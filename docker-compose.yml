@@ -1,0 +1,12 @@
+services:
+  app-one:
+    build: app-one
+    image: online-shop/app-one:latest
+    ports:
+      - "8087:8080"
+
+  app-two:
+    build: app-two
+    image: online-shop/app-two:latest
+    ports:
+      - "9087:8080"
