@@ -54,3 +54,13 @@ services:
       KAFKA_BROKER: kafka:9092
     ports:
       - 9087:8080
+
+  app-three:
+    build: app-three
+    image: online-shop/app-three:latest
+    depends_on:
+      - kafka-topics
+    environment:
+      KAFKA_BROKER: kafka:9092
+    ports:
+      - 10087:8080

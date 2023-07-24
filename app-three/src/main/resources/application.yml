@@ -6,4 +6,4 @@ spring:
 kafka:
   bootstrap-address: ${KAFKA_BROKER}
   topic: draft-topic
-  group-id: draft-group-two
+  group-id: draft-group-three
