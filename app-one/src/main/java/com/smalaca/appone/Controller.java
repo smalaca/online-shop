@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("hello")
+@RequestMapping("command")
 public class Controller {
     private final KafkaTemplate<String, DataTransferObject> kafkaTemplate;
     private final String topicName;

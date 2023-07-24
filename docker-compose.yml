@@ -4,8 +4,6 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-#    ports:
-#      - 22181:2181
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -16,8 +14,6 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#    ports:
-#      - 29092:29092
     depends_on:
       - zookeeper
 
@@ -31,10 +27,12 @@ services:
     depends_on:
       - kafka
 
-#  app-two:
-#    build: app-two
-#    image: online-shop/app-two:latest
-#    ports:
-#      - 9087:8080
-#    depends_on:
-#      - kafka
+  app-two:
+    build: app-two
+    image: online-shop/app-two:latest
+    environment:
+      KAFKA_BROKER: kafka:9092
+    ports:
+      - 9087:8080
+    depends_on:
+      - kafka
