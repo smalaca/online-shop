@@ -3,7 +3,7 @@
 ---
 ### Event Storming
 1. Examples:
-   1. [Big Picture](https://miro.com/app/board/uXjVMzJI3n8=/?share_link_id=308586295561)
+   1. [Event Storming: Big Picture, Process Level and Design Level](https://miro.com/app/board/uXjVMzJI3n8=/?share_link_id=308586295561)
 2. Worth to read:
    1. [Discovering complex domain with Event Storming](https://solidstudio.io/blog/discovering-domain-with-event-storming)
    2. [EventStorming Glossary & Cheat sheet](https://virtualddd.com/learning-ddd/ddd-crew-eventstorming-glossary-cheat-sheet)
