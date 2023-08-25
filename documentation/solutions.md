@@ -22,5 +22,9 @@
 ### Domain-Driven Design
 1. Examples
 2. Worth to read:
-   1. [DDD: Strategic Design: Core, Supporting, and Generic Subdomains](https://blog.jonathanoliver.com/ddd-strategic-design-core-supporting-and-generic-subdomains/)
+   1. Context Mapping:
+      1. [Context Mapping](https://github.com/ddd-crew/context-mapping)
+      2. [Strategic Domain Driven Design with Context Mapping](https://www.infoq.com/articles/ddd-contextmapping/) 
+   2. Domain Types
+      1. [DDD: Strategic Design: Core, Supporting, and Generic Subdomains](https://blog.jonathanoliver.com/ddd-strategic-design-core-supporting-and-generic-subdomains/)
 3. Articles: [Event Storming](articles.md#domain-driven-design)
