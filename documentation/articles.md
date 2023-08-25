@@ -12,3 +12,5 @@
 5. Big Picture Event Storming - example 
 6. What questions you can ask to find more events?
 7. How to look for the Bounded Contexts?
+
+##### Domain-Driven Design

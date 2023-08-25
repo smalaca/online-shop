@@ -12,3 +12,10 @@
    5. [Process Level Event Storming: let’s get this process started!](https://mrpicky.dev/process-level-event-storming-lets-get-this-process-started/)
    6. [Design Level Event Storming with examples!](https://mrpicky.dev/design-level-event-storming-with-examples/)
 3. Articles: [Event Storming](articles.md#event-storming)
+
+
+### Domain-Driven Design
+1. Examples
+2. Worth to read:
+   1. [DDD: Strategic Design: Core, Supporting, and Generic Subdomains](https://blog.jonathanoliver.com/ddd-strategic-design-core-supporting-and-generic-subdomains/)
+3. Articles: [Event Storming](articles.md#domain-driven-design)
