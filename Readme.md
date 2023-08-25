@@ -4,9 +4,10 @@
 The goal of the application is to show and explain usage of various architectural and design patterns.
 
 ### Documentation
-1. [Project description](documentation/project-description.md) - brief description of the project and the way how the business wants to operate.
-2. [Solutions](documentation/solutions.md) - list of used solutions, techniques and patterns with the reference to the example in the code.
-3. [Articles](documentation/articles.md) - references to blog articles that explains used solutions.
+1. [Project description](./documentation/project-description.md) - brief description of the project and the way how the business wants to operate.
+2. [Architecture Decision Record](./architecture-decision-record) - log of all architectural decisions made.
+3. [Solutions](./documentation/solutions.md) - list of used solutions, techniques and patterns with the reference to the example in the code.
+4. [Articles](./documentation/articles.md) - references to blog articles that explains used solutions.
 
 ### How to run application
 To run application you need to:

@@ -1,6 +1,11 @@
 # Solutions
 
 ---
+### Architecture Decision Record
+1. Examples: [Architecture Decision Records](../architecture-decision-record)
+2. Worth to read:
+3. Articles: [Architecture Decision Record](articles.md#architecture-decision-record)
+
 ### Event Storming
 1. Examples:
    1. [Event Storming: Big Picture, Process Level and Design Level](https://miro.com/app/board/uXjVMzJI3n8=/?share_link_id=308586295561)
