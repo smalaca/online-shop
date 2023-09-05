@@ -35,9 +35,9 @@ services:
       kafka-topics --bootstrap-server kafka:9092 --list
       "
 
-  app-one:
-    build: app-one
-    image: online-shop/app-one:latest
+  product-management:
+    build: product-management
+    image: online-shop/product-management:latest
     depends_on:
       - kafka-topics
     environment:
@@ -45,9 +45,9 @@ services:
     ports:
       - 8087:8080
 
-  app-two:
-    build: app-two
-    image: online-shop/app-two:latest
+  product-catalogue:
+    build: product-catalogue
+    image: online-shop/product-catalogue:latest
     depends_on:
       - kafka-topics
     environment:
@@ -55,9 +55,9 @@ services:
     ports:
       - 9087:8080
 
-  app-three:
-    build: app-three
-    image: online-shop/app-three:latest
+  purchase:
+    build: purchase
+    image: online-shop/purchase:latest
     depends_on:
       - kafka-topics
     environment:
