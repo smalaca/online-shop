@@ -1,4 +1,4 @@
-FROM maven:3.8.3-openjdk-17 as builder
+FROM online-shop/online-shop-schema:latest as builder
 
 ADD ./pom.xml pom.xml
 ADD ./src src/

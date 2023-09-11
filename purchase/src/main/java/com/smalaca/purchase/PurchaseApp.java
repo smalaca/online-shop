@@ -1,11 +1,11 @@
-package com.smalaca.apptwo;
+package com.smalaca.purchase;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AppTwoApp {
+public class PurchaseApp {
     public static void main(String[] args) {
-        SpringApplication.run(AppTwoApp.class, args);
+        SpringApplication.run(PurchaseApp.class, args);
     }
 }

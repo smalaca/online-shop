@@ -1,5 +1,6 @@
-package com.smalaca.appone;
+package com.smalaca.productmanagement.fake;
 
+import com.smalaca.productmanagement.ProductPublished;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConfiguration {
     @Bean
-    public KafkaTemplate<String, DataTransferObject> kafkaTemplate(@Value("${kafka.bootstrap-address}") String bootstrapAddress) {
+    public KafkaTemplate<String, ProductPublished> kafkaTemplate(@Value("${kafka.bootstrap-address}") String bootstrapAddress) {
         Map<String, Object> properties = new HashMap<>();
 
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);

@@ -1,11 +1,11 @@
-package com.smalaca.appone;
+package com.smalaca.productmanagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AppOneApp {
+public class ProductManagementApp {
     public static void main(String[] args) {
-        SpringApplication.run(AppOneApp.class, args);
+        SpringApplication.run(ProductManagementApp.class, args);
     }
 }

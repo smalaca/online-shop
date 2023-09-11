@@ -1,11 +1,11 @@
-package com.smalaca.appthree;
+package com.smalaca.productcatalogue;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AppThreeApp {
+public class ProductCatalogueApp {
     public static void main(String[] args) {
-        SpringApplication.run(AppThreeApp.class, args);
+        SpringApplication.run(ProductCatalogueApp.class, args);
     }
 }

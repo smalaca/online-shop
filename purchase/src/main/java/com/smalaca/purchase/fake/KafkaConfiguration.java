@@ -1,6 +1,6 @@
-package com.smalaca.apptwo;
+package com.smalaca.purchase.fake;
 
-import com.smalaca.appone.DataTransferObject;
+import com.smalaca.productmanagement.ProductPublished;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,17 +16,16 @@ import java.util.Map;
 @Configuration
 public class KafkaConfiguration {
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, DataTransferObject> listenerContainerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, ProductPublished> listenerContainerFactory(
             @Value("${kafka.bootstrap-address}") String bootstrapAddress) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        properties.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        properties.put(JsonDeserializer.TRUSTED_PACKAGES, "com.smalaca.productmanagement");
 
-        ConcurrentKafkaListenerContainerFactory<String, DataTransferObject> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, ProductPublished> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(properties));
         return factory;
     }
-
 }
