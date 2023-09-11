@@ -35,6 +35,14 @@ services:
       kafka-topics --bootstrap-server kafka:9092 --list
       "
 
+  annotations-ddd:
+    build: annotations-ddd
+    image: online-shop/annotations-ddd:latest
+
+  annotations-architectures:
+    build: annotations-architectures
+    image: online-shop/annotations-architectures:latest
+
   online-shop-schema:
     build: online-shop-schema
     image: online-shop/online-shop-schema:latest
@@ -67,6 +75,8 @@ services:
     depends_on:
       - kafka-topics
       - online-shop-schema
+      - annotations-ddd
+      - annotations-architectures
     environment:
       KAFKA_BROKER: kafka:9092
     ports:
