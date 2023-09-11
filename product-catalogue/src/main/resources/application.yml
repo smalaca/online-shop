@@ -1,0 +1,9 @@
+spring:
+  jackson:
+    serialization:
+      indent_output: true
+
+kafka:
+  bootstrap-address: ${KAFKA_BROKER}
+  topic: product-management-product-published
+  group-id: product-catalogue-group

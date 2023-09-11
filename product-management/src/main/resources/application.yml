@@ -1,0 +1,8 @@
+kafka:
+  bootstrap-address: ${KAFKA_BROKER}
+  topic: product-management-product-published
+
+spring:
+  jackson:
+    serialization:
+      indent_output: true

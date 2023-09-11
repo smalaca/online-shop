@@ -1,9 +1,0 @@
-spring:
-  jackson:
-    serialization:
-      indent_output: true
-
-kafka:
-  bootstrap-address: ${KAFKA_BROKER}
-  topic: draft-topic
-  group-id: draft-group-three

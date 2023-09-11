@@ -28,38 +28,45 @@ services:
       kafka-topics --bootstrap-server kafka:9092 --list
       
       echo -e 'Creating kafka topics'
-      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic draft-topic --replication-factor 1 --partitions 1
-      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic draft-topic-2 --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic product-management-product-published --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic product-management-2 --replication-factor 1 --partitions 1
       
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server kafka:9092 --list
       "
 
-  app-one:
-    build: app-one
-    image: online-shop/app-one:latest
+  online-shop-schema:
+    build: online-shop-schema
+    image: online-shop/online-shop-schema:latest
+
+  product-management:
+    build: product-management
+    image: online-shop/product-management:latest
     depends_on:
       - kafka-topics
+      - online-shop-schema
     environment:
       KAFKA_BROKER: kafka:9092
     ports:
       - 8087:8080
 
-  app-two:
-    build: app-two
-    image: online-shop/app-two:latest
+  product-catalogue:
+    build: product-catalogue
+    image: online-shop/product-catalogue:latest
     depends_on:
       - kafka-topics
+      - online-shop-schema
     environment:
       KAFKA_BROKER: kafka:9092
     ports:
       - 9087:8080
 
-  app-three:
-    build: app-three
-    image: online-shop/app-three:latest
+  purchase:
+    build: purchase
+    image: online-shop/purchase:latest
     depends_on:
       - kafka-topics
+      - online-shop-schema
     environment:
       KAFKA_BROKER: kafka:9092
     ports:
