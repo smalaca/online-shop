@@ -1,4 +1,4 @@
-package com.smalaca.purchase.domain.cart;
+package com.smalaca.purchase.domain.productid;
 
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.annotations.ddd.ValueObject;

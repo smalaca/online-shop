@@ -2,6 +2,9 @@ package com.smalaca.purchase.domain.cart;
 
 import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
+import com.smalaca.annotations.ddd.Factory;
+import com.smalaca.purchase.domain.offer.Offer;
+import com.smalaca.purchase.domain.productid.ProductId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,5 +21,11 @@ public class Cart {
     @PrimaryPort
     public void removeProduct(ProductId productId) {
         products.remove(productId);
+    }
+
+    @PrimaryPort
+    @Factory
+    public Offer choose(List<ProductId> productsIds) {
+        return new Offer(productsIds);
     }
 }
