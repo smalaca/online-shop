@@ -7,4 +7,6 @@ import com.smalaca.annotations.ddd.Repository;
 @Repository
 public interface OrderRepository {
     void save(Order order);
+
+    Order findById(OrderId orderId);
 }
