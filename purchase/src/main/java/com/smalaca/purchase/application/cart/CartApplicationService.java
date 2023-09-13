@@ -10,6 +10,7 @@ import com.smalaca.purchase.domain.productid.ProductId;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class CartApplicationService {
 
     @PrimaryAdapter
     @Command
+    @Transactional
     public void addProduct(AddProductCommand command) {
         ProductId productId = ProductId.from(command.productId());
         Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
@@ -39,6 +41,7 @@ public class CartApplicationService {
 
     @PrimaryAdapter
     @Command
+    @Transactional
     public void removeProduct(RemoveProductCommand command) {
         ProductId productId = ProductId.from(command.productId());
         Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
@@ -50,6 +53,7 @@ public class CartApplicationService {
 
     @PrimaryAdapter
     @Command
+    @Transactional
     public void chooseProducts(ChooseProductsCommand command) {
         List<ProductId> productsIds = asProductsIds(command);
         Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
