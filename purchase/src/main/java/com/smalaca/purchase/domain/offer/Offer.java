@@ -1,5 +1,6 @@
 package com.smalaca.purchase.domain.offer;
 
+import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.purchase.domain.productid.ProductId;
 
@@ -11,5 +12,10 @@ public class Offer {
 
     public Offer(List<ProductId> productsIds) {
         this.productsIds = productsIds;
+    }
+
+    @PrimaryPort
+    public void reject() {
+
     }
 }

@@ -7,4 +7,6 @@ import com.smalaca.annotations.ddd.Repository;
 @SecondaryPort
 public interface OfferRepository {
     void save(Offer offer);
+
+    Offer findById(OfferId offerId);
 }
