@@ -4,7 +4,7 @@ ADD ./pom.xml pom.xml
 ADD ./src src/
 
 RUN mvn clean package
-RUN mvn install:install-file -Dfile=target/annotations-architectures-1.0-SNAPSHOT-jar-with-dependencies.jar \
+RUN mvn install:install-file -Dfile=target/annotations-architectures-1.0-SNAPSHOT.jar \
     -DgroupId=com.smalaca  \
     -DartifactId=annotations-architectures  \
     -Dversion=1.0-SNAPSHOT  \
