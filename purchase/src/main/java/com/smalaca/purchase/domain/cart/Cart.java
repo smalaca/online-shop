@@ -14,4 +14,9 @@ public class Cart {
     public void addProduct(ProductId productId) {
         products.add(productId);
     }
+
+    @PrimaryPort
+    public void removeProduct(ProductId productId) {
+        products.remove(productId);
+    }
 }

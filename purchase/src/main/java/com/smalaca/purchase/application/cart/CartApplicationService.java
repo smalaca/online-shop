@@ -26,4 +26,14 @@ public class CartApplicationService {
 
         cartRepository.save(cart);
     }
+
+    @PrimaryAdapter
+    public void removeProduct(RemoveProductCommand command) {
+        ProductId productId = ProductId.from(command.productId());
+        Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
+
+        cart.removeProduct(productId);
+
+        cartRepository.save(cart);
+    }
 }
