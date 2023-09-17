@@ -1,5 +1,6 @@
 package com.smalaca.purchase.domain.cart;
 
+import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.annotations.ddd.ValueObject;
 import lombok.EqualsAndHashCode;
 
@@ -12,6 +13,7 @@ class Amount {
         this.value = value;
     }
 
+    @Factory
     static Amount amount(Integer value) {
         if (value < 1) {
             throw new InvalidAmountException(value);
