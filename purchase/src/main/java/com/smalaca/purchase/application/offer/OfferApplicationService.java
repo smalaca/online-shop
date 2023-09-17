@@ -26,7 +26,7 @@ public class OfferApplicationService {
     @Command
     @Transactional
     public void accept(UUID offerId) {
-        Offer offer = offerRepository.findById(OfferId.from(offerId));
+        Offer offer = offerRepository.findById(new OfferId(offerId));
 
         Order order = offer.accept();
 
@@ -37,7 +37,7 @@ public class OfferApplicationService {
     @Command
     @Transactional
     public void reject(UUID offerId) {
-        Offer offer = offerRepository.findById(OfferId.from(offerId));
+        Offer offer = offerRepository.findById(new OfferId(offerId));
 
         offer.reject();
 
@@ -48,7 +48,7 @@ public class OfferApplicationService {
     @Command
     @Transactional
     public void recreate(UUID offerId) {
-        Offer offer = offerRepository.findById(OfferId.from(offerId));
+        Offer offer = offerRepository.findById(new OfferId(offerId));
 
         Offer recreated = offer.recreate();
 

@@ -4,34 +4,40 @@ import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.offer.Offer;
-import com.smalaca.purchase.domain.productid.ProductId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @AggregateRoot
 public class Cart {
-    private final BuyerId buyerId;
+    private final List<CartItem> items = new ArrayList<>();
 
-    private final List<ProductId> products = new ArrayList<>();
+    @PrimaryPort
+    public void add(List<Product> products) {
+        products.forEach(product -> {
+            Optional<CartItem> found = cartItemFor(product);
 
-    Cart(BuyerId buyerId) {
-        this.buyerId = buyerId;
+            if (found.isPresent()) {
+                found.get().increase(product.getAmount());
+            } else {
+                items.add(product.asCartItem());
+            }
+        });
+    }
+
+    private Optional<CartItem> cartItemFor(Product product) {
+        return items.stream().filter(item -> item.isFor(product)).findFirst();
     }
 
     @PrimaryPort
-    public void addProduct(ProductId productId) {
-        products.add(productId);
-    }
+    public void removeProduct(Product productId) {
 
-    @PrimaryPort
-    public void removeProduct(ProductId productId) {
-        products.remove(productId);
     }
 
     @PrimaryPort
     @Factory
-    public Offer choose(List<ProductId> productsIds) {
-        return new Offer(productsIds);
+    public Offer choose(List<Product> productsIds) {
+        return null;
     }
 }

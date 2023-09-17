@@ -26,7 +26,7 @@ public class OrderApplicationService {
     @Command
     @Transactional
     public void reject(UUID orderId) {
-        Order order = orderRepository.findById(OrderId.from(orderId));
+        Order order = orderRepository.findById(new OrderId(orderId));
 
         order.reject();
 
@@ -37,7 +37,7 @@ public class OrderApplicationService {
     @Command
     @Transactional
     public void purchase(UUID orderId) {
-        Order order = orderRepository.findById(OrderId.from(orderId));
+        Order order = orderRepository.findById(new OrderId(orderId));
 
         Purchase purchase = order.purchase();
 

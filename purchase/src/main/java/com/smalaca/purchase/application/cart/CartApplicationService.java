@@ -6,7 +6,7 @@ import com.smalaca.annotations.patterns.cqrs.Command;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
-import com.smalaca.purchase.domain.productid.ProductId;
+import com.smalaca.purchase.domain.cart.Product;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import org.springframework.stereotype.Service;
@@ -30,11 +30,11 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void addProduct(AddProductCommand command) {
-        ProductId productId = ProductId.from(command.productId());
-        Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
+    public void addProduct(AddProductsCommand command) {
+        List<Product> products = command.asProducts();
+        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
-        cart.addProduct(productId);
+        cart.add(products);
 
         cartRepository.save(cart);
     }
@@ -43,10 +43,10 @@ public class CartApplicationService {
     @Command
     @Transactional
     public void removeProduct(RemoveProductCommand command) {
-        ProductId productId = ProductId.from(command.productId());
-        Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
+        Product product = Product.product(command.productId(), 0);
+        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
-        cart.removeProduct(productId);
+        cart.removeProduct(product);
 
         cartRepository.save(cart);
     }
@@ -55,17 +55,17 @@ public class CartApplicationService {
     @Command
     @Transactional
     public void chooseProducts(ChooseProductsCommand command) {
-        List<ProductId> productsIds = asProductsIds(command);
-        Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
+        List<Product> products = asProductsIds(command);
+        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
-        Offer offer = cart.choose(productsIds);
+        Offer offer = cart.choose(products);
 
         offerRepository.save(offer);
     }
 
-    private List<ProductId> asProductsIds(ChooseProductsCommand command) {
+    private List<Product> asProductsIds(ChooseProductsCommand command) {
         return command.productsIds().stream()
-                .map(ProductId::from)
+                .map(productId -> Product.product(productId, 0))
                 .collect(toList());
     }
 }
