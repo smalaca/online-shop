@@ -11,7 +11,13 @@ import java.util.List;
 
 @AggregateRoot
 public class Cart {
+    private final BuyerId buyerId;
+
     private final List<ProductId> products = new ArrayList<>();
+
+    Cart(BuyerId buyerId) {
+        this.buyerId = buyerId;
+    }
 
     @PrimaryPort
     public void addProduct(ProductId productId) {
