@@ -6,15 +6,13 @@ import com.smalaca.annotations.patterns.cqrs.Command;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
-import com.smalaca.purchase.domain.productid.ProductId;
+import com.smalaca.purchase.domain.cart.Product;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @ApplicationService
@@ -30,23 +28,11 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void addProduct(AddProductCommand command) {
-        ProductId productId = ProductId.from(command.productId());
-        Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
+    public void addProduct(CartProductsDto dto) {
+        List<Product> products = dto.asProducts();
+        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
-        cart.addProduct(productId);
-
-        cartRepository.save(cart);
-    }
-
-    @PrimaryAdapter
-    @Command
-    @Transactional
-    public void removeProduct(RemoveProductCommand command) {
-        ProductId productId = ProductId.from(command.productId());
-        Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
-
-        cart.removeProduct(productId);
+        cart.add(products);
 
         cartRepository.save(cart);
     }
@@ -54,18 +40,24 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void chooseProducts(ChooseProductsCommand command) {
-        List<ProductId> productsIds = asProductsIds(command);
-        Cart cart = cartRepository.findBy(CartId.from(command.cartId()));
+    public void removeProduct(CartProductsDto dto) {
+        Product product = dto.asProducts().get(0);
+        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
-        Offer offer = cart.choose(productsIds);
+        cart.removeProduct(product);
+
+        cartRepository.save(cart);
+    }
+
+    @PrimaryAdapter
+    @Command
+    @Transactional
+    public void chooseProducts(CartProductsDto dto) {
+        List<Product> products = dto.asProducts();
+        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
+
+        Offer offer = cart.choose(products);
 
         offerRepository.save(offer);
-    }
-
-    private List<ProductId> asProductsIds(ChooseProductsCommand command) {
-        return command.productsIds().stream()
-                .map(ProductId::from)
-                .collect(toList());
     }
 }
