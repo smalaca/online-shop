@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.smalaca.purchase.domain.cart.CartAssertion.assertCart;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,11 +34,27 @@ class CartApplicationServiceTest {
     private final CartApplicationService service = new CartApplicationService(cartRepository, offerRepository);
 
     @Test
+    void shouldAddNothingWhenNothingGiven() {
+        UUID productIdOne = randomId();
+        UUID productIdTwo = randomId();
+        givenCartWith(ImmutableList.of(
+                Product.product(productIdOne, 12),
+                Product.product(productIdTwo, 4)));
+
+        service.addProduct(dto(emptyMap()));
+
+        assertCart(thenCartWasSaved())
+                .hasProducts(2)
+                .hasProduct(productIdOne, 12)
+                .hasProduct(productIdTwo, 4);
+    }
+
+    @Test
     void shouldAddProduct() {
         givenEmptyCart();
         UUID productId = randomId();
 
-        service.addProduct(addProductsCommand(ImmutableMap.of(productId, 13)));
+        service.addProduct(dto(ImmutableMap.of(productId, 13)));
 
         assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 13);
     }
@@ -46,7 +63,7 @@ class CartApplicationServiceTest {
     void shouldNotAddProductWhenAmountIsLowerThanOne() {
         givenEmptyCart();
 
-        Executable executable = () -> service.addProduct(addProductsCommand(ImmutableMap.of(randomId(), -13)));
+        Executable executable = () -> service.addProduct(dto(ImmutableMap.of(randomId(), -13)));
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertThat(actual).hasMessage("Amount: \"-13\" is not greater than zero.");
@@ -58,7 +75,7 @@ class CartApplicationServiceTest {
         UUID productId = randomId();
         givenCartWith(ImmutableList.of(Product.product(productId, 3)));
 
-        service.addProduct(addProductsCommand(ImmutableMap.of(productId, 12)));
+        service.addProduct(dto(ImmutableMap.of(productId, 12)));
 
         assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 15);
     }
@@ -69,7 +86,7 @@ class CartApplicationServiceTest {
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();
-        CartProductsDto command = addProductsCommand(ImmutableMap.of(
+        CartProductsDto command = dto(ImmutableMap.of(
                 productIdOne, 13,
                 productIdTwo, 26,
                 productIdThree, 42));
@@ -89,7 +106,7 @@ class CartApplicationServiceTest {
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();
-        CartProductsDto command = addProductsCommand(ImmutableMap.of(
+        CartProductsDto command = dto(ImmutableMap.of(
                 productIdOne, 13,
                 productIdTwo, -26,
                 productIdThree, -42));
@@ -112,7 +129,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1),
                 Product.product(productIdThree, 7)));
-        CartProductsDto command = addProductsCommand(ImmutableMap.of(
+        CartProductsDto command = dto(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 9,
                 productIdFour, 9,
@@ -129,7 +146,75 @@ class CartApplicationServiceTest {
                 .hasProduct(productIdFive, 11);
     }
 
-    private CartProductsDto addProductsCommand(Map<UUID, Integer> products) {
+    @Test
+    void shouldRemoveNothingWhenNothingGiven() {
+        UUID productIdOne = randomId();
+        UUID productIdTwo = randomId();
+        givenCartWith(ImmutableList.of(
+                Product.product(productIdOne, 14),
+                Product.product(productIdTwo, 1)));
+
+        service.addProduct(dto(emptyMap()));
+
+        assertCart(thenCartWasSaved())
+                .hasProducts(2)
+                .hasProduct(productIdOne, 14)
+                .hasProduct(productIdTwo, 1);
+    }
+
+    @Test
+    void shouldRemoveNothingWhenProductNotInCart() {
+        UUID productIdOne = randomId();
+        UUID productIdTwo = randomId();
+        givenCartWith(ImmutableList.of(
+                Product.product(productIdOne, 14),
+                Product.product(productIdTwo, 1)));
+        CartProductsDto dto = dto(ImmutableMap.of(
+                randomId(), 22, randomId(), 12, randomId(), 7));
+
+        service.removeProduct(dto);
+
+        assertCart(thenCartWasSaved())
+                .hasProducts(2)
+                .hasProduct(productIdOne, 14)
+                .hasProduct(productIdTwo, 1);
+    }
+
+    @Test
+    void shouldRemoveProductFromCart() {
+        UUID productIdOne = randomId();
+        UUID productIdTwo = randomId();
+        UUID productIdThree = randomId();
+        givenCartWith(ImmutableList.of(
+                Product.product(productIdOne, 14),
+                Product.product(productIdTwo, 1),
+                Product.product(productIdThree, 7)));
+        CartProductsDto dto = dto(ImmutableMap.of(productIdThree, 7));
+
+        service.removeProduct(dto);
+
+        assertCart(thenCartWasSaved())
+                .hasProducts(2)
+                .hasProduct(productIdOne, 14)
+                .hasProduct(productIdTwo, 1);
+    }
+
+    @Test
+    void shouldDecreaseProductAmount() {
+
+    }
+
+    @Test
+    void shouldRemoveProductFromCartWhenAmountGreaterThenInCart() {
+
+    }
+
+    @Test
+    void shouldRemoveProductsDecreaseAmountOfProductsAndIgnoreThoseNotInCart() {
+
+    }
+
+    private CartProductsDto dto(Map<UUID, Integer> products) {
         return new CartProductsDto(CART_UUID, products);
     }
 

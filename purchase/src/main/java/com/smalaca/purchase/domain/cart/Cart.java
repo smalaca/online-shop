@@ -31,8 +31,10 @@ public class Cart {
     }
 
     @PrimaryPort
-    public void removeProduct(Product productId) {
-
+    public void removeProduct(List<Product> products) {
+        products.forEach(product -> {
+            cartItemFor(product).ifPresent(items::remove);
+        });
     }
 
     @PrimaryPort
