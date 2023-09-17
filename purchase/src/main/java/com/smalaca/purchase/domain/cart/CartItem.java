@@ -23,4 +23,12 @@ class CartItem {
     void increase(Amount amount) {
         this.amount = this.amount.increase(amount);
     }
+
+    boolean hasMoreThan(Product product) {
+        return product.hasLessThan(amount);
+    }
+
+    void decrease(Amount amount) {
+        this.amount = this.amount.decrease(amount);
+    }
 }

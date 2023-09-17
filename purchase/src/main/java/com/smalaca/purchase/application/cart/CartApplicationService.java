@@ -41,10 +41,9 @@ public class CartApplicationService {
     @Command
     @Transactional
     public void removeProduct(CartProductsDto dto) {
-        Product product = dto.asProducts().get(0);
         Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
-        cart.removeProduct(product);
+        cart.remove(dto.asProducts());
 
         cartRepository.save(cart);
     }

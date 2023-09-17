@@ -16,6 +16,10 @@ public class CartAssertion {
         return new CartAssertion(actual);
     }
 
+    public CartAssertion hasNoProducts() {
+        return hasProducts(0);
+    }
+
     public CartAssertion hasOnlyProduct(UUID expectedProductId, int expectedAmount) {
         return hasProducts(1).hasProduct(expectedProductId, expectedAmount);
     }

@@ -31,8 +31,16 @@ public class Cart {
     }
 
     @PrimaryPort
-    public void removeProduct(Product productId) {
-
+    public void remove(List<Product> products) {
+        products.forEach(product -> {
+            cartItemFor(product).ifPresent(cartItem -> {
+                if (cartItem.hasMoreThan(product)){
+                    cartItem.decrease(product.getAmount());
+                } else {
+                    items.remove(cartItem);
+                }
+            });
+        });
     }
 
     @PrimaryPort

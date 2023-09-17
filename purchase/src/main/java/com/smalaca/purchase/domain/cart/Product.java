@@ -1,5 +1,6 @@
 package com.smalaca.purchase.domain.cart;
 
+import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.annotations.ddd.ValueObject;
 
 import java.util.UUID;
@@ -14,10 +15,12 @@ public class Product {
         this.amount = amount;
     }
 
+    @Factory
     public static Product product(UUID productId, Integer amount) {
         return new Product(productId, Amount.amount(amount));
     }
 
+    @Factory
     CartItem asCartItem() {
         return new CartItem(productId, amount);
     }
@@ -28,5 +31,9 @@ public class Product {
 
     Amount getAmount() {
         return amount;
+    }
+
+    boolean hasLessThan(Amount amount) {
+        return this.amount.isLowerThan(amount);
     }
 }
