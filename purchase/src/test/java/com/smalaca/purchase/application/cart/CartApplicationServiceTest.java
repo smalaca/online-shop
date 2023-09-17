@@ -69,7 +69,7 @@ class CartApplicationServiceTest {
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();
-        AddProductsCommand command = addProductsCommand(ImmutableMap.of(
+        CartProductsDto command = addProductsCommand(ImmutableMap.of(
                 productIdOne, 13,
                 productIdTwo, 26,
                 productIdThree, 42));
@@ -89,7 +89,7 @@ class CartApplicationServiceTest {
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();
-        AddProductsCommand command = addProductsCommand(ImmutableMap.of(
+        CartProductsDto command = addProductsCommand(ImmutableMap.of(
                 productIdOne, 13,
                 productIdTwo, -26,
                 productIdThree, -42));
@@ -112,7 +112,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1),
                 Product.product(productIdThree, 7)));
-        AddProductsCommand command = addProductsCommand(ImmutableMap.of(
+        CartProductsDto command = addProductsCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 9,
                 productIdFour, 9,
@@ -129,8 +129,8 @@ class CartApplicationServiceTest {
                 .hasProduct(productIdFive, 11);
     }
 
-    private AddProductsCommand addProductsCommand(Map<UUID, Integer> products) {
-        return new AddProductsCommand(CART_UUID, products);
+    private CartProductsDto addProductsCommand(Map<UUID, Integer> products) {
+        return new CartProductsDto(CART_UUID, products);
     }
 
     private void givenEmptyCart() {

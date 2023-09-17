@@ -14,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @ApplicationService
 public class CartApplicationService {
@@ -30,9 +28,9 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void addProduct(AddProductsCommand command) {
-        List<Product> products = command.asProducts();
-        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
+    public void addProduct(CartProductsDto dto) {
+        List<Product> products = dto.asProducts();
+        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
         cart.add(products);
 
@@ -42,9 +40,9 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void removeProduct(RemoveProductCommand command) {
-        Product product = Product.product(command.productId(), 0);
-        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
+    public void removeProduct(CartProductsDto dto) {
+        Product product = dto.asProducts().get(0);
+        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
         cart.removeProduct(product);
 
@@ -54,18 +52,12 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void chooseProducts(ChooseProductsCommand command) {
-        List<Product> products = asProductsIds(command);
-        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
+    public void chooseProducts(CartProductsDto dto) {
+        List<Product> products = dto.asProducts();
+        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
         Offer offer = cart.choose(products);
 
         offerRepository.save(offer);
-    }
-
-    private List<Product> asProductsIds(ChooseProductsCommand command) {
-        return command.productsIds().stream()
-                .map(productId -> Product.product(productId, 0))
-                .collect(toList());
     }
 }
