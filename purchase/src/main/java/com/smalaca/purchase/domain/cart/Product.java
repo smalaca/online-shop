@@ -32,4 +32,8 @@ public class Product {
     Amount getAmount() {
         return amount;
     }
+
+    boolean hasLessThan(Amount amount) {
+        return this.amount.isLowerThan(amount);
+    }
 }

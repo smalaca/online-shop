@@ -43,7 +43,7 @@ public class CartApplicationService {
     public void removeProduct(CartProductsDto dto) {
         Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
-        cart.removeProduct(dto.asProducts());
+        cart.remove(dto.asProducts());
 
         cartRepository.save(cart);
     }

@@ -22,7 +22,17 @@ class Amount {
         return new Amount(value);
     }
 
+    @Factory
     Amount increase(Amount amount) {
         return new Amount(this.value + amount.value);
+    }
+
+    boolean isLowerThan(Amount amount) {
+        return this.value < amount.value;
+    }
+
+    @Factory
+    Amount decrease(Amount amount) {
+        return new Amount(this.value - amount.value);
     }
 }
