@@ -35,11 +35,11 @@ public class Product {
         return amount;
     }
 
-    UUID getProductId() {
-        return productId;
-    }
-
     boolean hasLessThan(Amount amount) {
         return this.amount.isLowerThan(amount);
+    }
+
+    boolean hasLessOrEqualThan(Amount amount) {
+        return this.amount.isLowerOrEqualThan(amount);
     }
 }

@@ -69,7 +69,7 @@ public class Cart {
 
     private boolean isMissing(Product product) {
         Optional<CartItem> existing = items.stream()
-                .filter(cartItem -> cartItem.isFor(product))
+                .filter(cartItem -> cartItem.isEnoughOf(product))
                 .findFirst();
 
         return existing.isEmpty();

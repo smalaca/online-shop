@@ -290,13 +290,30 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeChosenProductHasGreaterAmountThanCart() {
+        UUID productIdOne = randomId();
+        UUID productIdTwo = randomId();
+        givenCartWith(ImmutableList.of(
+                Product.product(productIdOne, 13),
+                Product.product(productIdTwo, 7)));
+        CartProductsDto dto = dto(ImmutableMap.of(
+                productIdOne, 22,
+                productIdTwo, 9));
 
+        Executable executable = () -> service.chooseProducts(dto);
+
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        assertCartProductsException(actual)
+                .hasMessage("Cannot create Offer when products are not in the Cart.")
+                .containsProduct(productIdOne, 22)
+                .containsProduct(productIdTwo, 9);
     }
 
     @Test
     void shouldRecognizeOneOfChosenProductsIsNotInTheCart() {
 
     }
+
+    // chose product with exactly the same amount
 
     private CartProductsDto dto(Map<UUID, Integer> products) {
         return new CartProductsDto(CART_UUID, products);
