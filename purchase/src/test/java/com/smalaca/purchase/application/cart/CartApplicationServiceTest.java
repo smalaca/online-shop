@@ -310,7 +310,21 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeOneOfChosenProductsIsNotInTheCart() {
+        UUID productIdOne = randomId();
+        givenCartWith(ImmutableList.of(
+                Product.product(productIdOne, 13),
+                Product.product(randomId(), 7)));
+        UUID productIdThree = randomId();
+        CartProductsDto dto = dto(ImmutableMap.of(
+                productIdOne, 22,
+                productIdThree, 9));
 
+        Executable executable = () -> service.chooseProducts(dto);
+
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        assertCartProductsException(actual)
+                .hasMessage("Cannot create Offer when products are not in the Cart.")
+                .containsProduct(productIdThree, 9);
     }
 
     // chose product with exactly the same amount
