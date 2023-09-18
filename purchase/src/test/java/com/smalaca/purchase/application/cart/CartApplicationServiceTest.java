@@ -284,6 +284,7 @@ class CartApplicationServiceTest {
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
+                .hasProducts(2)
                 .containsProduct(productIdOne, 22)
                 .containsProduct(productIdTwo, 13);
     }
@@ -304,6 +305,7 @@ class CartApplicationServiceTest {
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
+                .hasProducts(2)
                 .containsProduct(productIdOne, 22)
                 .containsProduct(productIdTwo, 9);
     }
@@ -316,7 +318,7 @@ class CartApplicationServiceTest {
                 Product.product(randomId(), 7)));
         UUID productIdThree = randomId();
         CartProductsDto dto = dto(ImmutableMap.of(
-                productIdOne, 22,
+                productIdOne, 10,
                 productIdThree, 9));
 
         Executable executable = () -> service.chooseProducts(dto);
@@ -324,7 +326,7 @@ class CartApplicationServiceTest {
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
-                .containsProduct(productIdThree, 9);
+                .hasOnlyOneProduct(productIdThree, 9);
     }
 
     // chose product with exactly the same amount

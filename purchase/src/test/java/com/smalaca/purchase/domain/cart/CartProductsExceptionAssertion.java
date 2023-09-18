@@ -20,8 +20,17 @@ public class CartProductsExceptionAssertion {
         return this;
     }
 
+    public CartProductsExceptionAssertion hasProducts(int expected) {
+        assertThat(actual.getProducts()).hasSize(expected);
+        return this;
+    }
+
     public CartProductsExceptionAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
         assertThat(actual.getProducts()).contains(Product.product(expectedProductId, expectedAmount));
         return this;
+    }
+
+    public CartProductsExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedAmount) {
+        return hasProducts(1).containsProduct(expectedProductId, expectedAmount);
     }
 }
