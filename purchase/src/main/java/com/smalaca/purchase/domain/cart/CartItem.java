@@ -20,6 +20,10 @@ class CartItem {
         return product.hasProductIdSameAs(productId);
     }
 
+    boolean isEnoughOf(Product product) {
+        return isFor(product) && product.hasLessOrEqualThan(amount);
+    }
+
     void increase(Amount amount) {
         this.amount = this.amount.increase(amount);
     }

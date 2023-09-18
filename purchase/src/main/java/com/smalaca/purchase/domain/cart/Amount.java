@@ -31,6 +31,10 @@ class Amount {
         return this.value < amount.value;
     }
 
+    boolean isLowerOrEqualThan(Amount amount) {
+        return this.value <= amount.value;
+    }
+
     @Factory
     Amount decrease(Amount amount) {
         return new Amount(this.value - amount.value);
