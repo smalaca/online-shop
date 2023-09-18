@@ -45,7 +45,10 @@ public class Cart {
 
     @PrimaryPort
     @Factory
-    public Offer choose(List<Product> productsIds) {
+    public Offer choose(List<Product> products) {
+        if (products.isEmpty()) {
+            throw new NoProductsChosenException();
+        }
         return null;
     }
 }

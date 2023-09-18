@@ -255,6 +255,18 @@ class CartApplicationServiceTest {
                 .hasProduct(productIdFour, 11);
     }
 
+    @Test
+    void shouldRecognizeNoProductsWereChoose() {
+        givenCartWith(ImmutableList.of(
+                Product.product(randomId(), 13),
+                Product.product(randomId(), 42)));
+
+        Executable executable = () -> service.chooseProducts(dto(emptyMap()));
+
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        assertThat(actual).hasMessage("Cannot create Offer when no products were choose.");
+    }
+
     private CartProductsDto dto(Map<UUID, Integer> products) {
         return new CartProductsDto(CART_UUID, products);
     }

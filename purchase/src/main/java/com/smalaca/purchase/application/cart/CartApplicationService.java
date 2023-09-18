@@ -52,10 +52,9 @@ public class CartApplicationService {
     @Command
     @Transactional
     public void chooseProducts(CartProductsDto dto) {
-        List<Product> products = dto.asProducts();
         Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
-        Offer offer = cart.choose(products);
+        Offer offer = cart.choose(dto.asProducts());
 
         offerRepository.save(offer);
     }
