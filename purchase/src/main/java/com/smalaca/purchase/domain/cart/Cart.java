@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
+
 @AggregateRoot
 public class Cart {
     private final List<CartItem> items = new ArrayList<>();
@@ -47,8 +49,29 @@ public class Cart {
     @Factory
     public Offer choose(List<Product> products) {
         if (products.isEmpty()) {
-            throw new NoProductsChosenException();
+            throw CartProductsException.choseNothing();
         }
+
+        List<Product> missing = getMissingOf(products);
+
+        if (!missing.isEmpty()) {
+            throw CartProductsException.missing(missing);
+        }
+
         return null;
+    }
+
+    private List<Product> getMissingOf(List<Product> products) {
+        return products.stream()
+                .filter(this::isMissing)
+                .collect(toList());
+    }
+
+    private boolean isMissing(Product product) {
+        Optional<CartItem> existing = items.stream()
+                .filter(cartItem -> cartItem.isFor(product))
+                .findFirst();
+
+        return existing.isEmpty();
     }
 }

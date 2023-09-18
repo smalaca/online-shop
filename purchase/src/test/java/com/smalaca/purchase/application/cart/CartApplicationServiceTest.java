@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.smalaca.purchase.domain.cart.CartAssertion.assertCart;
+import static com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion.assertCartProductsException;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -264,7 +265,37 @@ class CartApplicationServiceTest {
         Executable executable = () -> service.chooseProducts(dto(emptyMap()));
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertThat(actual).hasMessage("Cannot create Offer when no products were choose.");
+        assertCartProductsException(actual).hasMessage("Cannot create Offer when no products were choose.");
+    }
+
+    @Test
+    void shouldRecognizeProductsAreNotFromCart() {
+        givenCartWith(ImmutableList.of(
+                Product.product(randomId(), 13),
+                Product.product(randomId(), 42)));
+        UUID productIdOne = randomId();
+        UUID productIdTwo = randomId();
+        CartProductsDto dto = dto(ImmutableMap.of(
+                productIdOne, 22,
+                productIdTwo, 13));
+
+        Executable executable = () -> service.chooseProducts(dto);
+
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        assertCartProductsException(actual)
+                .hasMessage("Cannot create Offer when products are not in the Cart.")
+                .containsProduct(productIdOne, 22)
+                .containsProduct(productIdTwo, 13);
+    }
+
+    @Test
+    void shouldRecognizeChosenProductHasGreaterAmountThanCart() {
+
+    }
+
+    @Test
+    void shouldRecognizeOneOfChosenProductsIsNotInTheCart() {
+
     }
 
     private CartProductsDto dto(Map<UUID, Integer> products) {

@@ -35,4 +35,8 @@ class Amount {
     Amount decrease(Amount amount) {
         return new Amount(this.value - amount.value);
     }
+
+    Integer value() {
+        return value;
+    }
 }

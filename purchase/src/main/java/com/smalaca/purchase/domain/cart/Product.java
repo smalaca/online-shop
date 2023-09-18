@@ -2,10 +2,12 @@ package com.smalaca.purchase.domain.cart;
 
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.annotations.ddd.ValueObject;
+import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
 
 @ValueObject
+@EqualsAndHashCode
 public class Product {
     private final UUID productId;
     private final Amount amount;
@@ -31,6 +33,10 @@ public class Product {
 
     Amount getAmount() {
         return amount;
+    }
+
+    UUID getProductId() {
+        return productId;
     }
 
     boolean hasLessThan(Amount amount) {
