@@ -6,9 +6,11 @@ import com.smalaca.annotations.patterns.cqrs.Command;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
-import com.smalaca.purchase.domain.cart.Product;
-import com.smalaca.purchase.domain.cart.ProductManagementService;
+import com.smalaca.purchase.domain.offer.Clock;
+import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.offer.ProductManagementService;
 import com.smalaca.purchase.domain.offer.Offer;
+import com.smalaca.purchase.domain.offer.OfferFactory;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +23,18 @@ public class CartApplicationService {
     private final CartRepository cartRepository;
     private final OfferRepository offerRepository;
     private final ProductManagementService productManagementService;
+    private final OfferFactory offerFactory;
 
-    public CartApplicationService(
-            CartRepository cartRepository, OfferRepository offerRepository, ProductManagementService productManagementService) {
+    private CartApplicationService(
+            CartRepository cartRepository, OfferRepository offerRepository, ProductManagementService productManagementService, OfferFactory offerFactory) {
         this.cartRepository = cartRepository;
         this.offerRepository = offerRepository;
         this.productManagementService = productManagementService;
+        this.offerFactory = offerFactory;
+    }
+
+    static CartApplicationService create(CartRepository cartRepository, OfferRepository offerRepository, ProductManagementService productManagementService, Clock clock) {
+        return new CartApplicationService(cartRepository, offerRepository, productManagementService, new OfferFactory(productManagementService, clock));
     }
 
     @PrimaryAdapter
@@ -58,7 +66,7 @@ public class CartApplicationService {
     public void chooseProducts(CartProductsDto dto) {
         Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
-        Offer offer = cart.choose(dto.asProducts(), productManagementService);
+        Offer offer = cart.choose(dto.asProducts(), offerFactory);
 
         offerRepository.save(offer);
     }

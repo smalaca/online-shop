@@ -1,4 +1,4 @@
-package com.smalaca.purchase.domain.cart;
+package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.purchase.domain.product.Product;
 
@@ -7,23 +7,23 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CartProductsExceptionAssertion {
-    private final CartProductsException actual;
+public class OfferProductsExceptionAssertion {
+    private final OfferProductsException actual;
 
-    private CartProductsExceptionAssertion(CartProductsException actual) {
+    private OfferProductsExceptionAssertion(OfferProductsException actual) {
         this.actual = actual;
     }
 
-    public static CartProductsExceptionAssertion assertCartProductsException(RuntimeException actual) {
-        return new CartProductsExceptionAssertion((CartProductsException) actual);
+    public static OfferProductsExceptionAssertion assertOfferProductsException(RuntimeException actual) {
+        return new OfferProductsExceptionAssertion((OfferProductsException) actual);
     }
 
-    public CartProductsExceptionAssertion hasMessage(String expected) {
+    public OfferProductsExceptionAssertion hasMessage(String expected) {
         assertThat(actual).hasMessage(expected);
         return this;
     }
 
-    public CartProductsExceptionAssertion hasProducts(int expected) {
+    public OfferProductsExceptionAssertion hasProducts(int expected) {
         assertThat(actual).extracting("products").satisfies(products -> {
             assertThat((List<Product>) products).hasSize(expected);
         });
@@ -31,7 +31,7 @@ public class CartProductsExceptionAssertion {
         return this;
     }
 
-    public CartProductsExceptionAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
+    public OfferProductsExceptionAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
         assertThat(actual).extracting("products").satisfies(products -> {
             assertThat((List<Product>) products).contains(Product.product(expectedProductId, expectedAmount));
         });
@@ -39,7 +39,7 @@ public class CartProductsExceptionAssertion {
         return this;
     }
 
-    public CartProductsExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedAmount) {
+    public OfferProductsExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedAmount) {
         return hasProducts(1).containsProduct(expectedProductId, expectedAmount);
     }
 }

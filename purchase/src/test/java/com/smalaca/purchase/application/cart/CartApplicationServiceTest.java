@@ -5,19 +5,24 @@ import com.google.common.collect.ImmutableMap;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
-import com.smalaca.purchase.domain.cart.Product;
-import com.smalaca.purchase.domain.cart.ProductManagementService;
+import com.smalaca.purchase.domain.offer.Clock;
+import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferRepository;
+import com.smalaca.purchase.domain.offer.ProductManagementService;
+import com.smalaca.purchase.domain.product.Product;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static com.smalaca.purchase.domain.cart.CartAssertion.assertCart;
 import static com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion.assertCartProductsException;
+import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
+import static com.smalaca.purchase.domain.offer.OfferProductsExceptionAssertion.assertOfferProductsException;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,11 +35,13 @@ import static org.mockito.Mockito.never;
 class CartApplicationServiceTest {
     private static final UUID CART_UUID = randomId();
     private static final CartId CART_ID = new CartId(CART_UUID);
+    private static final LocalDateTime CREATED_AT = LocalDateTime.now();
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final CartRepository cartRepository = mock(CartRepository.class);
     private final ProductManagementService productManagementService = mock(ProductManagementService.class);
-    private final CartApplicationService service = new CartApplicationService(cartRepository, offerRepository, productManagementService);
+    private final Clock clock = mock(Clock.class);
+    private final CartApplicationService service = CartApplicationService.create(cartRepository, offerRepository, productManagementService, clock);
 
     @Test
     void shouldAddNothingWhenNothingGiven() {
@@ -370,7 +377,7 @@ class CartApplicationServiceTest {
         Executable executable = () -> service.chooseProducts(dto);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        assertOfferProductsException(actual)
                 .hasMessage("Cannot create Offer because products are not available anymore.")
                 .hasOnlyOneProduct(productIdOne, 2);
     }
@@ -396,14 +403,39 @@ class CartApplicationServiceTest {
         Executable executable = () -> service.chooseProducts(dto);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        assertOfferProductsException(actual)
                 .hasMessage("Cannot create Offer because products are not available anymore.")
                 .hasProducts(2)
                 .containsProduct(productIdOne, 2)
                 .containsProduct(productIdTwo, 7);
     }
 
-    // chose product with exactly the same amount
+    @Test
+    void shouldCreateOffer() {
+        UUID productIdOne = randomId();
+        UUID productIdTwo = randomId();
+        UUID productIdThree = randomId();
+        givenCartWith(ImmutableList.of(
+                Product.product(productIdOne, 2),
+                Product.product(productIdTwo, 7),
+                Product.product(productIdThree, 4)));
+        CartProductsDto dto = dto(ImmutableMap.of(
+                productIdOne, 2,
+                productIdTwo, 7,
+                productIdThree, 3));
+        given(productManagementService.getAvailabilityOf(ImmutableList.of(productIdOne, productIdTwo, productIdThree))).willReturn(ImmutableList.of(
+                Product.product(productIdOne, 2),
+                Product.product(productIdTwo, 8),
+                Product.product(productIdThree, 4)));
+
+        service.chooseProducts(dto);
+
+        assertOffer(thenOfferWasSaved())
+                .hasCreationDateTime(CREATED_AT);
+                // offer number
+                // products with the price -> refactoring first
+                // delivery methods with price -> refactoring first
+    }
 
     private CartProductsDto dto(Map<UUID, Integer> products) {
         return new CartProductsDto(CART_UUID, products);
@@ -422,6 +454,12 @@ class CartApplicationServiceTest {
     private Cart thenCartWasSaved() {
         ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
         then(cartRepository).should().save(captor.capture());
+        return captor.getValue();
+    }
+
+    private Offer thenOfferWasSaved() {
+        ArgumentCaptor<Offer> captor = ArgumentCaptor.forClass(Offer.class);
+        then(offerRepository).should().save(captor.capture());
         return captor.getValue();
     }
 

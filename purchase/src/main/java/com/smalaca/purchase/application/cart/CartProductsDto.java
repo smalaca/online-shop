@@ -1,6 +1,6 @@
 package com.smalaca.purchase.application.cart;
 
-import com.smalaca.purchase.domain.cart.Product;
+import com.smalaca.purchase.domain.product.Product;
 
 import java.util.List;
 import java.util.Map;

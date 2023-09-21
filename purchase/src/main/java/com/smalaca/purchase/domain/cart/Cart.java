@@ -4,11 +4,12 @@ import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.offer.Offer;
+import com.smalaca.purchase.domain.offer.OfferFactory;
+import com.smalaca.purchase.domain.product.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,9 +25,13 @@ public class Cart {
             if (found.isPresent()) {
                 found.get().increase(product.getAmount());
             } else {
-                items.add(product.asCartItem());
+                items.add(asCartItem(product));
             }
         });
+    }
+
+    private CartItem asCartItem(Product product) {
+        return new CartItem(product.getProductId(), product.getAmount());
     }
 
     private Optional<CartItem> cartItemFor(Product product) {
@@ -48,7 +53,7 @@ public class Cart {
 
     @PrimaryPort
     @Factory
-    public Offer choose(List<Product> products, ProductManagementService productManagementService) {
+    public Offer choose(List<Product> products, OfferFactory offerFactory) {
         if (products.isEmpty()) {
             throw CartProductsException.choseNothing();
         }
@@ -59,13 +64,7 @@ public class Cart {
             throw CartProductsException.missing(missing);
         }
 
-        List<Product> notAvailable = getNotAvailableOf(products, productManagementService);
-
-        if (!notAvailable.isEmpty()) {
-            throw CartProductsException.notAvailable(notAvailable);
-        }
-
-        return null;
+        return offerFactory.create(products);
     }
 
     private List<Product> getMissingOf(List<Product> products) {
@@ -80,18 +79,5 @@ public class Cart {
                 .findFirst();
 
         return existing.isEmpty();
-    }
-
-    private List<Product> getNotAvailableOf(List<Product> products, ProductManagementService productManagementService) {
-        List<UUID> productIds = products.stream().map(Product::getProductId).collect(toList());
-        List<Product> available = productManagementService.getAvailabilityOf(productIds);
-
-        return products.stream()
-                .filter(product -> isAvailabilityNotSatisfied(available, product))
-                .collect(toList());
-    }
-
-    private boolean isAvailabilityNotSatisfied(List<Product> products, Product product) {
-        return products.stream().noneMatch(product::isAvailabilitySatisfied);
     }
 }

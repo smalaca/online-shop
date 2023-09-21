@@ -1,5 +1,7 @@
 package com.smalaca.purchase.domain.cart;
 
+import com.smalaca.purchase.domain.product.Product;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,21 +17,9 @@ class CartProductsException extends RuntimeException {
     }
 
     static RuntimeException missing(List<Product> products) {
-        return create(products, "Cannot create Offer when products are not in the Cart.");
-    }
-
-    static RuntimeException notAvailable(List<Product> products) {
-        return create(products, "Cannot create Offer because products are not available anymore.");
-    }
-
-    private static CartProductsException create(List<Product> products, String message) {
-        CartProductsException exception = new CartProductsException(message);
+        CartProductsException exception = new CartProductsException("Cannot create Offer when products are not in the Cart.");
         exception.products.addAll(products);
 
         return exception;
-    }
-
-    List<Product> getProducts() {
-        return products;
     }
 }
