@@ -412,6 +412,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldCreateOffer() {
+        given(clock.nowDateTime()).willReturn(CREATED_AT);
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();

@@ -5,8 +5,16 @@ import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.order.Order;
 
+import java.time.LocalDateTime;
+
 @AggregateRoot
 public class Offer {
+    private final LocalDateTime creationDateTime;
+
+    Offer(LocalDateTime creationDateTime) {
+        this.creationDateTime = creationDateTime;
+    }
+
     @PrimaryPort
     public void reject() {
 
@@ -15,7 +23,7 @@ public class Offer {
     @PrimaryPort
     @Factory
     public Offer recreate() {
-        return new Offer();
+        return new Offer(null);
     }
 
     @PrimaryPort

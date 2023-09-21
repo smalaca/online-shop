@@ -25,7 +25,7 @@ public class OfferFactory {
             throw OfferProductsException.notAvailable(notAvailable);
         }
 
-        return null;
+        return new Offer(clock.nowDateTime());
     }
 
     private List<Product> getNotAvailableOf(List<Product> products) {
