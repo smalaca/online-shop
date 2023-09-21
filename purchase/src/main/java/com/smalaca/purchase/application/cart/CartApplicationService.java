@@ -7,6 +7,7 @@ import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.cart.Product;
+import com.smalaca.purchase.domain.cart.ProductManagementService;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,13 @@ import java.util.List;
 public class CartApplicationService {
     private final CartRepository cartRepository;
     private final OfferRepository offerRepository;
+    private final ProductManagementService productManagementService;
 
-    public CartApplicationService(CartRepository cartRepository, OfferRepository offerRepository) {
+    public CartApplicationService(
+            CartRepository cartRepository, OfferRepository offerRepository, ProductManagementService productManagementService) {
         this.cartRepository = cartRepository;
         this.offerRepository = offerRepository;
+        this.productManagementService = productManagementService;
     }
 
     @PrimaryAdapter
@@ -54,7 +58,7 @@ public class CartApplicationService {
     public void chooseProducts(CartProductsDto dto) {
         Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
 
-        Offer offer = cart.choose(dto.asProducts());
+        Offer offer = cart.choose(dto.asProducts(), productManagementService);
 
         offerRepository.save(offer);
     }
