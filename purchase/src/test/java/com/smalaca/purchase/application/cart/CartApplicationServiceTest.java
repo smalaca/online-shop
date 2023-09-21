@@ -328,8 +328,7 @@ class CartApplicationServiceTest {
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
-                .hasProducts(1)
-                .containsProduct(productIdOne, 22);
+                .hasOnlyOneProduct(productIdOne, 22);
     }
 
     @Test
@@ -376,7 +375,34 @@ class CartApplicationServiceTest {
                 .hasOnlyOneProduct(productIdOne, 2);
     }
 
-    // shouldRecognizeProductsThatAreNotAvailableAnymore - lower amount than expected
+    @Test
+    void shouldRecognizeProductsWithNotEnoughAmountAnymore() {
+        UUID productIdOne = randomId();
+        UUID productIdTwo = randomId();
+        UUID productIdThree = randomId();
+        givenCartWith(ImmutableList.of(
+                Product.product(productIdOne, 2),
+                Product.product(productIdTwo, 7),
+                Product.product(productIdThree, 4)));
+        CartProductsDto dto = dto(ImmutableMap.of(
+                productIdOne, 2,
+                productIdTwo, 7,
+                productIdThree, 3));
+        given(productManagementService.getAvailabilityOf(ImmutableList.of(productIdOne, productIdTwo, productIdThree))).willReturn(ImmutableList.of(
+                Product.product(productIdOne, 1),
+                Product.product(productIdTwo, 6),
+                Product.product(productIdThree, 4)));
+
+        Executable executable = () -> service.chooseProducts(dto);
+
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        assertCartProductsException(actual)
+                .hasMessage("Cannot create Offer because products are not available anymore.")
+                .hasProducts(2)
+                .containsProduct(productIdOne, 2)
+                .containsProduct(productIdTwo, 7);
+    }
+
     // chose product with exactly the same amount
 
     private CartProductsDto dto(Map<UUID, Integer> products) {
