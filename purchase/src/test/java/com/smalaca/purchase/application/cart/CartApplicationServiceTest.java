@@ -279,7 +279,7 @@ class CartApplicationServiceTest {
                 Product.product(randomId(), 13),
                 Product.product(randomId(), 42)));
 
-        Executable executable = () -> service.chooseProducts(dto(emptyMap()));
+        Executable executable = () -> service.chooseProducts(chooseProductCommand(emptyMap()));
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual).hasMessage("Cannot create Offer when no products were choose.");
@@ -292,11 +292,11 @@ class CartApplicationServiceTest {
                 Product.product(randomId(), 42)));
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
-        CartProductsDto dto = dto(ImmutableMap.of(
+        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 22,
                 productIdTwo, 13));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual)
@@ -313,11 +313,11 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 13),
                 Product.product(productIdTwo, 7)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 22,
                 productIdTwo, 9));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual)
@@ -334,11 +334,11 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 13),
                 Product.product(productIdTwo, 7)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 22,
                 productIdTwo, 2));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual)
@@ -353,11 +353,11 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 13),
                 Product.product(randomId(), 7)));
         UUID productIdThree = randomId();
-        CartProductsDto dto = dto(ImmutableMap.of(
+        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 10,
                 productIdThree, 9));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertCartProductsException(actual)
@@ -374,7 +374,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 2),
                 Product.product(productIdTwo, 7),
                 Product.product(productIdThree, 4)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 7,
                 productIdThree, 3));
@@ -382,7 +382,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdTwo, 7),
                 Product.product(productIdThree, 4)));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertOfferProductsException(actual)
@@ -399,7 +399,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 2),
                 Product.product(productIdTwo, 7),
                 Product.product(productIdThree, 4)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 7,
                 productIdThree, 3));
@@ -408,7 +408,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdTwo, 6),
                 Product.product(productIdThree, 4)));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertOfferProductsException(actual)
@@ -428,7 +428,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 2),
                 Product.product(productIdTwo, 7),
                 Product.product(productIdThree, 4)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 7,
                 productIdThree, 3));
@@ -437,7 +437,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdTwo, 8),
                 Product.product(productIdThree, 4)));
 
-        service.chooseProducts(dto);
+        service.chooseProducts(command);
 
         assertOffer(thenOfferWasSaved())
                 .hasCreationDateTime(CREATED_AT);
@@ -446,8 +446,8 @@ class CartApplicationServiceTest {
                 // delivery methods with price -> refactoring first
     }
 
-    private CartProductsDto dto(Map<UUID, Integer> products) {
-        return new CartProductsDto(CART_UUID, products);
+    private ChooseProductCommand chooseProductCommand(Map<UUID, Integer> products) {
+        return new ChooseProductCommand(CART_UUID, products);
     }
 
     private void givenEmptyCart() {

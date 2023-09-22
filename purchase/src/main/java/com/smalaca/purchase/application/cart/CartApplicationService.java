@@ -63,10 +63,10 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void chooseProducts(CartProductsDto dto) {
-        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
+    public void chooseProducts(ChooseProductCommand command) {
+        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
-        Offer offer = cart.choose(dto.asProducts(), offerFactory);
+        Offer offer = cart.choose(command.asProducts(), offerFactory);
 
         offerRepository.save(offer);
     }
