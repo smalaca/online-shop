@@ -51,7 +51,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 12),
                 Product.product(productIdTwo, 4)));
 
-        service.addProduct(addProductCommand(emptyMap()));
+        service.addProducts(addProductCommand(emptyMap()));
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -64,7 +64,7 @@ class CartApplicationServiceTest {
         givenEmptyCart();
         UUID productId = randomId();
 
-        service.addProduct(addProductCommand(ImmutableMap.of(productId, 13)));
+        service.addProducts(addProductCommand(ImmutableMap.of(productId, 13)));
 
         assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 13);
     }
@@ -73,7 +73,7 @@ class CartApplicationServiceTest {
     void shouldNotAddProductWhenAmountIsLowerThanOne() {
         givenEmptyCart();
 
-        Executable executable = () -> service.addProduct(addProductCommand(ImmutableMap.of(randomId(), -13)));
+        Executable executable = () -> service.addProducts(addProductCommand(ImmutableMap.of(randomId(), -13)));
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertThat(actual).hasMessage("Amount: \"-13\" is not greater than zero.");
@@ -85,7 +85,7 @@ class CartApplicationServiceTest {
         UUID productId = randomId();
         givenCartWith(ImmutableList.of(Product.product(productId, 3)));
 
-        service.addProduct(addProductCommand(ImmutableMap.of(productId, 12)));
+        service.addProducts(addProductCommand(ImmutableMap.of(productId, 12)));
 
         assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 15);
     }
@@ -96,12 +96,12 @@ class CartApplicationServiceTest {
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();
-        AddProductCommand command = addProductCommand(ImmutableMap.of(
+        AddProductsCommand command = addProductCommand(ImmutableMap.of(
                 productIdOne, 13,
                 productIdTwo, 26,
                 productIdThree, 42));
 
-        service.addProduct(command);
+        service.addProducts(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(3)
@@ -116,12 +116,12 @@ class CartApplicationServiceTest {
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();
-        AddProductCommand command = addProductCommand(ImmutableMap.of(
+        AddProductsCommand command = addProductCommand(ImmutableMap.of(
                 productIdOne, 13,
                 productIdTwo, -26,
                 productIdThree, -42));
 
-        Executable executable = () -> service.addProduct(command);
+        Executable executable = () -> service.addProducts(command);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertThat(actual).hasMessage("Amount: \"-26\" is not greater than zero.");
@@ -139,13 +139,13 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1),
                 Product.product(productIdThree, 7)));
-        AddProductCommand command = addProductCommand(ImmutableMap.of(
+        AddProductsCommand command = addProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 9,
                 productIdFour, 9,
                 productIdFive, 11));
 
-        service.addProduct(command);
+        service.addProducts(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(5)
@@ -164,7 +164,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1)));
 
-        service.addProduct(addProductCommand(emptyMap()));
+        service.addProducts(addProductCommand(emptyMap()));
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -172,8 +172,8 @@ class CartApplicationServiceTest {
                 .hasProduct(productIdTwo, 1);
     }
 
-    private AddProductCommand addProductCommand(Map<UUID, Integer> products) {
-        return new AddProductCommand(CART_UUID, products);
+    private AddProductsCommand addProductCommand(Map<UUID, Integer> products) {
+        return new AddProductsCommand(CART_UUID, products);
     }
 
     @Test
@@ -183,10 +183,10 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1)));
-        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(
+        RemoveProductsCommand command = removeProductCommand(ImmutableMap.of(
                 randomId(), 22, randomId(), 12, randomId(), 7));
 
-        service.removeProduct(command);
+        service.removeProducts(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -203,9 +203,9 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1),
                 Product.product(productIdThree, 7)));
-        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(productIdThree, 7));
+        RemoveProductsCommand command = removeProductCommand(ImmutableMap.of(productIdThree, 7));
 
-        service.removeProduct(command);
+        service.removeProducts(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -220,9 +220,9 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1)));
-        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(productIdOne, 7));
+        RemoveProductsCommand command = removeProductCommand(ImmutableMap.of(productIdOne, 7));
 
-        service.removeProduct(command);
+        service.removeProducts(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -237,9 +237,9 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1)));
-        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(productIdOne, 21));
+        RemoveProductsCommand command = removeProductCommand(ImmutableMap.of(productIdOne, 21));
 
-        service.removeProduct(command);
+        service.removeProducts(command);
 
         assertCart(thenCartWasSaved()).hasOnlyProduct(productIdTwo, 1);
     }
@@ -255,13 +255,13 @@ class CartApplicationServiceTest {
                 Product.product(productIdTwo, 1),
                 Product.product(productIdThree, 7),
                 Product.product(productIdFour, 11)));
-        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(
+        RemoveProductsCommand command = removeProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 9,
                 productIdThree, 7,
                 randomId(), 11));
 
-        service.removeProduct(command);
+        service.removeProducts(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -269,8 +269,8 @@ class CartApplicationServiceTest {
                 .hasProduct(productIdFour, 11);
     }
 
-    private RemoveProductCommand removeProductCommand(Map<UUID, Integer> products) {
-        return new RemoveProductCommand(CART_UUID, products);
+    private RemoveProductsCommand removeProductCommand(Map<UUID, Integer> products) {
+        return new RemoveProductsCommand(CART_UUID, products);
     }
 
     @Test
@@ -292,7 +292,7 @@ class CartApplicationServiceTest {
                 Product.product(randomId(), 42)));
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
-        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 22,
                 productIdTwo, 13));
 
@@ -313,7 +313,7 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 13),
                 Product.product(productIdTwo, 7)));
-        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 22,
                 productIdTwo, 9));
 
@@ -334,7 +334,7 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 13),
                 Product.product(productIdTwo, 7)));
-        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 22,
                 productIdTwo, 2));
 
@@ -353,7 +353,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 13),
                 Product.product(randomId(), 7)));
         UUID productIdThree = randomId();
-        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 10,
                 productIdThree, 9));
 
@@ -374,7 +374,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 2),
                 Product.product(productIdTwo, 7),
                 Product.product(productIdThree, 4)));
-        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 7,
                 productIdThree, 3));
@@ -399,7 +399,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 2),
                 Product.product(productIdTwo, 7),
                 Product.product(productIdThree, 4)));
-        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 7,
                 productIdThree, 3));
@@ -428,7 +428,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 2),
                 Product.product(productIdTwo, 7),
                 Product.product(productIdThree, 4)));
-        ChooseProductCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 7,
                 productIdThree, 3));
@@ -446,8 +446,8 @@ class CartApplicationServiceTest {
                 // delivery methods with price -> refactoring first
     }
 
-    private ChooseProductCommand chooseProductCommand(Map<UUID, Integer> products) {
-        return new ChooseProductCommand(CART_UUID, products);
+    private ChooseProductsCommand chooseProductCommand(Map<UUID, Integer> products) {
+        return new ChooseProductsCommand(CART_UUID, products);
     }
 
     private void givenEmptyCart() {

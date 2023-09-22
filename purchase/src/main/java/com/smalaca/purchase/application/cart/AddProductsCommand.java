@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 
-public record ChooseProductCommand(UUID cartId, Map<UUID, Integer> products) {
+public record AddProductsCommand(UUID cartId, Map<UUID, Integer> products) {
     List<Product> asProducts() {
         return products().entrySet().stream()
                 .map(entry -> Product.product(entry.getKey(), entry.getValue()))

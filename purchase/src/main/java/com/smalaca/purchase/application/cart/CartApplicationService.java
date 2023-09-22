@@ -40,7 +40,7 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void addProduct(AddProductCommand command) {
+    public void addProducts(AddProductsCommand command) {
         List<Product> products = command.asProducts();
         Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
@@ -52,7 +52,7 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void removeProduct(RemoveProductCommand command) {
+    public void removeProducts(RemoveProductsCommand command) {
         Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
         cart.remove(command.asProducts());
@@ -63,7 +63,7 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void chooseProducts(ChooseProductCommand command) {
+    public void chooseProducts(ChooseProductsCommand command) {
         Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
         Offer offer = cart.choose(command.asProducts(), offerFactory);
