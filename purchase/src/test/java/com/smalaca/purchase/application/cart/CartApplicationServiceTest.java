@@ -183,10 +183,10 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(
                 randomId(), 22, randomId(), 12, randomId(), 7));
 
-        service.removeProduct(dto);
+        service.removeProduct(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -203,9 +203,9 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1),
                 Product.product(productIdThree, 7)));
-        CartProductsDto dto = dto(ImmutableMap.of(productIdThree, 7));
+        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(productIdThree, 7));
 
-        service.removeProduct(dto);
+        service.removeProduct(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -220,9 +220,9 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1)));
-        CartProductsDto dto = dto(ImmutableMap.of(productIdOne, 7));
+        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(productIdOne, 7));
 
-        service.removeProduct(dto);
+        service.removeProduct(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -237,9 +237,9 @@ class CartApplicationServiceTest {
         givenCartWith(ImmutableList.of(
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1)));
-        CartProductsDto dto = dto(ImmutableMap.of(productIdOne, 21));
+        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(productIdOne, 21));
 
-        service.removeProduct(dto);
+        service.removeProduct(command);
 
         assertCart(thenCartWasSaved()).hasOnlyProduct(productIdTwo, 1);
     }
@@ -255,18 +255,22 @@ class CartApplicationServiceTest {
                 Product.product(productIdTwo, 1),
                 Product.product(productIdThree, 7),
                 Product.product(productIdFour, 11)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        RemoveProductCommand command = removeProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 9,
                 productIdThree, 7,
                 randomId(), 11));
 
-        service.removeProduct(dto);
+        service.removeProduct(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
                 .hasProduct(productIdOne, 12)
                 .hasProduct(productIdFour, 11);
+    }
+
+    private RemoveProductCommand removeProductCommand(Map<UUID, Integer> products) {
+        return new RemoveProductCommand(CART_UUID, products);
     }
 
     @Test

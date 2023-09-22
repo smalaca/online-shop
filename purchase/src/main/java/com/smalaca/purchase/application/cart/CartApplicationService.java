@@ -52,10 +52,10 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void removeProduct(CartProductsDto dto) {
-        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
+    public void removeProduct(RemoveProductCommand command) {
+        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
-        cart.remove(dto.asProducts());
+        cart.remove(command.asProducts());
 
         cartRepository.save(cart);
     }
