@@ -40,9 +40,9 @@ public class CartApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void addProduct(CartProductsDto dto) {
-        List<Product> products = dto.asProducts();
-        Cart cart = cartRepository.findBy(new CartId(dto.cartId()));
+    public void addProduct(AddProductCommand command) {
+        List<Product> products = command.asProducts();
+        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
         cart.add(products);
 

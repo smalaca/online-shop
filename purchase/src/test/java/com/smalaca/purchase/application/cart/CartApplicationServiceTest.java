@@ -51,7 +51,7 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 12),
                 Product.product(productIdTwo, 4)));
 
-        service.addProduct(dto(emptyMap()));
+        service.addProduct(addProductCommand(emptyMap()));
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
@@ -64,7 +64,7 @@ class CartApplicationServiceTest {
         givenEmptyCart();
         UUID productId = randomId();
 
-        service.addProduct(dto(ImmutableMap.of(productId, 13)));
+        service.addProduct(addProductCommand(ImmutableMap.of(productId, 13)));
 
         assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 13);
     }
@@ -73,7 +73,7 @@ class CartApplicationServiceTest {
     void shouldNotAddProductWhenAmountIsLowerThanOne() {
         givenEmptyCart();
 
-        Executable executable = () -> service.addProduct(dto(ImmutableMap.of(randomId(), -13)));
+        Executable executable = () -> service.addProduct(addProductCommand(ImmutableMap.of(randomId(), -13)));
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertThat(actual).hasMessage("Amount: \"-13\" is not greater than zero.");
@@ -85,7 +85,7 @@ class CartApplicationServiceTest {
         UUID productId = randomId();
         givenCartWith(ImmutableList.of(Product.product(productId, 3)));
 
-        service.addProduct(dto(ImmutableMap.of(productId, 12)));
+        service.addProduct(addProductCommand(ImmutableMap.of(productId, 12)));
 
         assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 15);
     }
@@ -96,12 +96,12 @@ class CartApplicationServiceTest {
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();
-        CartProductsDto dto = dto(ImmutableMap.of(
+        AddProductCommand command = addProductCommand(ImmutableMap.of(
                 productIdOne, 13,
                 productIdTwo, 26,
                 productIdThree, 42));
 
-        service.addProduct(dto);
+        service.addProduct(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(3)
@@ -116,12 +116,12 @@ class CartApplicationServiceTest {
         UUID productIdOne = randomId();
         UUID productIdTwo = randomId();
         UUID productIdThree = randomId();
-        CartProductsDto dto = dto(ImmutableMap.of(
+        AddProductCommand command = addProductCommand(ImmutableMap.of(
                 productIdOne, 13,
                 productIdTwo, -26,
                 productIdThree, -42));
 
-        Executable executable = () -> service.addProduct(dto);
+        Executable executable = () -> service.addProduct(command);
 
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         assertThat(actual).hasMessage("Amount: \"-26\" is not greater than zero.");
@@ -139,13 +139,13 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1),
                 Product.product(productIdThree, 7)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        AddProductCommand command = addProductCommand(ImmutableMap.of(
                 productIdOne, 2,
                 productIdTwo, 9,
                 productIdFour, 9,
                 productIdFive, 11));
 
-        service.addProduct(dto);
+        service.addProduct(command);
 
         assertCart(thenCartWasSaved())
                 .hasProducts(5)
@@ -164,12 +164,16 @@ class CartApplicationServiceTest {
                 Product.product(productIdOne, 14),
                 Product.product(productIdTwo, 1)));
 
-        service.addProduct(dto(emptyMap()));
+        service.addProduct(addProductCommand(emptyMap()));
 
         assertCart(thenCartWasSaved())
                 .hasProducts(2)
                 .hasProduct(productIdOne, 14)
                 .hasProduct(productIdTwo, 1);
+    }
+
+    private AddProductCommand addProductCommand(Map<UUID, Integer> products) {
+        return new AddProductCommand(CART_UUID, products);
     }
 
     @Test
