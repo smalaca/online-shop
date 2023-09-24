@@ -5,13 +5,16 @@ import com.google.common.collect.ImmutableMap;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartAssertion;
 import com.smalaca.purchase.domain.cart.CartId;
+import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.offer.Clock;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferAssertion;
+import com.smalaca.purchase.domain.offer.OfferProductsExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.offer.ProductManagementService;
 import com.smalaca.purchase.domain.product.Product;
+import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
@@ -77,9 +80,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.addProducts(addProductCommand(ImmutableMap.of(randomId(), -13)));
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertThat(actual).hasMessage("Amount: \"-13\" is not greater than zero.");
-        thenCartWasNotSaved();
+        thenCartNotSavedDueToExceptionThat(executable).hasMessage("Amount: \"-13\" is not greater than zero.");
     }
 
     @Test
@@ -125,9 +126,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.addProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertThat(actual).hasMessage("Amount: \"-26\" is not greater than zero.");
-        thenCartWasNotSaved();
+        thenCartNotSavedDueToExceptionThat(executable).hasMessage("Amount: \"-26\" is not greater than zero.");
     }
 
     @Test
@@ -172,6 +171,17 @@ class CartApplicationServiceTest {
                 .hasProducts(2)
                 .hasProduct(productIdOne, 14)
                 .hasProduct(productIdTwo, 1);
+    }
+
+    private AbstractThrowableAssert<?, RuntimeException> thenCartNotSavedDueToExceptionThat(Executable executable) {
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        thenCartNotSaved();
+
+        return assertThat(actual);
+    }
+
+    private void thenCartNotSaved() {
+        then(cartRepository).should(never()).save(any());
     }
 
     private AddProductsCommand addProductCommand(Map<UUID, Integer> products) {
@@ -275,6 +285,13 @@ class CartApplicationServiceTest {
         return new RemoveProductsCommand(CART_UUID, products);
     }
 
+    private CartAssertion thenSavedCart() {
+        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
+        then(cartRepository).should().save(captor.capture());
+
+        return assertCart(captor.getValue());
+    }
+
     @Test
     void shouldRecognizeNoProductsWereChoose() {
         givenCartWith(ImmutableList.of(
@@ -283,8 +300,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(chooseProductCommand(emptyMap()));
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual).hasMessage("Cannot create Offer when no products were choose.");
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable).hasMessage("Cannot create Offer when no products were choose.");
     }
 
     @Test
@@ -300,8 +316,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
                 .hasProducts(2)
                 .containsProduct(productIdOne, 22)
@@ -321,8 +336,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
                 .hasProducts(2)
                 .containsProduct(productIdOne, 22)
@@ -342,8 +356,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
                 .hasOnlyOneProduct(productIdOne, 22);
     }
@@ -361,10 +374,16 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
                 .hasOnlyOneProduct(productIdThree, 9);
+    }
+
+    private CartProductsExceptionAssertion thenOfferNotCreatedDueToCartProductsExceptionThat(Executable executable) {
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        thenOfferNotSaved();
+
+        return assertCartProductsException(actual);
     }
 
     @Test
@@ -386,8 +405,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertOfferProductsException(actual)
+        thenOfferNotCreatedDueToOfferProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer because products are not available anymore.")
                 .hasOnlyOneProduct(productIdOne, 2);
     }
@@ -412,12 +430,18 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertOfferProductsException(actual)
+        thenOfferNotCreatedDueToOfferProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer because products are not available anymore.")
                 .hasProducts(2)
                 .containsProduct(productIdOne, 2)
                 .containsProduct(productIdTwo, 7);
+    }
+
+    private OfferProductsExceptionAssertion thenOfferNotCreatedDueToOfferProductsExceptionThat(Executable executable) {
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        thenOfferNotSaved();
+
+        return assertOfferProductsException(actual);
     }
 
     @Test
@@ -448,18 +472,15 @@ class CartApplicationServiceTest {
                 // delivery methods with price -> refactoring first
     }
 
+    private void thenOfferNotSaved() {
+        then(offerRepository).should(never()).save(any());
+    }
+
     private OfferAssertion thenSavedOffer() {
         ArgumentCaptor<Offer> captor = ArgumentCaptor.forClass(Offer.class);
         then(offerRepository).should().save(captor.capture());
 
         return assertOffer(captor.getValue());
-    }
-
-    private CartAssertion thenSavedCart() {
-        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
-        then(cartRepository).should().save(captor.capture());
-
-        return assertCart(captor.getValue());
     }
 
     private ChooseProductsCommand chooseProductCommand(Map<UUID, Integer> products) {
@@ -474,10 +495,6 @@ class CartApplicationServiceTest {
         Cart cart = new Cart();
         cart.add(products);
         given(cartRepository.findBy(CART_ID)).willReturn(cart);
-    }
-
-    private void thenCartWasNotSaved() {
-        then(cartRepository).should(never()).save(any());
     }
 
     private static UUID randomId() {
