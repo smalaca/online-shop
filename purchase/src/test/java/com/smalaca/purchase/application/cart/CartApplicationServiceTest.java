@@ -1,6 +1,5 @@
 package com.smalaca.purchase.application.cart;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartAssertion;
@@ -13,7 +12,6 @@ import com.smalaca.purchase.domain.offer.OfferAssertion;
 import com.smalaca.purchase.domain.offer.OfferProductsExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.offer.ProductManagementService;
-import com.smalaca.purchase.domain.product.Product;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -53,6 +51,7 @@ class CartApplicationServiceTest {
     private final CartApplicationService service = CartApplicationService.create(cartRepository, offerRepository, productManagementService, clock);
 
     private final GivenCartFactory givenCart = new GivenCartFactory(cartRepository);
+    private final GivenAvailabilityFactory givenAvailability = new GivenAvailabilityFactory(productManagementService);
 
     @Test
     void shouldAddNothingWhenNothingGiven() {
@@ -379,9 +378,11 @@ class CartApplicationServiceTest {
                 .withProduct(PRODUCT_ID_TWO, 7)
                 .withProduct(PRODUCT_ID_THREE, 4)
                 .with(CART_ID);
-        given(productManagementService.getAvailabilityOf(ImmutableList.of(PRODUCT_ID_ONE, PRODUCT_ID_TWO, PRODUCT_ID_THREE))).willReturn(ImmutableList.of(
-                Product.product(PRODUCT_ID_TWO, 7),
-                Product.product(PRODUCT_ID_THREE, 4)));
+        givenAvailability
+                .notAvailable(PRODUCT_ID_ONE)
+                .available(PRODUCT_ID_TWO, 7)
+                .available(PRODUCT_ID_THREE, 4)
+                .set();
         ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
@@ -401,10 +402,11 @@ class CartApplicationServiceTest {
                 .withProduct(PRODUCT_ID_TWO, 7)
                 .withProduct(PRODUCT_ID_THREE, 4)
                 .with(CART_ID);
-        given(productManagementService.getAvailabilityOf(ImmutableList.of(PRODUCT_ID_ONE, PRODUCT_ID_TWO, PRODUCT_ID_THREE))).willReturn(ImmutableList.of(
-                Product.product(PRODUCT_ID_ONE, 1),
-                Product.product(PRODUCT_ID_TWO, 6),
-                Product.product(PRODUCT_ID_THREE, 4)));
+        givenAvailability
+                .available(PRODUCT_ID_ONE, 1)
+                .available(PRODUCT_ID_TWO, 6)
+                .available(PRODUCT_ID_THREE, 4)
+                .set();
         ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
@@ -434,10 +436,11 @@ class CartApplicationServiceTest {
                 .withProduct(PRODUCT_ID_TWO, 7)
                 .withProduct(PRODUCT_ID_THREE, 4)
                 .with(CART_ID);
-        given(productManagementService.getAvailabilityOf(ImmutableList.of(PRODUCT_ID_ONE, PRODUCT_ID_TWO, PRODUCT_ID_THREE))).willReturn(ImmutableList.of(
-                Product.product(PRODUCT_ID_ONE, 2),
-                Product.product(PRODUCT_ID_TWO, 8),
-                Product.product(PRODUCT_ID_THREE, 4)));
+        givenAvailability
+                .available(PRODUCT_ID_ONE, 2)
+                .available(PRODUCT_ID_TWO, 8)
+                .available(PRODUCT_ID_THREE, 4)
+                .set();
         ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
