@@ -8,6 +8,7 @@ import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.offer.Clock;
 import com.smalaca.purchase.domain.offer.Offer;
+import com.smalaca.purchase.domain.offer.OfferAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.offer.ProductManagementService;
 import com.smalaca.purchase.domain.product.Product;
@@ -440,11 +441,18 @@ class CartApplicationServiceTest {
 
         service.chooseProducts(command);
 
-        assertOffer(thenOfferWasSaved())
+        thenSavedOffer()
                 .hasCreationDateTime(CREATED_AT);
                 // offer number
                 // products with the price -> refactoring first
                 // delivery methods with price -> refactoring first
+    }
+
+    private OfferAssertion thenSavedOffer() {
+        ArgumentCaptor<Offer> captor = ArgumentCaptor.forClass(Offer.class);
+        then(offerRepository).should().save(captor.capture());
+
+        return assertOffer(captor.getValue());
     }
 
     private CartAssertion thenSavedCart() {
@@ -466,12 +474,6 @@ class CartApplicationServiceTest {
         Cart cart = new Cart();
         cart.add(products);
         given(cartRepository.findBy(CART_ID)).willReturn(cart);
-    }
-
-    private Offer thenOfferWasSaved() {
-        ArgumentCaptor<Offer> captor = ArgumentCaptor.forClass(Offer.class);
-        then(offerRepository).should().save(captor.capture());
-        return captor.getValue();
     }
 
     private void thenCartWasNotSaved() {
