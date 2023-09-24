@@ -3,6 +3,7 @@ package com.smalaca.purchase.application.cart;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.smalaca.purchase.domain.cart.Cart;
+import com.smalaca.purchase.domain.cart.CartAssertion;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.offer.Clock;
@@ -53,7 +54,7 @@ class CartApplicationServiceTest {
 
         service.addProducts(addProductCommand(emptyMap()));
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
                 .hasProduct(productIdOne, 12)
                 .hasProduct(productIdTwo, 4);
@@ -66,7 +67,7 @@ class CartApplicationServiceTest {
 
         service.addProducts(addProductCommand(ImmutableMap.of(productId, 13)));
 
-        assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 13);
+        thenSavedCart().hasOnlyProduct(productId, 13);
     }
 
     @Test
@@ -87,7 +88,7 @@ class CartApplicationServiceTest {
 
         service.addProducts(addProductCommand(ImmutableMap.of(productId, 12)));
 
-        assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 15);
+        thenSavedCart().hasOnlyProduct(productId, 15);
     }
 
     @Test
@@ -103,7 +104,7 @@ class CartApplicationServiceTest {
 
         service.addProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(3)
                 .hasProduct(productIdOne, 13)
                 .hasProduct(productIdTwo, 26)
@@ -147,7 +148,7 @@ class CartApplicationServiceTest {
 
         service.addProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(5)
                 .hasProduct(productIdOne, 16)
                 .hasProduct(productIdTwo, 10)
@@ -166,7 +167,7 @@ class CartApplicationServiceTest {
 
         service.addProducts(addProductCommand(emptyMap()));
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
                 .hasProduct(productIdOne, 14)
                 .hasProduct(productIdTwo, 1);
@@ -188,7 +189,7 @@ class CartApplicationServiceTest {
 
         service.removeProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
                 .hasProduct(productIdOne, 14)
                 .hasProduct(productIdTwo, 1);
@@ -207,7 +208,7 @@ class CartApplicationServiceTest {
 
         service.removeProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
                 .hasProduct(productIdOne, 14)
                 .hasProduct(productIdTwo, 1);
@@ -224,7 +225,7 @@ class CartApplicationServiceTest {
 
         service.removeProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
                 .hasProduct(productIdOne, 7)
                 .hasProduct(productIdTwo, 1);
@@ -241,7 +242,7 @@ class CartApplicationServiceTest {
 
         service.removeProducts(command);
 
-        assertCart(thenCartWasSaved()).hasOnlyProduct(productIdTwo, 1);
+        thenSavedCart().hasOnlyProduct(productIdTwo, 1);
     }
 
     @Test
@@ -263,7 +264,7 @@ class CartApplicationServiceTest {
 
         service.removeProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
                 .hasProduct(productIdOne, 12)
                 .hasProduct(productIdFour, 11);
@@ -446,6 +447,13 @@ class CartApplicationServiceTest {
                 // delivery methods with price -> refactoring first
     }
 
+    private CartAssertion thenSavedCart() {
+        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
+        then(cartRepository).should().save(captor.capture());
+
+        return assertCart(captor.getValue());
+    }
+
     private ChooseProductsCommand chooseProductCommand(Map<UUID, Integer> products) {
         return new ChooseProductsCommand(CART_UUID, products);
     }
@@ -458,12 +466,6 @@ class CartApplicationServiceTest {
         Cart cart = new Cart();
         cart.add(products);
         given(cartRepository.findBy(CART_ID)).willReturn(cart);
-    }
-
-    private Cart thenCartWasSaved() {
-        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
-        then(cartRepository).should().save(captor.capture());
-        return captor.getValue();
     }
 
     private Offer thenOfferWasSaved() {
