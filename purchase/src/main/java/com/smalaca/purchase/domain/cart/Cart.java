@@ -3,6 +3,7 @@ package com.smalaca.purchase.domain.cart;
 import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
+import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
 import com.smalaca.purchase.domain.product.Product;
@@ -64,7 +65,7 @@ public class Cart {
             throw CartProductsException.missing(missing);
         }
 
-        return offerFactory.create(products, deliveryMethod);
+        return offerFactory.create(new ChooseProductsDomainCommand(products, deliveryMethod));
     }
 
     private List<Product> getMissingOf(List<Product> products) {

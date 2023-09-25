@@ -484,7 +484,7 @@ class CartApplicationServiceTest {
 
         thenSavedOffer()
                 .hasCreationDateTime(CREATED_AT)
-                .hasDeliveryMethod(DELIVERY_METHOD)
+                .hasDeliveryMethod(DELIVERY_METHOD) // replace that to id
                 .hasProducts(3)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_TWO)

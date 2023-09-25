@@ -20,29 +20,29 @@ public class OfferFactory {
         this.clock = clock;
     }
 
-    public Offer create(List<Product> products, String deliveryMethod) {
-        DeliveryPlan deliveryPlan = deliveryService.calculate(deliveryMethod);
+    public Offer create(ChooseProductsDomainCommand command) {
+        DeliveryPlan deliveryPlan = deliveryService.calculate(command.deliveryMethod());
 
         if (!deliveryPlan.isValidDelivery()) {
-            throw OfferException.unsupportedDelivery(deliveryMethod);
+            throw OfferException.unsupportedDelivery(command.deliveryMethod());
         }
 
-        List<AvailableProduct> availableProducts = availableProductsFor(products);
-        List<Product> notAvailable = notAvailableOf(products, availableProducts);
+        List<AvailableProduct> availableProducts = availableProductsFor(command.products());
+        List<Product> notAvailable = notAvailableOf(command.products(), availableProducts);
 
         if (!notAvailable.isEmpty()) {
             throw OfferException.notAvailableProducts(notAvailable);
         }
 
         Offer.Builder builder = new Offer.Builder();
-        products.forEach(product -> {
+        command.products().forEach(product -> {
             AvailableProduct availableProduct = availableProductFor(product.getProductId(), availableProducts);
             builder.item(availableProduct.getSellerId(), product.getProductId(), product.getAmount(), availableProduct.getPrice());
         });
 
         return builder
                 .creationDateTime(clock.nowDateTime())
-                .deliveryMethod(deliveryMethod)
+                .deliveryMethod(command.deliveryMethod())
                 .build();
     }
 
