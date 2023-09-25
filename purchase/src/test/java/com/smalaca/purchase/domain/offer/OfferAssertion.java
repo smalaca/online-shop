@@ -2,6 +2,7 @@ package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.purchase.domain.amount.Amount;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -32,11 +33,11 @@ public class OfferAssertion {
         return this;
     }
 
-    public OfferAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
+    public OfferAssertion containsProduct(UUID expectedProductId, int expectedAmount, BigDecimal expectedPrice) {
         assertThat(actual).extracting("items")
                 .satisfies(actualItems -> {
                     assertThat((List) actualItems)
-                            .contains(new OfferItem(expectedProductId, Amount.amount(expectedAmount)));
+                            .contains(new OfferItem(expectedProductId, Amount.amount(expectedAmount), Price.price(expectedPrice)));
                 });
         return this;
     }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +44,9 @@ class CartApplicationServiceTest {
     private static final UUID CART_UUID = randomId();
     private static final CartId CART_ID = new CartId(CART_UUID);
     private static final LocalDateTime CREATED_AT = LocalDateTime.now();
+    private static final BigDecimal PRICE_ONE = BigDecimal.valueOf(13.11);
+    private static final BigDecimal PRICE_TWO = BigDecimal.valueOf(43.223);
+    private static final BigDecimal PRICE_THREE = BigDecimal.valueOf(123.23);
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final CartRepository cartRepository = mock(CartRepository.class);
@@ -380,8 +384,8 @@ class CartApplicationServiceTest {
                 .with(CART_ID);
         givenAvailability
                 .notAvailable(PRODUCT_ID_ONE)
-                .available(PRODUCT_ID_TWO, 7)
-                .available(PRODUCT_ID_THREE, 4)
+                .available(PRODUCT_ID_TWO, 7, PRICE_ONE)
+                .available(PRODUCT_ID_THREE, 4, PRICE_TWO)
                 .set();
         ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
@@ -403,9 +407,9 @@ class CartApplicationServiceTest {
                 .withProduct(PRODUCT_ID_THREE, 4)
                 .with(CART_ID);
         givenAvailability
-                .available(PRODUCT_ID_ONE, 1)
-                .available(PRODUCT_ID_TWO, 6)
-                .available(PRODUCT_ID_THREE, 4)
+                .available(PRODUCT_ID_ONE, 1, PRICE_ONE)
+                .available(PRODUCT_ID_TWO, 6, PRICE_TWO)
+                .available(PRODUCT_ID_THREE, 4, PRICE_THREE)
                 .set();
         ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
@@ -437,9 +441,9 @@ class CartApplicationServiceTest {
                 .withProduct(PRODUCT_ID_THREE, 4)
                 .with(CART_ID);
         givenAvailability
-                .available(PRODUCT_ID_ONE, 2)
-                .available(PRODUCT_ID_TWO, 8)
-                .available(PRODUCT_ID_THREE, 4)
+                .available(PRODUCT_ID_ONE, 2, PRICE_ONE)
+                .available(PRODUCT_ID_TWO, 8, PRICE_TWO)
+                .available(PRODUCT_ID_THREE, 4, PRICE_THREE)
                 .set();
         ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
@@ -451,9 +455,9 @@ class CartApplicationServiceTest {
         thenSavedOffer()
                 .hasCreationDateTime(CREATED_AT)
                 .hasProducts(3)
-                .containsProduct(PRODUCT_ID_ONE, 2)
-                .containsProduct(PRODUCT_ID_TWO, 7)
-                .containsProduct(PRODUCT_ID_THREE, 3);
+                .containsProduct(PRODUCT_ID_ONE, 2, PRICE_ONE)
+                .containsProduct(PRODUCT_ID_TWO, 7, PRICE_TWO)
+                .containsProduct(PRODUCT_ID_THREE, 3, PRICE_THREE);
                 // offer number
                 // products with the price -> refactoring first
                 // delivery methods with price -> refactoring first

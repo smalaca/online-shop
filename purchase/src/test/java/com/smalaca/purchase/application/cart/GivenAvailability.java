@@ -3,6 +3,7 @@ package com.smalaca.purchase.application.cart;
 import com.smalaca.purchase.domain.offer.AvailableProduct;
 import com.smalaca.purchase.domain.offer.ProductManagementService;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,9 +24,9 @@ class GivenAvailability {
         return this;
     }
 
-    GivenAvailability available(UUID productId, int amount) {
+    GivenAvailability available(UUID productId, int amount, BigDecimal price) {
         products.add(productId);
-        availableProducts.add(AvailableProduct.product(productId, amount));
+        availableProducts.add(AvailableProduct.availableProduct(productId, amount, price));
         return this;
     }
 

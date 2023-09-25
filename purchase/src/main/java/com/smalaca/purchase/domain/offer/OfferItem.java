@@ -11,9 +11,11 @@ import java.util.UUID;
 class OfferItem {
     private final UUID productId;
     private final Amount amount;
+    private final Price price;
 
-    OfferItem(UUID productId, Amount amount) {
+    OfferItem(UUID productId, Amount amount, Price price) {
         this.productId = productId;
         this.amount = amount;
+        this.price = price;
     }
 }

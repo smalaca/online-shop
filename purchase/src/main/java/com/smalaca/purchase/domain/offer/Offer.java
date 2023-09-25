@@ -52,8 +52,8 @@ public class Offer {
             return this;
         }
 
-        void item(UUID productId, Amount amount) {
-            items.add(new OfferItem(productId, amount));
+        void item(UUID productId, Amount amount, Price price) {
+            items.add(new OfferItem(productId, amount, price));
         }
     }
 }
