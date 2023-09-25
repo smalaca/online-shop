@@ -19,19 +19,29 @@ public class OfferFactory {
     }
 
     public Offer create(List<Product> products) {
-        List<Product> notAvailable = getNotAvailableOf(products);
+        List<AvailableProduct> availableProducts = availableProductsFor(products);
+        List<Product> notAvailable = notAvailableOf(products, availableProducts);
 
         if (!notAvailable.isEmpty()) {
             throw OfferProductsException.notAvailable(notAvailable);
         }
 
-        return new Offer(clock.nowDateTime());
+        Offer.Builder builder = new Offer.Builder();
+        products.forEach(product -> {
+            builder.item(product.getProductId(), product.getAmount());
+        });
+
+        return builder
+                .creationDateTime(clock.nowDateTime())
+                .build();
     }
 
-    private List<Product> getNotAvailableOf(List<Product> products) {
+    private List<AvailableProduct> availableProductsFor(List<Product> products) {
         List<UUID> productIds = products.stream().map(Product::getProductId).collect(toList());
-        List<AvailableProduct> available = productManagementService.getAvailabilityOf(productIds);
+        return productManagementService.getAvailabilityOf(productIds);
+    }
 
+    private List<Product> notAvailableOf(List<Product> products, List<AvailableProduct> available) {
         return products.stream()
                 .filter(product -> isAvailabilityNotSatisfied(available, product))
                 .collect(toList());

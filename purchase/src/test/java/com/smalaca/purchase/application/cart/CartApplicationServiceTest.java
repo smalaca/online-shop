@@ -64,8 +64,8 @@ class CartApplicationServiceTest {
 
         thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(PRODUCT_ID_ONE, 12)
-                .hasProduct(PRODUCT_ID_TWO, 4);
+                .containsProduct(PRODUCT_ID_ONE, 12)
+                .containsProduct(PRODUCT_ID_TWO, 4);
     }
 
     @Test
@@ -107,9 +107,9 @@ class CartApplicationServiceTest {
 
         thenSavedCart()
                 .hasProducts(3)
-                .hasProduct(PRODUCT_ID_ONE, 13)
-                .hasProduct(PRODUCT_ID_TWO, 26)
-                .hasProduct(PRODUCT_ID_THREE, 42);
+                .containsProduct(PRODUCT_ID_ONE, 13)
+                .containsProduct(PRODUCT_ID_TWO, 26)
+                .containsProduct(PRODUCT_ID_THREE, 42);
     }
 
     @Test
@@ -142,11 +142,11 @@ class CartApplicationServiceTest {
 
         thenSavedCart()
                 .hasProducts(5)
-                .hasProduct(PRODUCT_ID_ONE, 16)
-                .hasProduct(PRODUCT_ID_TWO, 10)
-                .hasProduct(PRODUCT_ID_THREE, 7)
-                .hasProduct(PRODUCT_ID_FOUR, 9)
-                .hasProduct(PRODUCT_ID_FIVE, 11);
+                .containsProduct(PRODUCT_ID_ONE, 16)
+                .containsProduct(PRODUCT_ID_TWO, 10)
+                .containsProduct(PRODUCT_ID_THREE, 7)
+                .containsProduct(PRODUCT_ID_FOUR, 9)
+                .containsProduct(PRODUCT_ID_FIVE, 11);
     }
 
     @Test
@@ -160,8 +160,8 @@ class CartApplicationServiceTest {
 
         thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(PRODUCT_ID_ONE, 14)
-                .hasProduct(PRODUCT_ID_TWO, 1);
+                .containsProduct(PRODUCT_ID_ONE, 14)
+                .containsProduct(PRODUCT_ID_TWO, 1);
     }
 
     private AbstractThrowableAssert<?, RuntimeException> thenCartNotSavedDueToExceptionThat(Executable executable) {
@@ -196,8 +196,8 @@ class CartApplicationServiceTest {
 
         thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(PRODUCT_ID_ONE, 14)
-                .hasProduct(PRODUCT_ID_TWO, 1);
+                .containsProduct(PRODUCT_ID_ONE, 14)
+                .containsProduct(PRODUCT_ID_TWO, 1);
     }
 
     @Test
@@ -212,8 +212,8 @@ class CartApplicationServiceTest {
 
         thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(PRODUCT_ID_ONE, 14)
-                .hasProduct(PRODUCT_ID_TWO, 1);
+                .containsProduct(PRODUCT_ID_ONE, 14)
+                .containsProduct(PRODUCT_ID_TWO, 1);
     }
 
     @Test
@@ -227,8 +227,8 @@ class CartApplicationServiceTest {
 
         thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(PRODUCT_ID_ONE, 7)
-                .hasProduct(PRODUCT_ID_TWO, 1);
+                .containsProduct(PRODUCT_ID_ONE, 7)
+                .containsProduct(PRODUCT_ID_TWO, 1);
     }
 
     @Test
@@ -261,8 +261,8 @@ class CartApplicationServiceTest {
 
         thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(PRODUCT_ID_ONE, 12)
-                .hasProduct(PRODUCT_ID_FOUR, 11);
+                .containsProduct(PRODUCT_ID_ONE, 12)
+                .containsProduct(PRODUCT_ID_FOUR, 11);
     }
 
     private RemoveProductsCommand removeProductCommand(UUID productId, int amount) {
@@ -449,7 +449,11 @@ class CartApplicationServiceTest {
         service.chooseProducts(command);
 
         thenSavedOffer()
-                .hasCreationDateTime(CREATED_AT);
+                .hasCreationDateTime(CREATED_AT)
+                .hasProducts(3)
+                .containsProduct(PRODUCT_ID_ONE, 2)
+                .containsProduct(PRODUCT_ID_TWO, 7)
+                .containsProduct(PRODUCT_ID_THREE, 3);
                 // offer number
                 // products with the price -> refactoring first
                 // delivery methods with price -> refactoring first

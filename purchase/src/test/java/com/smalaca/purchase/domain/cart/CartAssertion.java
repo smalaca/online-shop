@@ -19,7 +19,7 @@ public class CartAssertion {
     }
 
     public CartAssertion hasOnlyProduct(UUID expectedProductId, int expectedAmount) {
-        return hasProducts(1).hasProduct(expectedProductId, expectedAmount);
+        return hasProducts(1).containsProduct(expectedProductId, expectedAmount);
     }
 
     public CartAssertion hasProducts(int expected) {
@@ -30,7 +30,7 @@ public class CartAssertion {
         return this;
     }
 
-    public CartAssertion hasProduct(UUID expectedProductId, int expectedAmount) {
+    public CartAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
         assertThat(actual).extracting("items")
                 .satisfies(actualItems -> {
                     assertThat((List) actualItems)
