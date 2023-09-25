@@ -1,6 +1,6 @@
 package com.smalaca.purchase.application.cart;
 
-import com.smalaca.purchase.domain.offer.AddressDto;
+import com.smalaca.purchase.domain.deliveryaddress.AddressDto;
 import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 
 import java.util.Map;
