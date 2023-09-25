@@ -1,6 +1,7 @@
 package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.price.Price;
 
 import java.math.BigDecimal;
@@ -68,6 +69,11 @@ public class OfferAssertion {
 
     public OfferAssertion hasBuyerId(UUID expected) {
         assertThat(actual).extracting("buyerId").isEqualTo(expected);
+        return this;
+    }
+
+    public OfferAssertion hasDeliveryAddress(DeliveryAddress expected) {
+        assertThat(actual).extracting("deliveryAddress").isEqualTo(expected);
         return this;
     }
 }

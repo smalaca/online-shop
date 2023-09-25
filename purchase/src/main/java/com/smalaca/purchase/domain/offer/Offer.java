@@ -4,6 +4,7 @@ import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.price.Price;
 
@@ -18,6 +19,7 @@ public class Offer {
     private final List<OfferItem> items;
     private final UUID deliveryMethodId;
     private final Price deliveryPrice;
+    private final DeliveryAddress deliveryAddress;
     private final OfferNumber offerNumber;
     private final UUID buyerId;
 
@@ -25,6 +27,7 @@ public class Offer {
         this.creationDateTime = builder.creationDateTime;
         this.items = builder.items;
         this.deliveryMethodId = builder.deliveryMethodId;
+        this.deliveryAddress = builder.deliveryAddress;
         this.deliveryPrice = builder.deliveryPrice;
         this.offerNumber = builder.offerNumber;
         this.buyerId = builder.buyerId;
@@ -52,6 +55,7 @@ public class Offer {
         private final List<OfferItem> items = new ArrayList<>();
         private LocalDateTime creationDateTime;
         private UUID deliveryMethodId;
+        private DeliveryAddress deliveryAddress;
         private Price deliveryPrice;
         private OfferNumber offerNumber;
         private UUID buyerId;
@@ -66,8 +70,9 @@ public class Offer {
             return this;
         }
 
-        Builder delivery(UUID deliveryMethod, Price deliveryPrice) {
+        Builder delivery(UUID deliveryMethod, DeliveryAddress deliveryAddress, Price deliveryPrice) {
             this.deliveryMethodId = deliveryMethod;
+            this.deliveryAddress = deliveryAddress;
             this.deliveryPrice = deliveryPrice;
             return this;
         }
