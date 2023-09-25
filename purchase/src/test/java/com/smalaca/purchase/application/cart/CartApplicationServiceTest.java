@@ -7,6 +7,8 @@ import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.offer.Clock;
+import com.smalaca.purchase.domain.offer.DeliveryPlan;
+import com.smalaca.purchase.domain.offer.DeliveryService;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferAssertion;
 import com.smalaca.purchase.domain.offer.OfferProductsExceptionAssertion;
@@ -49,12 +51,16 @@ class CartApplicationServiceTest {
     private static final BigDecimal PRICE_THREE = BigDecimal.valueOf(123.23);
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
+    private static final String DELIVERY_METHOD = "InPost";
+    private static final boolean VALID_DELIVERY = true;
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final CartRepository cartRepository = mock(CartRepository.class);
     private final ProductManagementService productManagementService = mock(ProductManagementService.class);
+    private final DeliveryService deliveryService = mock(DeliveryService.class);
     private final Clock clock = mock(Clock.class);
-    private final CartApplicationService service = CartApplicationService.create(cartRepository, offerRepository, productManagementService, clock);
+    private final CartApplicationService service = CartApplicationService.create(
+            cartRepository, offerRepository, productManagementService, deliveryService, clock);
 
     private final GivenCartFactory givenCart = new GivenCartFactory(cartRepository);
     private final GivenAvailabilityFactory givenAvailability = new GivenAvailabilityFactory(productManagementService);
@@ -293,7 +299,7 @@ class CartApplicationServiceTest {
                 .withProduct(randomId(), 42)
                 .with(CART_ID);
 
-        Executable executable = () -> service.chooseProducts(chooseProductCommand(emptyMap()));
+        Executable executable = () -> service.chooseProducts(chooseProductsCommand(emptyMap()));
 
         thenOfferNotCreatedDueToCartProductsExceptionThat(executable).hasMessage("Cannot create Offer when no products were choose.");
     }
@@ -304,7 +310,7 @@ class CartApplicationServiceTest {
                 .withProduct(randomId(), 13)
                 .withProduct(randomId(), 42)
                 .with(CART_ID);
-        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 22,
                 PRODUCT_ID_TWO, 13));
 
@@ -323,7 +329,7 @@ class CartApplicationServiceTest {
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .withProduct(PRODUCT_ID_TWO, 7)
                 .with(CART_ID);
-        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 22,
                 PRODUCT_ID_TWO, 9));
 
@@ -342,7 +348,7 @@ class CartApplicationServiceTest {
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .withProduct(PRODUCT_ID_TWO, 7)
                 .with(CART_ID);
-        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 22,
                 PRODUCT_ID_TWO, 2));
 
@@ -359,7 +365,7 @@ class CartApplicationServiceTest {
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .withProduct(randomId(), 7)
                 .with(CART_ID);
-        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 10,
                 PRODUCT_ID_THREE, 9));
 
@@ -377,8 +383,23 @@ class CartApplicationServiceTest {
         return assertCartProductsException(actual);
     }
 
+//    @Test
+//    void shouldRecognizeUnsupportedDeliveryMethod() {
+//        givenUnsupportedDeliveryMethod();
+//        givenCart
+//                .withProduct(PRODUCT_ID_ONE, 13)
+//                .with(CART_ID);
+//        ChooseProductsCommand command = chooseProductsCommand(PRODUCT_ID_ONE, 10);
+//
+//        Executable executable = () -> service.chooseProducts(command);
+//
+//        thenOfferNotCreatedDueToOfferProductsExceptionThat(executable)
+//                .hasMessage("Delivery Method: InPost is not supported.");
+//    }
+
     @Test
     void shouldRecognizeProductsThatAreNotAvailableAnymore() {
+        givenValidDelivery();
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 2)
                 .withProduct(PRODUCT_ID_TWO, 7)
@@ -389,7 +410,7 @@ class CartApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_ONE)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_TWO)
                 .set();
-        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
                 PRODUCT_ID_THREE, 3));
@@ -403,6 +424,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeProductsWithNotEnoughAmountAnymore() {
+        givenValidDelivery();
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 2)
                 .withProduct(PRODUCT_ID_TWO, 7)
@@ -413,7 +435,7 @@ class CartApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 6, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
                 .set();
-        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
                 PRODUCT_ID_THREE, 3));
@@ -436,6 +458,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldCreateOffer() {
+        givenValidDelivery();
         given(clock.nowDateTime()).willReturn(CREATED_AT);
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 2)
@@ -447,7 +470,7 @@ class CartApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
                 .set();
-        ChooseProductsCommand command = chooseProductCommand(ImmutableMap.of(
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
                 PRODUCT_ID_THREE, 3));
@@ -461,8 +484,11 @@ class CartApplicationServiceTest {
                 .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_TWO)
                 .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, 3, PRICE_THREE);
                 // offer number
-                // products with the price -> refactoring first
                 // delivery methods with price -> refactoring first
+    }
+
+    private void givenValidDelivery() {
+        given(deliveryService.calculate(DELIVERY_METHOD)).willReturn(new DeliveryPlan(VALID_DELIVERY));
     }
 
     private void thenOfferNotSaved() {
@@ -476,8 +502,12 @@ class CartApplicationServiceTest {
         return assertOffer(captor.getValue());
     }
 
-    private ChooseProductsCommand chooseProductCommand(Map<UUID, Integer> products) {
-        return new ChooseProductsCommand(CART_UUID, products);
+    private ChooseProductsCommand chooseProductsCommand(UUID productId, int amount) {
+        return chooseProductsCommand(ImmutableMap.of(productId, amount));
+    }
+
+    private ChooseProductsCommand chooseProductsCommand(Map<UUID, Integer> products) {
+        return new ChooseProductsCommand(CART_UUID, products, DELIVERY_METHOD);
     }
 
     private static UUID randomId() {

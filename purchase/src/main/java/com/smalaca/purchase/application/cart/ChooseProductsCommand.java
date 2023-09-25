@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public record ChooseProductsCommand(UUID cartId, Map<UUID, Integer> products) {
+public record ChooseProductsCommand(UUID cartId, Map<UUID, Integer> products, String deliveryMethod) {
     List<Product> asProducts() {
         return ProductsFactory.create(products);
     }

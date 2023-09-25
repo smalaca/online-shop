@@ -7,11 +7,12 @@ import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.offer.Clock;
-import com.smalaca.purchase.domain.product.Product;
-import com.smalaca.purchase.domain.offer.ProductManagementService;
+import com.smalaca.purchase.domain.offer.DeliveryService;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
 import com.smalaca.purchase.domain.offer.OfferRepository;
+import com.smalaca.purchase.domain.offer.ProductManagementService;
+import com.smalaca.purchase.domain.product.Product;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +34,11 @@ public class CartApplicationService {
         this.offerFactory = offerFactory;
     }
 
-    static CartApplicationService create(CartRepository cartRepository, OfferRepository offerRepository, ProductManagementService productManagementService, Clock clock) {
-        return new CartApplicationService(cartRepository, offerRepository, productManagementService, new OfferFactory(productManagementService, clock));
+    static CartApplicationService create(
+            CartRepository cartRepository, OfferRepository offerRepository, ProductManagementService productManagementService,
+            DeliveryService deliveryService, Clock clock) {
+        OfferFactory offerFactory = new OfferFactory(productManagementService, deliveryService, clock);
+        return new CartApplicationService(cartRepository, offerRepository, productManagementService, offerFactory);
     }
 
     @PrimaryAdapter

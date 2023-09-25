@@ -11,10 +11,12 @@ import static java.util.stream.Collectors.toList;
 @Factory
 public class OfferFactory {
     private final ProductManagementService productManagementService;
+    private final DeliveryService deliveryService;
     private final Clock clock;
 
-    public OfferFactory(ProductManagementService productManagementService, Clock clock) {
+    public OfferFactory(ProductManagementService productManagementService, DeliveryService deliveryService, Clock clock) {
         this.productManagementService = productManagementService;
+        this.deliveryService = deliveryService;
         this.clock = clock;
     }
 
