@@ -1,4 +1,4 @@
-package com.smalaca.purchase.domain.offer;
+package com.smalaca.purchase.domain.productmanagementservice;
 
 import com.smalaca.annotations.architectures.portadapter.SecondaryPort;
 

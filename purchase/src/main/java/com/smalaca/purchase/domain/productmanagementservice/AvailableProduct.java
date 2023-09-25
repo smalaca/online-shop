@@ -1,6 +1,7 @@
-package com.smalaca.purchase.domain.offer;
+package com.smalaca.purchase.domain.productmanagementservice;
 
 import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.price.Price;
 import com.smalaca.purchase.domain.product.Product;
 
 import java.math.BigDecimal;
@@ -23,19 +24,19 @@ public class AvailableProduct {
         return new AvailableProduct(sellerId, productId, Amount.amount(amount), Price.price(price));
     }
 
-    boolean isAvailableFor(Product product) {
+    public boolean isAvailableFor(Product product) {
         return product.hasProductIdSameAs(productId) && product.hasLessOrEqualThan(amount);
     }
 
-    boolean isFor(UUID productId) {
+    public boolean isFor(UUID productId) {
         return this.productId == productId;
     }
 
-    Price getPrice() {
+    public Price getPrice() {
         return price;
     }
 
-    UUID getSellerId() {
+    public UUID getSellerId() {
         return sellerId;
     }
 }

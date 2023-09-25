@@ -1,4 +1,4 @@
-package com.smalaca.purchase.domain.offer;
+package com.smalaca.purchase.domain.clock;
 
 import java.time.LocalDateTime;
 

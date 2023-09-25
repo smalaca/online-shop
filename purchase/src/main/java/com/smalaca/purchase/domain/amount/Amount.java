@@ -6,8 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @ValueObject
 @EqualsAndHashCode
-public
-class Amount {
+public class Amount {
     private final Integer value;
 
     private Amount(Integer value) {

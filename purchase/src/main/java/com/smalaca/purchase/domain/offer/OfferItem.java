@@ -2,6 +2,7 @@ package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.annotations.ddd.Entity;
 import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.price.Price;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;

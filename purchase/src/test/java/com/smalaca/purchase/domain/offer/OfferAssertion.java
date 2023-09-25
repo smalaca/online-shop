@@ -1,6 +1,7 @@
 package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.price.Price;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
