@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public record ChooseProductsCommand(
-        UUID buyerId, UUID cartId, Map<UUID, Integer> products, UUID deliveryMethodId, AddressDto deliveryAddress) {
+        UUID buyerId, UUID cartId, Map<UUID, Integer> products, UUID deliveryMethodId, AddressDto addressDto) {
     ChooseProductsDomainCommand asCommand() {
         List<Product> products = ProductsFactory.create(this.products);
-        DeliveryAddress deliveryAddress = this.deliveryAddress.asDeliveryAddress();
+        DeliveryAddress deliveryAddress = this.addressDto.asDeliveryAddress();
         return new ChooseProductsDomainCommand(buyerId, products, deliveryMethodId, deliveryAddress);
     }
 }
