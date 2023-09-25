@@ -33,7 +33,7 @@ public class OfferFactory {
         }
 
         if (deliveryResponse.isNotExistingAddress()) {
-            throw OfferException.notExistingAddress(command.addressDto());
+            throw OfferException.notExistingAddress(command.deliveryAddress());
         }
 
         List<AvailableProduct> availableProducts = availableProductsFor(command.products());

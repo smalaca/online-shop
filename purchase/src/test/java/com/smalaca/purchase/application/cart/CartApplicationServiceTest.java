@@ -6,7 +6,7 @@ import com.smalaca.purchase.domain.cart.CartAssertion;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
-import com.smalaca.purchase.domain.deliveryaddress.AddressDto;
+import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryRequest;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryResponse;
@@ -52,6 +52,7 @@ class CartApplicationServiceTest {
     private static final Faker FAKER = new Faker();
 
     private static final AddressDto ADDRESS_DTO = randomAddressDto();
+    private static final DeliveryAddress DELIVERY_ADDRESS = ADDRESS_DTO.asDeliveryAddress();
     private static final UUID PRODUCT_ID_ONE = randomId();
     private static final UUID PRODUCT_ID_TWO = randomId();
     private static final UUID PRODUCT_ID_THREE = randomId();
@@ -424,7 +425,8 @@ class CartApplicationServiceTest {
         Executable executable = () -> service.chooseProducts(command);
 
         thenOfferNotCreatedDueToOfferExceptionThat(executable)
-                .hasMessage("Address: " + ADDRESS_DTO + " do not exist.");
+                .hasMessage("Delivery address do not exists")
+                .hasDeliveryAddress(DELIVERY_ADDRESS);
     }
 
     @Test
@@ -524,7 +526,7 @@ class CartApplicationServiceTest {
     }
 
     private void givenDeliveryResponseWith(DeliveryStatusCode deliveryStatusCode, Price price) {
-        DeliveryRequest deliveryRequest = new DeliveryRequest(DELIVERY_METHOD_ID, ADDRESS_DTO);
+        DeliveryRequest deliveryRequest = new DeliveryRequest(DELIVERY_METHOD_ID, DELIVERY_ADDRESS);
         DeliveryResponse deliveryResponse = new DeliveryResponse(deliveryStatusCode, price);
 
         given(deliveryService.calculate(deliveryRequest)).willReturn(deliveryResponse);

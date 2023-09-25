@@ -1,8 +1,8 @@
 package com.smalaca.purchase.domain.deliveryservice;
 
-import com.smalaca.purchase.domain.deliveryaddress.AddressDto;
+import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 
 import java.util.UUID;
 
-public record DeliveryRequest(UUID deliveryMethodId, AddressDto addressDto) {
+public record DeliveryRequest(UUID deliveryMethodId, DeliveryAddress deliveryAddress) {
 }

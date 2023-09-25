@@ -1,5 +1,6 @@
 package com.smalaca.purchase.domain.offer;
 
+import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.product.Product;
 
 import java.util.List;
@@ -41,5 +42,10 @@ public class OfferExceptionAssertion {
 
     public OfferExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedAmount) {
         return hasProducts(1).containsProduct(expectedProductId, expectedAmount);
+    }
+
+    public OfferExceptionAssertion hasDeliveryAddress(DeliveryAddress expected) {
+        assertThat(actual).extracting("deliveryAddress").isEqualTo(expected);
+        return this;
     }
 }
