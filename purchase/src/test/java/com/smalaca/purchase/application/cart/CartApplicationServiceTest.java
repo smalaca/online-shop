@@ -26,7 +26,9 @@ import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -55,9 +57,10 @@ class CartApplicationServiceTest {
     private static final UUID PRODUCT_ID_THREE = randomId();
     private static final UUID PRODUCT_ID_FOUR = randomId();
     private static final UUID PRODUCT_ID_FIVE = randomId();
+    private static final UUID BUYER_ID = randomId();
     private static final UUID CART_UUID = randomId();
     private static final CartId CART_ID = new CartId(CART_UUID);
-    private static final LocalDateTime CREATED_AT = LocalDateTime.now();
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(LocalDate.of(2023, 9, 25), LocalTime.now());
     private static final BigDecimal PRICE_ONE = BigDecimal.valueOf(13.11);
     private static final BigDecimal PRICE_TWO = BigDecimal.valueOf(43.223);
     private static final BigDecimal PRICE_THREE = BigDecimal.valueOf(123.23);
@@ -505,6 +508,8 @@ class CartApplicationServiceTest {
         service.chooseProducts(command);
 
         thenSavedOffer()
+                // buyer id
+                .hasOfferNumberThatStartsWith(BUYER_ID + "/2023/09/25/")
                 .hasCreationDateTime(CREATED_AT)
                 .hasDeliveryMethod(DELIVERY_METHOD_ID)
                 .hasDeliveryPrice(DELIVERY_PRICE)
@@ -512,8 +517,6 @@ class CartApplicationServiceTest {
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_TWO)
                 .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, 3, PRICE_THREE);
-                // offer number
-                // delivery methods with price -> refactoring first
     }
 
     private void givenValidDelivery() {
@@ -543,7 +546,7 @@ class CartApplicationServiceTest {
     }
 
     private ChooseProductsCommand chooseProductsCommand(Map<UUID, Integer> products) {
-        return new ChooseProductsCommand(CART_UUID, products, DELIVERY_METHOD_ID, ADDRESS_DTO);
+        return new ChooseProductsCommand(BUYER_ID, CART_UUID, products, DELIVERY_METHOD_ID, ADDRESS_DTO);
     }
 
     private static AddressDto randomAddressDto() {

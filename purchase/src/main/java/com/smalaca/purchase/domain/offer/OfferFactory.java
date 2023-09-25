@@ -45,6 +45,7 @@ public class OfferFactory {
         });
 
         return builder
+                .buyerId(command.buyerId())
                 .creationDateTime(clock.nowDateTime())
                 .delivery(command.deliveryMethodId(), deliveryResponse.price())
                 .build();

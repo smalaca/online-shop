@@ -5,7 +5,7 @@ import com.smalaca.purchase.domain.product.Product;
 import java.util.List;
 import java.util.UUID;
 
-public record ChooseProductsDomainCommand(List<Product> products, UUID deliveryMethodId, AddressDto addressDto) {
+public record ChooseProductsDomainCommand(UUID buyerId, List<Product> products, UUID deliveryMethodId, AddressDto addressDto) {
     public boolean hasNoProducts() {
         return products.isEmpty();
     }
