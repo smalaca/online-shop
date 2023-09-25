@@ -1,5 +1,7 @@
 package com.smalaca.purchase.domain.offer;
 
+import java.util.UUID;
+
 public interface DeliveryService {
-    DeliveryPlan calculate(String deliveryMethod);
+    DeliveryPlan calculate(UUID deliveryMethodId);
 }

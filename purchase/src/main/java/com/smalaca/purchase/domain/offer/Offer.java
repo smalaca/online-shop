@@ -15,12 +15,12 @@ import java.util.UUID;
 public class Offer {
     private final LocalDateTime creationDateTime;
     private final List<OfferItem> items;
-    private final String deliveryMethod;
+    private final UUID deliveryMethodId;
 
     private Offer(Builder builder) {
         this.creationDateTime = builder.creationDateTime;
         this.items = builder.items;
-        this.deliveryMethod = builder.deliveryMethod;
+        this.deliveryMethodId = builder.deliveryMethodId;
     }
 
     @PrimaryPort
@@ -44,7 +44,7 @@ public class Offer {
     static class Builder {
         private final List<OfferItem> items = new ArrayList<>();
         private LocalDateTime creationDateTime;
-        private String deliveryMethod;
+        private UUID deliveryMethodId;
 
         Offer build() {
             return new Offer(this);
@@ -55,8 +55,8 @@ public class Offer {
             return this;
         }
 
-        Builder deliveryMethod(String deliveryMethod) {
-            this.deliveryMethod = deliveryMethod;
+        Builder deliveryMethodId(UUID deliveryMethod) {
+            this.deliveryMethodId = deliveryMethod;
             return this;
         }
 

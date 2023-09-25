@@ -21,10 +21,10 @@ public class OfferFactory {
     }
 
     public Offer create(ChooseProductsDomainCommand command) {
-        DeliveryPlan deliveryPlan = deliveryService.calculate(command.deliveryMethod());
+        DeliveryPlan deliveryPlan = deliveryService.calculate(command.deliveryMethodId());
 
         if (!deliveryPlan.isValidDelivery()) {
-            throw OfferException.unsupportedDelivery(command.deliveryMethod());
+            throw OfferException.unsupportedDelivery(command.deliveryMethodId());
         }
 
         List<AvailableProduct> availableProducts = availableProductsFor(command.products());
@@ -42,7 +42,7 @@ public class OfferFactory {
 
         return builder
                 .creationDateTime(clock.nowDateTime())
-                .deliveryMethod(command.deliveryMethod())
+                .deliveryMethodId(command.deliveryMethodId())
                 .build();
     }
 

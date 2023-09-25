@@ -51,7 +51,7 @@ class CartApplicationServiceTest {
     private static final BigDecimal PRICE_THREE = BigDecimal.valueOf(123.23);
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
-    private static final String DELIVERY_METHOD = "InPost";
+    private static final UUID DELIVERY_METHOD_ID = randomId();
     private static final boolean VALID_DELIVERY = true;
     private static final boolean INVALID_DELIVERY = false;
 
@@ -395,11 +395,11 @@ class CartApplicationServiceTest {
         Executable executable = () -> service.chooseProducts(command);
 
         thenOfferNotCreatedDueToOfferExceptionThat(executable)
-                .hasMessage("Delivery Method: InPost is not supported.");
+                .hasMessage("Delivery Method: " + DELIVERY_METHOD_ID + " is not supported.");
     }
 
     private void givenUnsupportedDeliveryMethod() {
-        given(deliveryService.calculate(DELIVERY_METHOD)).willReturn(new DeliveryPlan(INVALID_DELIVERY));
+        given(deliveryService.calculate(DELIVERY_METHOD_ID)).willReturn(new DeliveryPlan(INVALID_DELIVERY));
     }
 
     @Test
@@ -484,7 +484,7 @@ class CartApplicationServiceTest {
 
         thenSavedOffer()
                 .hasCreationDateTime(CREATED_AT)
-                .hasDeliveryMethod(DELIVERY_METHOD) // replace that to id
+                .hasDeliveryMethod(DELIVERY_METHOD_ID)
                 .hasProducts(3)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_TWO)
@@ -494,7 +494,7 @@ class CartApplicationServiceTest {
     }
 
     private void givenValidDelivery() {
-        given(deliveryService.calculate(DELIVERY_METHOD)).willReturn(new DeliveryPlan(VALID_DELIVERY));
+        given(deliveryService.calculate(DELIVERY_METHOD_ID)).willReturn(new DeliveryPlan(VALID_DELIVERY));
     }
 
     private void thenOfferNotSaved() {
@@ -513,7 +513,7 @@ class CartApplicationServiceTest {
     }
 
     private ChooseProductsCommand chooseProductsCommand(Map<UUID, Integer> products) {
-        return new ChooseProductsCommand(CART_UUID, products, DELIVERY_METHOD);
+        return new ChooseProductsCommand(CART_UUID, products, DELIVERY_METHOD_ID);
     }
 
     private static UUID randomId() {

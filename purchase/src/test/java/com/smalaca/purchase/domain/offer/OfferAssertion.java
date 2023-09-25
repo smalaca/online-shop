@@ -42,8 +42,8 @@ public class OfferAssertion {
         return this;
     }
 
-    public OfferAssertion hasDeliveryMethod(String expected) {
-        assertThat(actual).extracting("deliveryMethod").isEqualTo(expected);
+    public OfferAssertion hasDeliveryMethod(UUID expected) {
+        assertThat(actual).extracting("deliveryMethodId").isEqualTo(expected);
         return this;
     }
 }

@@ -4,6 +4,7 @@ import com.smalaca.purchase.domain.product.Product;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 class OfferException extends RuntimeException {
     private final List<Product> products = new ArrayList<>();
@@ -19,7 +20,7 @@ class OfferException extends RuntimeException {
         return exception;
     }
 
-    static RuntimeException unsupportedDelivery(String deliveryMethod) {
-        return new OfferException("Delivery Method: " + deliveryMethod + " is not supported.");
+    static RuntimeException unsupportedDelivery(UUID deliveryMethodId) {
+        return new OfferException("Delivery Method: " + deliveryMethodId + " is not supported.");
     }
 }
