@@ -33,7 +33,7 @@ public class OfferFactory {
         }
 
         if (deliveryResponse.isNotExistingAddress()) {
-            throw OfferException.notExistingAddress(command.addressDto());
+            throw OfferException.notExistingAddress(command.deliveryAddress());
         }
 
         List<AvailableProduct> availableProducts = availableProductsFor(command.products());
@@ -52,7 +52,7 @@ public class OfferFactory {
         return builder
                 .buyerId(command.buyerId())
                 .creationDateTime(clock.nowDateTime())
-                .delivery(command.deliveryMethodId(), deliveryResponse.price())
+                .delivery(command.deliveryMethodId(), command.deliveryAddress(), deliveryResponse.price())
                 .build();
     }
 
