@@ -1,4 +1,4 @@
-package com.smalaca.purchase.domain.offer;
+package com.smalaca.purchase.domain.price;
 
 import com.smalaca.annotations.ddd.ValueObject;
 import lombok.EqualsAndHashCode;

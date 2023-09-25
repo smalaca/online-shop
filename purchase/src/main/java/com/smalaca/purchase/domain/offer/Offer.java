@@ -5,6 +5,7 @@ import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.amount.Amount;
 import com.smalaca.purchase.domain.order.Order;
+import com.smalaca.purchase.domain.price.Price;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
