@@ -3,11 +3,10 @@ package com.smalaca.purchase.application.cart;
 import com.google.common.collect.ImmutableMap;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartAssertion;
-import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
-import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.clock.Clock;
+import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryRequest;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryResponse;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
@@ -59,8 +58,7 @@ class CartApplicationServiceTest {
     private static final UUID PRODUCT_ID_FOUR = randomId();
     private static final UUID PRODUCT_ID_FIVE = randomId();
     private static final UUID BUYER_ID = randomId();
-    private static final UUID CART_UUID = randomId();
-    private static final CartId CART_ID = new CartId(CART_UUID);
+    private static final UUID CART_ID = randomId();
     private static final LocalDateTime CREATED_AT = LocalDateTime.of(LocalDate.of(2023, 9, 25), LocalTime.now());
     private static final BigDecimal PRICE_ONE = BigDecimal.valueOf(13.11);
     private static final BigDecimal PRICE_TWO = BigDecimal.valueOf(43.223);
@@ -209,7 +207,7 @@ class CartApplicationServiceTest {
     }
 
     private AddProductsCommand addProductCommand(Map<UUID, Integer> products) {
-        return new AddProductsCommand(CART_UUID, products);
+        return new AddProductsCommand(CART_ID, products);
     }
 
     @Test
@@ -299,7 +297,7 @@ class CartApplicationServiceTest {
     }
 
     private RemoveProductsCommand removeProductCommand(Map<UUID, Integer> products) {
-        return new RemoveProductsCommand(CART_UUID, products);
+        return new RemoveProductsCommand(CART_ID, products);
     }
 
     private CartAssertion thenSavedCart() {
@@ -547,7 +545,7 @@ class CartApplicationServiceTest {
     }
 
     private ChooseProductsCommand chooseProductsCommand(Map<UUID, Integer> products) {
-        return new ChooseProductsCommand(BUYER_ID, CART_UUID, products, DELIVERY_METHOD_ID, ADDRESS_DTO);
+        return new ChooseProductsCommand(BUYER_ID, CART_ID, products, DELIVERY_METHOD_ID, ADDRESS_DTO);
     }
 
     private static AddressDto randomAddressDto() {

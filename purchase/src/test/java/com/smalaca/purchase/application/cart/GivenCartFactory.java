@@ -1,6 +1,5 @@
 package com.smalaca.purchase.application.cart;
 
-import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
 
 import java.util.UUID;
@@ -16,7 +15,7 @@ class GivenCartFactory {
         return givenCart().withProduct(productId, amount);
     }
 
-    void empty(CartId cartId) {
+    void empty(UUID cartId) {
         givenCart().with(cartId);
     }
 
