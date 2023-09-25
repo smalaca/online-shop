@@ -46,4 +46,9 @@ public class OfferAssertion {
         assertThat(actual).extracting("deliveryMethodId").isEqualTo(expected);
         return this;
     }
+
+    public OfferAssertion hasDeliveryPrice(Price expected) {
+        assertThat(actual).extracting("deliveryPrice").isEqualTo(expected);
+        return this;
+    }
 }

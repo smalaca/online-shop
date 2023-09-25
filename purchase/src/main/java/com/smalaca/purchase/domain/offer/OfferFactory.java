@@ -46,7 +46,7 @@ public class OfferFactory {
 
         return builder
                 .creationDateTime(clock.nowDateTime())
-                .deliveryMethodId(command.deliveryMethodId())
+                .delivery(command.deliveryMethodId(), deliveryResponse.price())
                 .build();
     }
 

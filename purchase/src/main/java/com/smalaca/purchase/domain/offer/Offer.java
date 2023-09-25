@@ -16,11 +16,13 @@ public class Offer {
     private final LocalDateTime creationDateTime;
     private final List<OfferItem> items;
     private final UUID deliveryMethodId;
+    private final Price deliveryPrice;
 
     private Offer(Builder builder) {
         this.creationDateTime = builder.creationDateTime;
         this.items = builder.items;
         this.deliveryMethodId = builder.deliveryMethodId;
+        this.deliveryPrice = builder.deliveryPrice;
     }
 
     @PrimaryPort
@@ -45,6 +47,7 @@ public class Offer {
         private final List<OfferItem> items = new ArrayList<>();
         private LocalDateTime creationDateTime;
         private UUID deliveryMethodId;
+        private Price deliveryPrice;
 
         Offer build() {
             return new Offer(this);
@@ -55,8 +58,9 @@ public class Offer {
             return this;
         }
 
-        Builder deliveryMethodId(UUID deliveryMethod) {
+        Builder delivery(UUID deliveryMethod, Price deliveryPrice) {
             this.deliveryMethodId = deliveryMethod;
+            this.deliveryPrice = deliveryPrice;
             return this;
         }
 
