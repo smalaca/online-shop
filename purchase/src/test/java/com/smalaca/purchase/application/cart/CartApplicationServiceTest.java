@@ -1,22 +1,44 @@
 package com.smalaca.purchase.application.cart;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.smalaca.purchase.domain.cart.Cart;
+import com.smalaca.purchase.domain.cart.CartAssertion;
 import com.smalaca.purchase.domain.cart.CartId;
+import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
-import com.smalaca.purchase.domain.cart.Product;
+import com.smalaca.purchase.domain.offer.AddressDto;
+import com.smalaca.purchase.domain.offer.Clock;
+import com.smalaca.purchase.domain.offer.DeliveryRequest;
+import com.smalaca.purchase.domain.offer.DeliveryResponse;
+import com.smalaca.purchase.domain.offer.DeliveryService;
+import com.smalaca.purchase.domain.offer.DeliveryStatusCode;
+import com.smalaca.purchase.domain.offer.Offer;
+import com.smalaca.purchase.domain.offer.OfferAssertion;
+import com.smalaca.purchase.domain.offer.OfferExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
+import com.smalaca.purchase.domain.offer.Price;
+import com.smalaca.purchase.domain.offer.ProductManagementService;
+import net.datafaker.Faker;
+import net.datafaker.providers.base.Address;
+import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.UUID;
 
 import static com.smalaca.purchase.domain.cart.CartAssertion.assertCart;
 import static com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion.assertCartProductsException;
+import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.NOT_EXISTING_ADDRESS;
+import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.SUCCESS;
+import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.UNSUPPORTED_METHOD;
+import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
+import static com.smalaca.purchase.domain.offer.OfferExceptionAssertion.assertOfferProductsException;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,332 +49,509 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
 class CartApplicationServiceTest {
+    private static final Faker FAKER = new Faker();
+
+    private static final AddressDto ADDRESS_DTO = randomAddressDto();
+    private static final UUID PRODUCT_ID_ONE = randomId();
+    private static final UUID PRODUCT_ID_TWO = randomId();
+    private static final UUID PRODUCT_ID_THREE = randomId();
+    private static final UUID PRODUCT_ID_FOUR = randomId();
+    private static final UUID PRODUCT_ID_FIVE = randomId();
+    private static final UUID BUYER_ID = randomId();
     private static final UUID CART_UUID = randomId();
     private static final CartId CART_ID = new CartId(CART_UUID);
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(LocalDate.of(2023, 9, 25), LocalTime.now());
+    private static final BigDecimal PRICE_ONE = BigDecimal.valueOf(13.11);
+    private static final BigDecimal PRICE_TWO = BigDecimal.valueOf(43.223);
+    private static final BigDecimal PRICE_THREE = BigDecimal.valueOf(123.23);
+    private static final UUID SELLER_ONE = randomId();
+    private static final UUID SELLER_TWO = randomId();
+    private static final UUID DELIVERY_METHOD_ID = randomId();
+    private static final Price NO_PRICE = null;
+    private static final Price DELIVERY_PRICE = Price.price(BigDecimal.valueOf(234.53));
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final CartRepository cartRepository = mock(CartRepository.class);
-    private final CartApplicationService service = new CartApplicationService(cartRepository, offerRepository);
+    private final ProductManagementService productManagementService = mock(ProductManagementService.class);
+    private final DeliveryService deliveryService = mock(DeliveryService.class);
+    private final Clock clock = mock(Clock.class);
+    private final CartApplicationService service = CartApplicationService.create(
+            cartRepository, offerRepository, productManagementService, deliveryService, clock);
+
+    private final GivenCartFactory givenCart = new GivenCartFactory(cartRepository);
+    private final GivenAvailabilityFactory givenAvailability = new GivenAvailabilityFactory(productManagementService);
 
     @Test
     void shouldAddNothingWhenNothingGiven() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 12),
-                Product.product(productIdTwo, 4)));
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 12)
+                .withProduct(PRODUCT_ID_TWO, 4)
+                .with(CART_ID);
 
-        service.addProduct(dto(emptyMap()));
+        service.addProducts(addProductCommand(emptyMap()));
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(productIdOne, 12)
-                .hasProduct(productIdTwo, 4);
+                .containsProduct(PRODUCT_ID_ONE, 12)
+                .containsProduct(PRODUCT_ID_TWO, 4);
     }
 
     @Test
     void shouldAddProduct() {
-        givenEmptyCart();
-        UUID productId = randomId();
+        givenCart.empty(CART_ID);
 
-        service.addProduct(dto(ImmutableMap.of(productId, 13)));
+        service.addProducts(addProductCommand(PRODUCT_ID_ONE, 13));
 
-        assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 13);
+        thenSavedCart().hasOnlyProduct(PRODUCT_ID_ONE, 13);
     }
 
     @Test
     void shouldNotAddProductWhenAmountIsLowerThanOne() {
-        givenEmptyCart();
+        givenCart.empty(CART_ID);
 
-        Executable executable = () -> service.addProduct(dto(ImmutableMap.of(randomId(), -13)));
+        Executable executable = () -> service.addProducts(addProductCommand(PRODUCT_ID_ONE, -13));
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertThat(actual).hasMessage("Amount: \"-13\" is not greater than zero.");
-        thenCartWasNotSaved();
+        thenCartNotSavedDueToExceptionThat(executable).hasMessage("Amount: \"-13\" is not greater than zero.");
     }
 
     @Test
     void shouldIncreaseAmountOfProductWhenAlreadyInCart() {
-        UUID productId = randomId();
-        givenCartWith(ImmutableList.of(Product.product(productId, 3)));
+        givenCart.withProduct(PRODUCT_ID_ONE, 3).with(CART_ID);
 
-        service.addProduct(dto(ImmutableMap.of(productId, 12)));
+        service.addProducts(addProductCommand(PRODUCT_ID_ONE, 12));
 
-        assertCart(thenCartWasSaved()).hasOnlyProduct(productId, 15);
+        thenSavedCart().hasOnlyProduct(PRODUCT_ID_ONE, 15);
     }
 
     @Test
     void shouldAddProducts() {
-        givenEmptyCart();
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        UUID productIdThree = randomId();
-        CartProductsDto dto = dto(ImmutableMap.of(
-                productIdOne, 13,
-                productIdTwo, 26,
-                productIdThree, 42));
+        givenCart.empty(CART_ID);
+        AddProductsCommand command = addProductCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 13,
+                PRODUCT_ID_TWO, 26,
+                PRODUCT_ID_THREE, 42));
 
-        service.addProduct(dto);
+        service.addProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(3)
-                .hasProduct(productIdOne, 13)
-                .hasProduct(productIdTwo, 26)
-                .hasProduct(productIdThree, 42);
+                .containsProduct(PRODUCT_ID_ONE, 13)
+                .containsProduct(PRODUCT_ID_TWO, 26)
+                .containsProduct(PRODUCT_ID_THREE, 42);
     }
 
     @Test
-    void shouldNotAddAnyProductsWhenAmountIsLowerThanOne() {
-        givenEmptyCart();
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        UUID productIdThree = randomId();
-        CartProductsDto dto = dto(ImmutableMap.of(
-                productIdOne, 13,
-                productIdTwo, -26,
-                productIdThree, -42));
+    void shouldNotAddAnyProductsWhenAmountOfAtLeastOneIsLowerThanOne() {
+        givenCart.empty(CART_ID);
+        AddProductsCommand command = addProductCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 13,
+                PRODUCT_ID_TWO, -26,
+                PRODUCT_ID_THREE, -42));
 
-        Executable executable = () -> service.addProduct(dto);
+        Executable executable = () -> service.addProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertThat(actual).hasMessage("Amount: \"-26\" is not greater than zero.");
-        thenCartWasNotSaved();
+        thenCartNotSavedDueToExceptionThat(executable).hasMessage("Amount: \"-26\" is not greater than zero.");
     }
 
     @Test
     void shouldUpdateProductsWhenSomeWereAlreadyInCartAndSomeAdded() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        UUID productIdThree = randomId();
-        UUID productIdFour = randomId();
-        UUID productIdFive = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 14),
-                Product.product(productIdTwo, 1),
-                Product.product(productIdThree, 7)));
-        CartProductsDto dto = dto(ImmutableMap.of(
-                productIdOne, 2,
-                productIdTwo, 9,
-                productIdFour, 9,
-                productIdFive, 11));
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 14)
+                .withProduct(PRODUCT_ID_TWO, 1)
+                .withProduct(PRODUCT_ID_THREE, 7)
+                .with(CART_ID);
+        AddProductsCommand command = addProductCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 2,
+                PRODUCT_ID_TWO, 9,
+                PRODUCT_ID_FOUR, 9,
+                PRODUCT_ID_FIVE, 11));
 
-        service.addProduct(dto);
+        service.addProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(5)
-                .hasProduct(productIdOne, 16)
-                .hasProduct(productIdTwo, 10)
-                .hasProduct(productIdThree, 7)
-                .hasProduct(productIdFour, 9)
-                .hasProduct(productIdFive, 11);
+                .containsProduct(PRODUCT_ID_ONE, 16)
+                .containsProduct(PRODUCT_ID_TWO, 10)
+                .containsProduct(PRODUCT_ID_THREE, 7)
+                .containsProduct(PRODUCT_ID_FOUR, 9)
+                .containsProduct(PRODUCT_ID_FIVE, 11);
     }
 
     @Test
     void shouldRemoveNothingWhenNothingGiven() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 14),
-                Product.product(productIdTwo, 1)));
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 14)
+                .withProduct(PRODUCT_ID_TWO, 1)
+                .with(CART_ID);
 
-        service.addProduct(dto(emptyMap()));
+        service.addProducts(addProductCommand(emptyMap()));
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(productIdOne, 14)
-                .hasProduct(productIdTwo, 1);
+                .containsProduct(PRODUCT_ID_ONE, 14)
+                .containsProduct(PRODUCT_ID_TWO, 1);
+    }
+
+    private AbstractThrowableAssert<?, RuntimeException> thenCartNotSavedDueToExceptionThat(Executable executable) {
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        thenCartNotSaved();
+
+        return assertThat(actual);
+    }
+
+    private void thenCartNotSaved() {
+        then(cartRepository).should(never()).save(any());
+    }
+
+    private AddProductsCommand addProductCommand(UUID productId, int amount) {
+        return addProductCommand(ImmutableMap.of(productId, amount));
+    }
+
+    private AddProductsCommand addProductCommand(Map<UUID, Integer> products) {
+        return new AddProductsCommand(CART_UUID, products);
     }
 
     @Test
     void shouldRemoveNothingWhenProductNotInCart() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 14),
-                Product.product(productIdTwo, 1)));
-        CartProductsDto dto = dto(ImmutableMap.of(
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 14)
+                .withProduct(PRODUCT_ID_TWO, 1)
+                .with(CART_ID);
+        RemoveProductsCommand command = removeProductCommand(ImmutableMap.of(
                 randomId(), 22, randomId(), 12, randomId(), 7));
 
-        service.removeProduct(dto);
+        service.removeProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(productIdOne, 14)
-                .hasProduct(productIdTwo, 1);
+                .containsProduct(PRODUCT_ID_ONE, 14)
+                .containsProduct(PRODUCT_ID_TWO, 1);
     }
 
     @Test
     void shouldRemoveProductFromCart() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        UUID productIdThree = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 14),
-                Product.product(productIdTwo, 1),
-                Product.product(productIdThree, 7)));
-        CartProductsDto dto = dto(ImmutableMap.of(productIdThree, 7));
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 14)
+                .withProduct(PRODUCT_ID_TWO, 1)
+                .withProduct(PRODUCT_ID_THREE, 7)
+                .with(CART_ID);
 
-        service.removeProduct(dto);
+        service.removeProducts(removeProductCommand(PRODUCT_ID_THREE, 7));
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(productIdOne, 14)
-                .hasProduct(productIdTwo, 1);
+                .containsProduct(PRODUCT_ID_ONE, 14)
+                .containsProduct(PRODUCT_ID_TWO, 1);
     }
 
     @Test
     void shouldDecreaseProductAmount() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 14),
-                Product.product(productIdTwo, 1)));
-        CartProductsDto dto = dto(ImmutableMap.of(productIdOne, 7));
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 14)
+                .withProduct(PRODUCT_ID_TWO, 1)
+                .with(CART_ID);
 
-        service.removeProduct(dto);
+        service.removeProducts(removeProductCommand(PRODUCT_ID_ONE, 7));
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(productIdOne, 7)
-                .hasProduct(productIdTwo, 1);
+                .containsProduct(PRODUCT_ID_ONE, 7)
+                .containsProduct(PRODUCT_ID_TWO, 1);
     }
 
     @Test
     void shouldRemoveProductFromCartWhenAmountGreaterThenInCart() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 14),
-                Product.product(productIdTwo, 1)));
-        CartProductsDto dto = dto(ImmutableMap.of(productIdOne, 21));
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 14)
+                .withProduct(PRODUCT_ID_TWO, 1)
+                .with(CART_ID);
 
-        service.removeProduct(dto);
+        service.removeProducts(removeProductCommand(PRODUCT_ID_ONE, 21));
 
-        assertCart(thenCartWasSaved()).hasOnlyProduct(productIdTwo, 1);
+        thenSavedCart().hasOnlyProduct(PRODUCT_ID_TWO, 1);
     }
 
     @Test
     void shouldRemoveProductsDecreaseAmountOfProductsAndIgnoreThoseNotInCart() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        UUID productIdThree = randomId();
-        UUID productIdFour = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 14),
-                Product.product(productIdTwo, 1),
-                Product.product(productIdThree, 7),
-                Product.product(productIdFour, 11)));
-        CartProductsDto dto = dto(ImmutableMap.of(
-                productIdOne, 2,
-                productIdTwo, 9,
-                productIdThree, 7,
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 14)
+                .withProduct(PRODUCT_ID_TWO, 1)
+                .withProduct(PRODUCT_ID_THREE, 7)
+                .withProduct(PRODUCT_ID_FOUR, 11)
+                .with(CART_ID);
+        RemoveProductsCommand command = removeProductCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 2,
+                PRODUCT_ID_TWO, 9,
+                PRODUCT_ID_THREE, 7,
                 randomId(), 11));
 
-        service.removeProduct(dto);
+        service.removeProducts(command);
 
-        assertCart(thenCartWasSaved())
+        thenSavedCart()
                 .hasProducts(2)
-                .hasProduct(productIdOne, 12)
-                .hasProduct(productIdFour, 11);
+                .containsProduct(PRODUCT_ID_ONE, 12)
+                .containsProduct(PRODUCT_ID_FOUR, 11);
+    }
+
+    private RemoveProductsCommand removeProductCommand(UUID productId, int amount) {
+        return removeProductCommand(ImmutableMap.of(productId, amount));
+    }
+
+    private RemoveProductsCommand removeProductCommand(Map<UUID, Integer> products) {
+        return new RemoveProductsCommand(CART_UUID, products);
+    }
+
+    private CartAssertion thenSavedCart() {
+        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
+        then(cartRepository).should().save(captor.capture());
+
+        return assertCart(captor.getValue());
     }
 
     @Test
     void shouldRecognizeNoProductsWereChoose() {
-        givenCartWith(ImmutableList.of(
-                Product.product(randomId(), 13),
-                Product.product(randomId(), 42)));
+        givenCart
+                .withProduct(randomId(), 13)
+                .withProduct(randomId(), 42)
+                .with(CART_ID);
 
-        Executable executable = () -> service.chooseProducts(dto(emptyMap()));
+        Executable executable = () -> service.chooseProducts(chooseProductsCommand(emptyMap()));
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual).hasMessage("Cannot create Offer when no products were choose.");
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable).hasMessage("Cannot create Offer when no products were choose.");
     }
 
     @Test
     void shouldRecognizeProductsAreNotFromCart() {
-        givenCartWith(ImmutableList.of(
-                Product.product(randomId(), 13),
-                Product.product(randomId(), 42)));
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        CartProductsDto dto = dto(ImmutableMap.of(
-                productIdOne, 22,
-                productIdTwo, 13));
+        givenCart
+                .withProduct(randomId(), 13)
+                .withProduct(randomId(), 42)
+                .with(CART_ID);
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 22,
+                PRODUCT_ID_TWO, 13));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
                 .hasProducts(2)
-                .containsProduct(productIdOne, 22)
-                .containsProduct(productIdTwo, 13);
+                .containsProduct(PRODUCT_ID_ONE, 22)
+                .containsProduct(PRODUCT_ID_TWO, 13);
     }
 
     @Test
     void shouldRecognizeChosenProductHasGreaterAmountThanCart() {
-        UUID productIdOne = randomId();
-        UUID productIdTwo = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 13),
-                Product.product(productIdTwo, 7)));
-        CartProductsDto dto = dto(ImmutableMap.of(
-                productIdOne, 22,
-                productIdTwo, 9));
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 13)
+                .withProduct(PRODUCT_ID_TWO, 7)
+                .with(CART_ID);
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 22,
+                PRODUCT_ID_TWO, 9));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
                 .hasProducts(2)
-                .containsProduct(productIdOne, 22)
-                .containsProduct(productIdTwo, 9);
+                .containsProduct(PRODUCT_ID_ONE, 22)
+                .containsProduct(PRODUCT_ID_TWO, 9);
+    }
+
+    @Test
+    void shouldRecognizeOneOfChosenProductHasGreaterAmountThanCart() {
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 13)
+                .withProduct(PRODUCT_ID_TWO, 7)
+                .with(CART_ID);
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 22,
+                PRODUCT_ID_TWO, 2));
+
+        Executable executable = () -> service.chooseProducts(command);
+
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable)
+                .hasMessage("Cannot create Offer when products are not in the Cart.")
+                .hasOnlyOneProduct(PRODUCT_ID_ONE, 22);
     }
 
     @Test
     void shouldRecognizeOneOfChosenProductsIsNotInTheCart() {
-        UUID productIdOne = randomId();
-        givenCartWith(ImmutableList.of(
-                Product.product(productIdOne, 13),
-                Product.product(randomId(), 7)));
-        UUID productIdThree = randomId();
-        CartProductsDto dto = dto(ImmutableMap.of(
-                productIdOne, 10,
-                productIdThree, 9));
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 13)
+                .withProduct(randomId(), 7)
+                .with(CART_ID);
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 10,
+                PRODUCT_ID_THREE, 9));
 
-        Executable executable = () -> service.chooseProducts(dto);
+        Executable executable = () -> service.chooseProducts(command);
 
-        RuntimeException actual = assertThrows(RuntimeException.class, executable);
-        assertCartProductsException(actual)
+        thenOfferNotCreatedDueToCartProductsExceptionThat(executable)
                 .hasMessage("Cannot create Offer when products are not in the Cart.")
-                .hasOnlyOneProduct(productIdThree, 9);
+                .hasOnlyOneProduct(PRODUCT_ID_THREE, 9);
     }
 
-    // chose product with exactly the same amount
+    private CartProductsExceptionAssertion thenOfferNotCreatedDueToCartProductsExceptionThat(Executable executable) {
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        thenOfferNotSaved();
 
-    private CartProductsDto dto(Map<UUID, Integer> products) {
-        return new CartProductsDto(CART_UUID, products);
+        return assertCartProductsException(actual);
     }
 
-    private void givenEmptyCart() {
-        given(cartRepository.findBy(CART_ID)).willReturn(new Cart());
+    @Test
+    void shouldRecognizeUnsupportedDeliveryMethod() {
+        givenDeliveryResponseWith(UNSUPPORTED_METHOD, NO_PRICE);
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 13)
+                .with(CART_ID);
+        ChooseProductsCommand command = chooseProductsCommand(PRODUCT_ID_ONE, 10);
+
+        Executable executable = () -> service.chooseProducts(command);
+
+        thenOfferNotCreatedDueToOfferExceptionThat(executable)
+                .hasMessage("Delivery Method: " + DELIVERY_METHOD_ID + " is not supported.");
     }
 
-    private void givenCartWith(List<Product> products) {
-        Cart cart = new Cart();
-        cart.add(products);
-        given(cartRepository.findBy(CART_ID)).willReturn(cart);
+    @Test
+    void shouldRecognizeNotExistingDeliveryAddress() {
+        givenDeliveryResponseWith(NOT_EXISTING_ADDRESS, NO_PRICE);
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 13)
+                .with(CART_ID);
+        ChooseProductsCommand command = chooseProductsCommand(PRODUCT_ID_ONE, 10);
+
+        Executable executable = () -> service.chooseProducts(command);
+
+        thenOfferNotCreatedDueToOfferExceptionThat(executable)
+                .hasMessage("Address: " + ADDRESS_DTO + " do not exist.");
     }
 
-    private Cart thenCartWasSaved() {
-        ArgumentCaptor<Cart> captor = ArgumentCaptor.forClass(Cart.class);
-        then(cartRepository).should().save(captor.capture());
-        return captor.getValue();
+    @Test
+    void shouldRecognizeProductsThatAreNotAvailableAnymore() {
+        givenValidDelivery();
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 2)
+                .withProduct(PRODUCT_ID_TWO, 7)
+                .withProduct(PRODUCT_ID_THREE, 4)
+                .with(CART_ID);
+        givenAvailability
+                .notAvailable(PRODUCT_ID_ONE)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_ONE)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_TWO)
+                .set();
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 2,
+                PRODUCT_ID_TWO, 7,
+                PRODUCT_ID_THREE, 3));
+
+        Executable executable = () -> service.chooseProducts(command);
+
+        thenOfferNotCreatedDueToOfferExceptionThat(executable)
+                .hasMessage("Cannot create Offer because products are not available anymore.")
+                .hasOnlyOneProduct(PRODUCT_ID_ONE, 2);
     }
 
-    private void thenCartWasNotSaved() {
-        then(cartRepository).should(never()).save(any());
+    @Test
+    void shouldRecognizeProductsWithNotEnoughAmountAnymore() {
+        givenValidDelivery();
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 2)
+                .withProduct(PRODUCT_ID_TWO, 7)
+                .withProduct(PRODUCT_ID_THREE, 4)
+                .with(CART_ID);
+        givenAvailability
+                .available(SELLER_ONE, PRODUCT_ID_ONE, 1, PRICE_ONE)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, 6, PRICE_TWO)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
+                .set();
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 2,
+                PRODUCT_ID_TWO, 7,
+                PRODUCT_ID_THREE, 3));
+
+        Executable executable = () -> service.chooseProducts(command);
+
+        thenOfferNotCreatedDueToOfferExceptionThat(executable)
+                .hasMessage("Cannot create Offer because products are not available anymore.")
+                .hasProducts(2)
+                .containsProduct(PRODUCT_ID_ONE, 2)
+                .containsProduct(PRODUCT_ID_TWO, 7);
+    }
+
+    private OfferExceptionAssertion thenOfferNotCreatedDueToOfferExceptionThat(Executable executable) {
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        thenOfferNotSaved();
+
+        return assertOfferProductsException(actual);
+    }
+
+    @Test
+    void shouldCreateOffer() {
+        givenValidDelivery();
+        given(clock.nowDateTime()).willReturn(CREATED_AT);
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 2)
+                .withProduct(PRODUCT_ID_TWO, 7)
+                .withProduct(PRODUCT_ID_THREE, 4)
+                .with(CART_ID);
+        givenAvailability
+                .available(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
+                .set();
+        ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
+                PRODUCT_ID_ONE, 2,
+                PRODUCT_ID_TWO, 7,
+                PRODUCT_ID_THREE, 3));
+
+        service.chooseProducts(command);
+
+        thenSavedOffer()
+                .hasBuyerId(BUYER_ID)
+                .hasOfferNumberThatStartsWith(BUYER_ID + "/2023/09/25/")
+                .hasCreationDateTime(CREATED_AT)
+                .hasDeliveryMethod(DELIVERY_METHOD_ID)
+                .hasDeliveryPrice(DELIVERY_PRICE)
+                .hasProducts(3)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_TWO)
+                .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, 3, PRICE_THREE);
+    }
+
+    private void givenValidDelivery() {
+        givenDeliveryResponseWith(SUCCESS, DELIVERY_PRICE);
+    }
+
+    private void givenDeliveryResponseWith(DeliveryStatusCode deliveryStatusCode, Price price) {
+        DeliveryRequest deliveryRequest = new DeliveryRequest(DELIVERY_METHOD_ID, ADDRESS_DTO);
+        DeliveryResponse deliveryResponse = new DeliveryResponse(deliveryStatusCode, price);
+
+        given(deliveryService.calculate(deliveryRequest)).willReturn(deliveryResponse);
+    }
+
+    private void thenOfferNotSaved() {
+        then(offerRepository).should(never()).save(any());
+    }
+
+    private OfferAssertion thenSavedOffer() {
+        ArgumentCaptor<Offer> captor = ArgumentCaptor.forClass(Offer.class);
+        then(offerRepository).should().save(captor.capture());
+
+        return assertOffer(captor.getValue());
+    }
+
+    private ChooseProductsCommand chooseProductsCommand(UUID productId, int amount) {
+        return chooseProductsCommand(ImmutableMap.of(productId, amount));
+    }
+
+    private ChooseProductsCommand chooseProductsCommand(Map<UUID, Integer> products) {
+        return new ChooseProductsCommand(BUYER_ID, CART_UUID, products, DELIVERY_METHOD_ID, ADDRESS_DTO);
+    }
+
+    private static AddressDto randomAddressDto() {
+        Address address = FAKER.address();
+        return new AddressDto(address.streetAddress(), address.city(), address.postcode(), address.country());
     }
 
     private static UUID randomId() {

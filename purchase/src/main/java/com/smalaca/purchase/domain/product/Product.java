@@ -1,7 +1,8 @@
-package com.smalaca.purchase.domain.cart;
+package com.smalaca.purchase.domain.product;
 
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.annotations.ddd.ValueObject;
+import com.smalaca.purchase.domain.amount.Amount;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
@@ -22,24 +23,23 @@ public class Product {
         return new Product(productId, Amount.amount(amount));
     }
 
-    @Factory
-    CartItem asCartItem() {
-        return new CartItem(productId, amount);
-    }
-
-    boolean hasProductIdSameAs(UUID productId) {
+    public boolean hasProductIdSameAs(UUID productId) {
         return this.productId.equals(productId);
     }
 
-    Amount getAmount() {
+    public Amount getAmount() {
         return amount;
     }
 
-    boolean hasLessThan(Amount amount) {
+    public UUID getProductId() {
+        return productId;
+    }
+
+    public boolean hasLessThan(Amount amount) {
         return this.amount.isLowerThan(amount);
     }
 
-    boolean hasLessOrEqualThan(Amount amount) {
+    public boolean hasLessOrEqualThan(Amount amount) {
         return this.amount.isLowerOrEqualThan(amount);
     }
 }

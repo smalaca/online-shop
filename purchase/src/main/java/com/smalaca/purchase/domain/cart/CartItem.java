@@ -1,6 +1,8 @@
 package com.smalaca.purchase.domain.cart;
 
 import com.smalaca.annotations.ddd.Entity;
+import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.product.Product;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;

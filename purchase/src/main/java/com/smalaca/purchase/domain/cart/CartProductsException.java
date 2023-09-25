@@ -1,5 +1,7 @@
 package com.smalaca.purchase.domain.cart;
 
+import com.smalaca.purchase.domain.product.Product;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +21,5 @@ class CartProductsException extends RuntimeException {
         exception.products.addAll(products);
 
         return exception;
-    }
-
-    List<Product> getProducts() {
-        return products;
     }
 }

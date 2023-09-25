@@ -1,5 +1,7 @@
 package com.smalaca.purchase.domain.cart;
 
+import com.smalaca.purchase.domain.amount.Amount;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -16,12 +18,8 @@ public class CartAssertion {
         return new CartAssertion(actual);
     }
 
-    public CartAssertion hasNoProducts() {
-        return hasProducts(0);
-    }
-
     public CartAssertion hasOnlyProduct(UUID expectedProductId, int expectedAmount) {
-        return hasProducts(1).hasProduct(expectedProductId, expectedAmount);
+        return hasProducts(1).containsProduct(expectedProductId, expectedAmount);
     }
 
     public CartAssertion hasProducts(int expected) {
@@ -32,7 +30,7 @@ public class CartAssertion {
         return this;
     }
 
-    public CartAssertion hasProduct(UUID expectedProductId, int expectedAmount) {
+    public CartAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
         assertThat(actual).extracting("items")
                 .satisfies(actualItems -> {
                     assertThat((List) actualItems)

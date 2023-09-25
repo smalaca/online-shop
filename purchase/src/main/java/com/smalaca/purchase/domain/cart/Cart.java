@@ -3,7 +3,10 @@ package com.smalaca.purchase.domain.cart;
 import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
+import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 import com.smalaca.purchase.domain.offer.Offer;
+import com.smalaca.purchase.domain.offer.OfferFactory;
+import com.smalaca.purchase.domain.product.Product;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +26,13 @@ public class Cart {
             if (found.isPresent()) {
                 found.get().increase(product.getAmount());
             } else {
-                items.add(product.asCartItem());
+                items.add(asCartItem(product));
             }
         });
+    }
+
+    private CartItem asCartItem(Product product) {
+        return new CartItem(product.getProductId(), product.getAmount());
     }
 
     private Optional<CartItem> cartItemFor(Product product) {
@@ -47,18 +54,18 @@ public class Cart {
 
     @PrimaryPort
     @Factory
-    public Offer choose(List<Product> products) {
-        if (products.isEmpty()) {
+    public Offer choose(ChooseProductsDomainCommand command, OfferFactory offerFactory) {
+        if (command.hasNoProducts()) {
             throw CartProductsException.choseNothing();
         }
 
-        List<Product> missing = getMissingOf(products);
+        List<Product> missing = getMissingOf(command.products());
 
         if (!missing.isEmpty()) {
             throw CartProductsException.missing(missing);
         }
 
-        return null;
+        return offerFactory.create(command);
     }
 
     private List<Product> getMissingOf(List<Product> products) {
