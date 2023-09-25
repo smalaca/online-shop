@@ -16,7 +16,7 @@ class GivenAvailabilityFactory {
         return new GivenAvailability(productManagementService).notAvailable(productId);
     }
 
-    GivenAvailability available(UUID productId, int amount, BigDecimal price) {
-        return new GivenAvailability(productManagementService).available(productId, amount, price);
+    GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
+        return new GivenAvailability(productManagementService).available(sellerId, productId, amount, price);
     }
 }

@@ -28,8 +28,8 @@ public class OfferFactory {
 
         Offer.Builder builder = new Offer.Builder();
         products.forEach(product -> {
-            Price price = priceFor(product.getProductId(), availableProducts);
-            builder.item(product.getProductId(), product.getAmount(), price);
+            AvailableProduct availableProduct = availableProductFor(product.getProductId(), availableProducts);
+            builder.item(availableProduct.getSellerId(), product.getProductId(), product.getAmount(), availableProduct.getPrice());
         });
 
         return builder
@@ -37,13 +37,12 @@ public class OfferFactory {
                 .build();
     }
 
-    private Price priceFor(UUID productId, List<AvailableProduct> availableProducts) {
-        AvailableProduct found = availableProducts
+    private AvailableProduct availableProductFor(UUID productId, List<AvailableProduct> availableProducts) {
+        return availableProducts
                 .stream()
                 .filter(availableProduct -> availableProduct.isFor(productId))
                 .findFirst()
                 .get();
-        return found.getPrice();
     }
 
     private List<AvailableProduct> availableProductsFor(List<Product> products) {

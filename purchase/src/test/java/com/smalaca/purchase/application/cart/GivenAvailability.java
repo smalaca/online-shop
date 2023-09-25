@@ -24,9 +24,9 @@ class GivenAvailability {
         return this;
     }
 
-    GivenAvailability available(UUID productId, int amount, BigDecimal price) {
+    GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
         products.add(productId);
-        availableProducts.add(AvailableProduct.availableProduct(productId, amount, price));
+        availableProducts.add(AvailableProduct.availableProduct(sellerId, productId, amount, price));
         return this;
     }
 
