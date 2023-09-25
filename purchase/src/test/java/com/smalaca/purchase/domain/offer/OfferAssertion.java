@@ -48,16 +48,6 @@ public class OfferAssertion {
         return this;
     }
 
-    public OfferAssertion hasDeliveryMethod(UUID expected) {
-        assertThat(actual).extracting("deliveryMethodId").isEqualTo(expected);
-        return this;
-    }
-
-    public OfferAssertion hasDeliveryPrice(Price expected) {
-        assertThat(actual).extracting("deliveryPrice").isEqualTo(expected);
-        return this;
-    }
-
     public OfferAssertion hasOfferNumberThatStartsWith(String expected) {
         assertThat(actual).extracting("offerNumber").extracting("value")
                 .satisfies(offerNumber -> {
@@ -72,8 +62,10 @@ public class OfferAssertion {
         return this;
     }
 
-    public OfferAssertion hasDeliveryAddress(DeliveryAddress expected) {
-        assertThat(actual).extracting("deliveryAddress").isEqualTo(expected);
+    public OfferAssertion hasDelivery(UUID expectedMethodId, DeliveryAddress expectedAddress, Price expectedPrice) {
+        Delivery expected = DeliveryTestFactory.delivery(expectedMethodId, expectedAddress, expectedPrice);
+        assertThat(actual).extracting("delivery").isEqualTo(expected);
+
         return this;
     }
 }

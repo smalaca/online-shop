@@ -17,18 +17,14 @@ import java.util.UUID;
 public class Offer {
     private final LocalDateTime creationDateTime;
     private final List<OfferItem> items;
-    private final UUID deliveryMethodId;
-    private final Price deliveryPrice;
-    private final DeliveryAddress deliveryAddress;
+    private final Delivery delivery;
     private final OfferNumber offerNumber;
     private final UUID buyerId;
 
     private Offer(Builder builder) {
         this.creationDateTime = builder.creationDateTime;
         this.items = builder.items;
-        this.deliveryMethodId = builder.deliveryMethodId;
-        this.deliveryAddress = builder.deliveryAddress;
-        this.deliveryPrice = builder.deliveryPrice;
+        this.delivery = builder.delivery;
         this.offerNumber = builder.offerNumber;
         this.buyerId = builder.buyerId;
     }
@@ -54,11 +50,9 @@ public class Offer {
     static class Builder {
         private final List<OfferItem> items = new ArrayList<>();
         private LocalDateTime creationDateTime;
-        private UUID deliveryMethodId;
-        private DeliveryAddress deliveryAddress;
-        private Price deliveryPrice;
         private OfferNumber offerNumber;
         private UUID buyerId;
+        private Delivery delivery;
 
         Offer build() {
             offerNumber = OfferNumber.offerNumber(buyerId, creationDateTime);
@@ -70,10 +64,8 @@ public class Offer {
             return this;
         }
 
-        Builder delivery(UUID deliveryMethod, DeliveryAddress deliveryAddress, Price deliveryPrice) {
-            this.deliveryMethodId = deliveryMethod;
-            this.deliveryAddress = deliveryAddress;
-            this.deliveryPrice = deliveryPrice;
+        Builder delivery(UUID deliveryMethodId, DeliveryAddress deliveryAddress, Price deliveryPrice) {
+            this.delivery = new Delivery(deliveryMethodId, deliveryAddress, deliveryPrice);
             return this;
         }
 
