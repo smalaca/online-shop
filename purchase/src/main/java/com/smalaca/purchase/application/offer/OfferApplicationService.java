@@ -4,7 +4,6 @@ import com.smalaca.annotations.architectures.portadapter.PrimaryAdapter;
 import com.smalaca.annotations.ddd.ApplicationService;
 import com.smalaca.annotations.patterns.cqrs.Command;
 import com.smalaca.purchase.domain.offer.Offer;
-import com.smalaca.purchase.domain.offer.OfferId;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.order.OrderRepository;
@@ -26,7 +25,7 @@ public class OfferApplicationService {
     @Command
     @Transactional
     public void accept(UUID offerId) {
-        Offer offer = offerRepository.findById(new OfferId(offerId));
+        Offer offer = offerRepository.findById(offerId);
 
         Order order = offer.accept();
 
@@ -37,7 +36,7 @@ public class OfferApplicationService {
     @Command
     @Transactional
     public void reject(UUID offerId) {
-        Offer offer = offerRepository.findById(new OfferId(offerId));
+        Offer offer = offerRepository.findById(offerId);
 
         offer.reject();
 
@@ -48,7 +47,7 @@ public class OfferApplicationService {
     @Command
     @Transactional
     public void recreate(UUID offerId) {
-        Offer offer = offerRepository.findById(new OfferId(offerId));
+        Offer offer = offerRepository.findById(offerId);
 
         Offer recreated = offer.recreate();
 

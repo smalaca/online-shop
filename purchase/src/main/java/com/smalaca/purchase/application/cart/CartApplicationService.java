@@ -4,15 +4,14 @@ import com.smalaca.annotations.architectures.portadapter.PrimaryAdapter;
 import com.smalaca.annotations.ddd.ApplicationService;
 import com.smalaca.annotations.patterns.cqrs.Command;
 import com.smalaca.purchase.domain.cart.Cart;
-import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
 import com.smalaca.purchase.domain.offer.OfferRepository;
-import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +45,7 @@ public class CartApplicationService {
     @Transactional
     public void addProducts(AddProductsCommand command) {
         List<Product> products = command.asProducts();
-        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
+        Cart cart = cartRepository.findBy(command.cartId());
 
         cart.add(products);
 
@@ -57,7 +56,7 @@ public class CartApplicationService {
     @Command
     @Transactional
     public void removeProducts(RemoveProductsCommand command) {
-        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
+        Cart cart = cartRepository.findBy(command.cartId());
 
         cart.remove(command.asProducts());
 
@@ -68,7 +67,7 @@ public class CartApplicationService {
     @Command
     @Transactional
     public void chooseProducts(ChooseProductsCommand command) {
-        Cart cart = cartRepository.findBy(new CartId(command.cartId()));
+        Cart cart = cartRepository.findBy(command.cartId());
 
         Offer offer = cart.choose(command.asCommand(), offerFactory);
 

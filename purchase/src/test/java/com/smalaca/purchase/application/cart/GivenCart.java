@@ -1,7 +1,6 @@
 package com.smalaca.purchase.application.cart;
 
 import com.smalaca.purchase.domain.cart.Cart;
-import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.product.Product;
 
@@ -24,7 +23,7 @@ class GivenCart {
         return this;
     }
 
-    void with(CartId cartId) {
+    void with(UUID cartId) {
         Cart cart = new Cart();
         cart.add(products);
         given(cartRepository.findBy(cartId)).willReturn(cart);

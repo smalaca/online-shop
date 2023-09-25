@@ -1,10 +1,9 @@
 package com.smalaca.purchase.domain.deliveryservice;
 
-import com.smalaca.purchase.domain.offer.DeliveryStatusCode;
 import com.smalaca.purchase.domain.price.Price;
 
-import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.NOT_EXISTING_ADDRESS;
-import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.UNSUPPORTED_METHOD;
+import static com.smalaca.purchase.domain.deliveryservice.DeliveryStatusCode.NOT_EXISTING_ADDRESS;
+import static com.smalaca.purchase.domain.deliveryservice.DeliveryStatusCode.UNSUPPORTED_METHOD;
 
 public record DeliveryResponse(DeliveryStatusCode deliveryStatusCode, Price price) {
     public boolean isDeliveryMethodUnsupported() {
