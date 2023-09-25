@@ -2,6 +2,8 @@ package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.clock.Clock;
+import com.smalaca.purchase.domain.deliveryservice.DeliveryResponse;
+import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
 import com.smalaca.purchase.domain.product.Product;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public class OfferFactory {
     public Offer create(ChooseProductsDomainCommand command) {
         DeliveryResponse deliveryResponse = deliveryService.calculate(command.asDeliveryRequest());
 
-        if (deliveryResponse.isMethodUnsupported()) {
+        if (deliveryResponse.isDeliveryMethodUnsupported()) {
             throw OfferException.unsupportedDeliveryMethod(command.deliveryMethodId());
         }
 
