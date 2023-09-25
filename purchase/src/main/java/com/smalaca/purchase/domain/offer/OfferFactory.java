@@ -1,6 +1,7 @@
 package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.annotations.ddd.Factory;
+import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.product.Product;
 
 import java.util.List;

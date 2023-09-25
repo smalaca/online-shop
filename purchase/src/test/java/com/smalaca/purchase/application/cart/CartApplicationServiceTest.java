@@ -7,7 +7,7 @@ import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.offer.AddressDto;
-import com.smalaca.purchase.domain.offer.Clock;
+import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.offer.DeliveryRequest;
 import com.smalaca.purchase.domain.offer.DeliveryResponse;
 import com.smalaca.purchase.domain.offer.DeliveryService;
