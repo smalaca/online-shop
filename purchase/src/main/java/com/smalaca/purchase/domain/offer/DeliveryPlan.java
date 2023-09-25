@@ -1,4 +1,4 @@
 package com.smalaca.purchase.domain.offer;
 
-public record DeliveryPlan(boolean validDelivery) {
+public record DeliveryPlan(boolean isValidDelivery) {
 }

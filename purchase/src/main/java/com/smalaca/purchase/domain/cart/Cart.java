@@ -53,7 +53,7 @@ public class Cart {
 
     @PrimaryPort
     @Factory
-    public Offer choose(List<Product> products, OfferFactory offerFactory) {
+    public Offer choose(List<Product> products, String deliveryMethod, OfferFactory offerFactory) {
         if (products.isEmpty()) {
             throw CartProductsException.choseNothing();
         }
@@ -64,7 +64,7 @@ public class Cart {
             throw CartProductsException.missing(missing);
         }
 
-        return offerFactory.create(products);
+        return offerFactory.create(products, deliveryMethod);
     }
 
     private List<Product> getMissingOf(List<Product> products) {

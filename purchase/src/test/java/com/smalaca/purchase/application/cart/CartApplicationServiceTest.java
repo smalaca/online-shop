@@ -53,6 +53,7 @@ class CartApplicationServiceTest {
     private static final UUID SELLER_TWO = randomId();
     private static final String DELIVERY_METHOD = "InPost";
     private static final boolean VALID_DELIVERY = true;
+    private static final boolean INVALID_DELIVERY = false;
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final CartRepository cartRepository = mock(CartRepository.class);
@@ -383,19 +384,23 @@ class CartApplicationServiceTest {
         return assertCartProductsException(actual);
     }
 
-//    @Test
-//    void shouldRecognizeUnsupportedDeliveryMethod() {
-//        givenUnsupportedDeliveryMethod();
-//        givenCart
-//                .withProduct(PRODUCT_ID_ONE, 13)
-//                .with(CART_ID);
-//        ChooseProductsCommand command = chooseProductsCommand(PRODUCT_ID_ONE, 10);
-//
-//        Executable executable = () -> service.chooseProducts(command);
-//
-//        thenOfferNotCreatedDueToOfferProductsExceptionThat(executable)
-//                .hasMessage("Delivery Method: InPost is not supported.");
-//    }
+    @Test
+    void shouldRecognizeUnsupportedDeliveryMethod() {
+        givenUnsupportedDeliveryMethod();
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 13)
+                .with(CART_ID);
+        ChooseProductsCommand command = chooseProductsCommand(PRODUCT_ID_ONE, 10);
+
+        Executable executable = () -> service.chooseProducts(command);
+
+        thenOfferNotCreatedDueToOfferExceptionThat(executable)
+                .hasMessage("Delivery Method: InPost is not supported.");
+    }
+
+    private void givenUnsupportedDeliveryMethod() {
+        given(deliveryService.calculate(DELIVERY_METHOD)).willReturn(new DeliveryPlan(INVALID_DELIVERY));
+    }
 
     @Test
     void shouldRecognizeProductsThatAreNotAvailableAnymore() {
@@ -479,6 +484,7 @@ class CartApplicationServiceTest {
 
         thenSavedOffer()
                 .hasCreationDateTime(CREATED_AT)
+                .hasDeliveryMethod(DELIVERY_METHOD)
                 .hasProducts(3)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_TWO)

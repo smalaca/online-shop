@@ -20,7 +20,13 @@ public class OfferFactory {
         this.clock = clock;
     }
 
-    public Offer create(List<Product> products) {
+    public Offer create(List<Product> products, String deliveryMethod) {
+        DeliveryPlan deliveryPlan = deliveryService.calculate(deliveryMethod);
+
+        if (!deliveryPlan.isValidDelivery()) {
+            throw OfferException.unsupportedDelivery(deliveryMethod);
+        }
+
         List<AvailableProduct> availableProducts = availableProductsFor(products);
         List<Product> notAvailable = notAvailableOf(products, availableProducts);
 
@@ -36,6 +42,7 @@ public class OfferFactory {
 
         return builder
                 .creationDateTime(clock.nowDateTime())
+                .deliveryMethod(deliveryMethod)
                 .build();
     }
 

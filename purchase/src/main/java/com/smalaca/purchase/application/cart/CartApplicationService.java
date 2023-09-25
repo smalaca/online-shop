@@ -70,7 +70,7 @@ public class CartApplicationService {
     public void chooseProducts(ChooseProductsCommand command) {
         Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
-        Offer offer = cart.choose(command.asProducts(), offerFactory);
+        Offer offer = cart.choose(command.asProducts(), command.deliveryMethod(), offerFactory);
 
         offerRepository.save(offer);
     }

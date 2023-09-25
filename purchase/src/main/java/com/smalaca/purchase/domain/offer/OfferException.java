@@ -18,4 +18,8 @@ class OfferException extends RuntimeException {
 
         return exception;
     }
+
+    static RuntimeException unsupportedDelivery(String deliveryMethod) {
+        return new OfferException("Delivery Method: " + deliveryMethod + " is not supported.");
+    }
 }
