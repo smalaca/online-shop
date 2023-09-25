@@ -20,7 +20,11 @@ class OfferException extends RuntimeException {
         return exception;
     }
 
-    static RuntimeException unsupportedDelivery(UUID deliveryMethodId) {
+    static RuntimeException unsupportedDeliveryMethod(UUID deliveryMethodId) {
         return new OfferException("Delivery Method: " + deliveryMethodId + " is not supported.");
+    }
+
+    static RuntimeException notExistingAddress(AddressDto addressDto) {
+        return new OfferException("Address: " + addressDto + " do not exist.");
     }
 }

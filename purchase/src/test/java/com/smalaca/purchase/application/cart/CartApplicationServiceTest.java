@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import static com.smalaca.purchase.domain.cart.CartAssertion.assertCart;
 import static com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion.assertCartProductsException;
+import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.NOT_EXISTING_ADDRESS;
 import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.SUCCESS;
 import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.UNSUPPORTED_METHOD;
 import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
@@ -394,7 +395,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeUnsupportedDeliveryMethod() {
-        givenUnsupportedDeliveryMethod();
+        givenDeliveryResponseWith(UNSUPPORTED_METHOD);
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .with(CART_ID);
@@ -406,8 +407,18 @@ class CartApplicationServiceTest {
                 .hasMessage("Delivery Method: " + DELIVERY_METHOD_ID + " is not supported.");
     }
 
-    private void givenUnsupportedDeliveryMethod() {
-        givenDeliveryResponseWith(UNSUPPORTED_METHOD);
+    @Test
+    void shouldRecognizeNotExistingDeliveryAddress() {
+        givenDeliveryResponseWith(NOT_EXISTING_ADDRESS);
+        givenCart
+                .withProduct(PRODUCT_ID_ONE, 13)
+                .with(CART_ID);
+        ChooseProductsCommand command = chooseProductsCommand(PRODUCT_ID_ONE, 10);
+
+        Executable executable = () -> service.chooseProducts(command);
+
+        thenOfferNotCreatedDueToOfferExceptionThat(executable)
+                .hasMessage("Address: " + ADDRESS_DTO + " do not exist.");
     }
 
     @Test

@@ -24,7 +24,11 @@ public class OfferFactory {
         DeliveryResponse deliveryResponse = deliveryService.calculate(command.asDeliveryRequest());
 
         if (deliveryResponse.isMethodUnsupported()) {
-            throw OfferException.unsupportedDelivery(command.deliveryMethodId());
+            throw OfferException.unsupportedDeliveryMethod(command.deliveryMethodId());
+        }
+
+        if (deliveryResponse.isNotExistingAddress()) {
+            throw OfferException.notExistingAddress(command.addressDto());
         }
 
         List<AvailableProduct> availableProducts = availableProductsFor(command.products());
