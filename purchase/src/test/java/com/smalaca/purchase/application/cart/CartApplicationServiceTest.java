@@ -508,7 +508,7 @@ class CartApplicationServiceTest {
         service.chooseProducts(command);
 
         thenSavedOffer()
-                // buyer id
+                .hasBuyerId(BUYER_ID)
                 .hasOfferNumberThatStartsWith(BUYER_ID + "/2023/09/25/")
                 .hasCreationDateTime(CREATED_AT)
                 .hasDeliveryMethod(DELIVERY_METHOD_ID)

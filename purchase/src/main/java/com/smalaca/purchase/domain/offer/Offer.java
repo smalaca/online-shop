@@ -18,6 +18,7 @@ public class Offer {
     private final UUID deliveryMethodId;
     private final Price deliveryPrice;
     private final OfferNumber offerNumber;
+    private final UUID buyerId;
 
     private Offer(Builder builder) {
         this.creationDateTime = builder.creationDateTime;
@@ -25,6 +26,7 @@ public class Offer {
         this.deliveryMethodId = builder.deliveryMethodId;
         this.deliveryPrice = builder.deliveryPrice;
         this.offerNumber = builder.offerNumber;
+        this.buyerId = builder.buyerId;
     }
 
     @PrimaryPort
