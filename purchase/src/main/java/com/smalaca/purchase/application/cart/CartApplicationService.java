@@ -6,6 +6,7 @@ import com.smalaca.annotations.patterns.cqrs.Command;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartRepository;
+import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 import com.smalaca.purchase.domain.offer.Clock;
 import com.smalaca.purchase.domain.offer.DeliveryService;
 import com.smalaca.purchase.domain.offer.Offer;
@@ -70,7 +71,7 @@ public class CartApplicationService {
     public void chooseProducts(ChooseProductsCommand command) {
         Cart cart = cartRepository.findBy(new CartId(command.cartId()));
 
-        Offer offer = cart.choose(command.asProducts(), command.deliveryMethod(), offerFactory);
+        Offer offer = cart.choose(new ChooseProductsDomainCommand(command.asProducts(), command.deliveryMethod()), offerFactory);
 
         offerRepository.save(offer);
     }

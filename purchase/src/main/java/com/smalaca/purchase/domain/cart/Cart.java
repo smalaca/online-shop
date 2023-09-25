@@ -54,18 +54,18 @@ public class Cart {
 
     @PrimaryPort
     @Factory
-    public Offer choose(List<Product> products, String deliveryMethod, OfferFactory offerFactory) {
-        if (products.isEmpty()) {
+    public Offer choose(ChooseProductsDomainCommand command, OfferFactory offerFactory) {
+        if (command.hasNoProducts()) {
             throw CartProductsException.choseNothing();
         }
 
-        List<Product> missing = getMissingOf(products);
+        List<Product> missing = getMissingOf(command.products());
 
         if (!missing.isEmpty()) {
             throw CartProductsException.missing(missing);
         }
 
-        return offerFactory.create(new ChooseProductsDomainCommand(products, deliveryMethod));
+        return offerFactory.create(command);
     }
 
     private List<Product> getMissingOf(List<Product> products) {
