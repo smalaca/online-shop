@@ -1,12 +1,14 @@
 package com.smalaca.purchase.application.cart;
 
+import com.smalaca.purchase.domain.offer.AddressDto;
 import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 
 import java.util.Map;
 import java.util.UUID;
 
-public record ChooseProductsCommand(UUID cartId, Map<UUID, Integer> products, UUID deliveryMethodId) {
+public record ChooseProductsCommand(
+        UUID cartId, Map<UUID, Integer> products, UUID deliveryMethodId, AddressDto addressDto) {
     ChooseProductsDomainCommand asCommand() {
-        return new ChooseProductsDomainCommand(ProductsFactory.create(products), deliveryMethodId);
+        return new ChooseProductsDomainCommand(ProductsFactory.create(products), deliveryMethodId, addressDto);
     }
 }

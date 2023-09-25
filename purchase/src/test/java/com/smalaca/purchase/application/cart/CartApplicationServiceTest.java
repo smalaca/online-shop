@@ -6,14 +6,19 @@ import com.smalaca.purchase.domain.cart.CartAssertion;
 import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
+import com.smalaca.purchase.domain.offer.AddressDto;
 import com.smalaca.purchase.domain.offer.Clock;
-import com.smalaca.purchase.domain.offer.DeliveryPrice;
+import com.smalaca.purchase.domain.offer.DeliveryResponse;
+import com.smalaca.purchase.domain.offer.DeliveryRequest;
 import com.smalaca.purchase.domain.offer.DeliveryService;
+import com.smalaca.purchase.domain.offer.DeliveryStatusCode;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferAssertion;
 import com.smalaca.purchase.domain.offer.OfferExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.offer.ProductManagementService;
+import net.datafaker.Faker;
+import net.datafaker.providers.base.Address;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -40,6 +45,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
 class CartApplicationServiceTest {
+    private static final Faker FAKER = new Faker();
+
+    private static final AddressDto ADDRESS_DTO = randomAddressDto();
     private static final UUID PRODUCT_ID_ONE = randomId();
     private static final UUID PRODUCT_ID_TWO = randomId();
     private static final UUID PRODUCT_ID_THREE = randomId();
@@ -399,7 +407,7 @@ class CartApplicationServiceTest {
     }
 
     private void givenUnsupportedDeliveryMethod() {
-        given(deliveryService.calculate(DELIVERY_METHOD_ID)).willReturn(new DeliveryPrice(UNSUPPORTED_METHOD));
+        givenDeliveryResponseWith(UNSUPPORTED_METHOD);
     }
 
     @Test
@@ -494,7 +502,14 @@ class CartApplicationServiceTest {
     }
 
     private void givenValidDelivery() {
-        given(deliveryService.calculate(DELIVERY_METHOD_ID)).willReturn(new DeliveryPrice(SUCCESS));
+        givenDeliveryResponseWith(SUCCESS);
+    }
+
+    private void givenDeliveryResponseWith(DeliveryStatusCode deliveryStatusCode) {
+        DeliveryRequest deliveryRequest = new DeliveryRequest(DELIVERY_METHOD_ID, ADDRESS_DTO);
+        DeliveryResponse deliveryResponse = new DeliveryResponse(deliveryStatusCode);
+
+        given(deliveryService.calculate(deliveryRequest)).willReturn(deliveryResponse);
     }
 
     private void thenOfferNotSaved() {
@@ -513,7 +528,12 @@ class CartApplicationServiceTest {
     }
 
     private ChooseProductsCommand chooseProductsCommand(Map<UUID, Integer> products) {
-        return new ChooseProductsCommand(CART_UUID, products, DELIVERY_METHOD_ID);
+        return new ChooseProductsCommand(CART_UUID, products, DELIVERY_METHOD_ID, ADDRESS_DTO);
+    }
+
+    private static AddressDto randomAddressDto() {
+        Address address = FAKER.address();
+        return new AddressDto(address.streetAddress(), address.city(), address.postcode(), address.country());
     }
 
     private static UUID randomId() {
