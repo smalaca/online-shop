@@ -11,7 +11,7 @@ import com.smalaca.purchase.domain.offer.DeliveryPlan;
 import com.smalaca.purchase.domain.offer.DeliveryService;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferAssertion;
-import com.smalaca.purchase.domain.offer.OfferProductsExceptionAssertion;
+import com.smalaca.purchase.domain.offer.OfferExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.offer.ProductManagementService;
 import org.assertj.core.api.AbstractThrowableAssert;
@@ -27,7 +27,7 @@ import java.util.UUID;
 import static com.smalaca.purchase.domain.cart.CartAssertion.assertCart;
 import static com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion.assertCartProductsException;
 import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
-import static com.smalaca.purchase.domain.offer.OfferProductsExceptionAssertion.assertOfferProductsException;
+import static com.smalaca.purchase.domain.offer.OfferExceptionAssertion.assertOfferProductsException;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -417,7 +417,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(command);
 
-        thenOfferNotCreatedDueToOfferProductsExceptionThat(executable)
+        thenOfferNotCreatedDueToOfferExceptionThat(executable)
                 .hasMessage("Cannot create Offer because products are not available anymore.")
                 .hasOnlyOneProduct(PRODUCT_ID_ONE, 2);
     }
@@ -442,14 +442,14 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.chooseProducts(command);
 
-        thenOfferNotCreatedDueToOfferProductsExceptionThat(executable)
+        thenOfferNotCreatedDueToOfferExceptionThat(executable)
                 .hasMessage("Cannot create Offer because products are not available anymore.")
                 .hasProducts(2)
                 .containsProduct(PRODUCT_ID_ONE, 2)
                 .containsProduct(PRODUCT_ID_TWO, 7);
     }
 
-    private OfferProductsExceptionAssertion thenOfferNotCreatedDueToOfferProductsExceptionThat(Executable executable) {
+    private OfferExceptionAssertion thenOfferNotCreatedDueToOfferExceptionThat(Executable executable) {
         RuntimeException actual = assertThrows(RuntimeException.class, executable);
         thenOfferNotSaved();
 

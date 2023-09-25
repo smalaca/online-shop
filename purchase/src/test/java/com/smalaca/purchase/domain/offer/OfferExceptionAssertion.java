@@ -7,23 +7,23 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OfferProductsExceptionAssertion {
-    private final OfferProductsException actual;
+public class OfferExceptionAssertion {
+    private final OfferException actual;
 
-    private OfferProductsExceptionAssertion(OfferProductsException actual) {
+    private OfferExceptionAssertion(OfferException actual) {
         this.actual = actual;
     }
 
-    public static OfferProductsExceptionAssertion assertOfferProductsException(RuntimeException actual) {
-        return new OfferProductsExceptionAssertion((OfferProductsException) actual);
+    public static OfferExceptionAssertion assertOfferProductsException(RuntimeException actual) {
+        return new OfferExceptionAssertion((OfferException) actual);
     }
 
-    public OfferProductsExceptionAssertion hasMessage(String expected) {
+    public OfferExceptionAssertion hasMessage(String expected) {
         assertThat(actual).hasMessage(expected);
         return this;
     }
 
-    public OfferProductsExceptionAssertion hasProducts(int expected) {
+    public OfferExceptionAssertion hasProducts(int expected) {
         assertThat(actual).extracting("products").satisfies(products -> {
             assertThat((List<Product>) products).hasSize(expected);
         });
@@ -31,7 +31,7 @@ public class OfferProductsExceptionAssertion {
         return this;
     }
 
-    public OfferProductsExceptionAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
+    public OfferExceptionAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
         assertThat(actual).extracting("products").satisfies(products -> {
             assertThat((List<Product>) products).contains(Product.product(expectedProductId, expectedAmount));
         });
@@ -39,7 +39,7 @@ public class OfferProductsExceptionAssertion {
         return this;
     }
 
-    public OfferProductsExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedAmount) {
+    public OfferExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedAmount) {
         return hasProducts(1).containsProduct(expectedProductId, expectedAmount);
     }
 }

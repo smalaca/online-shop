@@ -25,7 +25,7 @@ public class OfferFactory {
         List<Product> notAvailable = notAvailableOf(products, availableProducts);
 
         if (!notAvailable.isEmpty()) {
-            throw OfferProductsException.notAvailable(notAvailable);
+            throw OfferException.notAvailableProducts(notAvailable);
         }
 
         Offer.Builder builder = new Offer.Builder();
