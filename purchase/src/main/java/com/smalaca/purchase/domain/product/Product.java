@@ -42,8 +42,4 @@ public class Product {
     public boolean hasLessOrEqualThan(Amount amount) {
         return this.amount.isLowerOrEqualThan(amount);
     }
-
-    public boolean isAvailabilitySatisfied(Product available) {
-        return hasProductIdSameAs(available.productId) && hasLessOrEqualThan(available.amount);
-    }
 }

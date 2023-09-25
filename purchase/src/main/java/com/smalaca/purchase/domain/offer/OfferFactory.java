@@ -30,14 +30,14 @@ public class OfferFactory {
 
     private List<Product> getNotAvailableOf(List<Product> products) {
         List<UUID> productIds = products.stream().map(Product::getProductId).collect(toList());
-        List<Product> available = productManagementService.getAvailabilityOf(productIds);
+        List<AvailableProduct> available = productManagementService.getAvailabilityOf(productIds);
 
         return products.stream()
                 .filter(product -> isAvailabilityNotSatisfied(available, product))
                 .collect(toList());
     }
 
-    private boolean isAvailabilityNotSatisfied(List<Product> products, Product product) {
-        return products.stream().noneMatch(product::isAvailabilitySatisfied);
+    private boolean isAvailabilityNotSatisfied(List<AvailableProduct> products, Product product) {
+        return products.stream().noneMatch(available -> available.isAvailableFor(product));
     }
 }

@@ -1,7 +1,7 @@
 package com.smalaca.purchase.application.cart;
 
+import com.smalaca.purchase.domain.offer.AvailableProduct;
 import com.smalaca.purchase.domain.offer.ProductManagementService;
-import com.smalaca.purchase.domain.product.Product;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import static org.mockito.BDDMockito.given;
 class GivenAvailability {
     private final ProductManagementService productManagementService;
     private final List<UUID> products = new ArrayList<>();
-    private final List<Product> availability = new ArrayList<>();
+    private final List<AvailableProduct> availableProducts = new ArrayList<>();
 
     GivenAvailability(ProductManagementService productManagementService) {
         this.productManagementService = productManagementService;
@@ -25,11 +25,11 @@ class GivenAvailability {
 
     GivenAvailability available(UUID productId, int amount) {
         products.add(productId);
-        availability.add(Product.product(productId, amount));
+        availableProducts.add(AvailableProduct.product(productId, amount));
         return this;
     }
 
     void set() {
-        given(productManagementService.getAvailabilityOf(products)).willReturn(availability);
+        given(productManagementService.getAvailabilityOf(products)).willReturn(availableProducts);
     }
 }
