@@ -7,7 +7,7 @@ import com.smalaca.purchase.domain.cart.CartId;
 import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.offer.Clock;
-import com.smalaca.purchase.domain.offer.DeliveryPlan;
+import com.smalaca.purchase.domain.offer.DeliveryPrice;
 import com.smalaca.purchase.domain.offer.DeliveryService;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferAssertion;
@@ -26,6 +26,8 @@ import java.util.UUID;
 
 import static com.smalaca.purchase.domain.cart.CartAssertion.assertCart;
 import static com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion.assertCartProductsException;
+import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.SUCCESS;
+import static com.smalaca.purchase.domain.offer.DeliveryStatusCode.UNSUPPORTED_METHOD;
 import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
 import static com.smalaca.purchase.domain.offer.OfferExceptionAssertion.assertOfferProductsException;
 import static java.util.Collections.emptyMap;
@@ -52,8 +54,6 @@ class CartApplicationServiceTest {
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
     private static final UUID DELIVERY_METHOD_ID = randomId();
-    private static final boolean VALID_DELIVERY = true;
-    private static final boolean INVALID_DELIVERY = false;
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final CartRepository cartRepository = mock(CartRepository.class);
@@ -399,7 +399,7 @@ class CartApplicationServiceTest {
     }
 
     private void givenUnsupportedDeliveryMethod() {
-        given(deliveryService.calculate(DELIVERY_METHOD_ID)).willReturn(new DeliveryPlan(INVALID_DELIVERY));
+        given(deliveryService.calculate(DELIVERY_METHOD_ID)).willReturn(new DeliveryPrice(UNSUPPORTED_METHOD));
     }
 
     @Test
@@ -494,7 +494,7 @@ class CartApplicationServiceTest {
     }
 
     private void givenValidDelivery() {
-        given(deliveryService.calculate(DELIVERY_METHOD_ID)).willReturn(new DeliveryPlan(VALID_DELIVERY));
+        given(deliveryService.calculate(DELIVERY_METHOD_ID)).willReturn(new DeliveryPrice(SUCCESS));
     }
 
     private void thenOfferNotSaved() {

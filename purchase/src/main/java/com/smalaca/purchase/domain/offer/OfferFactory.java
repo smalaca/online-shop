@@ -21,9 +21,9 @@ public class OfferFactory {
     }
 
     public Offer create(ChooseProductsDomainCommand command) {
-        DeliveryPlan deliveryPlan = deliveryService.calculate(command.deliveryMethodId());
+        DeliveryPrice deliveryPrice = deliveryService.calculate(command.deliveryMethodId());
 
-        if (!deliveryPlan.isValidDelivery()) {
+        if (deliveryPrice.isMethodUnsupported()) {
             throw OfferException.unsupportedDelivery(command.deliveryMethodId());
         }
 
