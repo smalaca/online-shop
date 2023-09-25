@@ -5,6 +5,8 @@ import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryResponse;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
 import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
+import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 
 import java.util.List;
 import java.util.UUID;

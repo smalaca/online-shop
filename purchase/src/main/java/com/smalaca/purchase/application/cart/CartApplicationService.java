@@ -11,7 +11,7 @@ import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
 import com.smalaca.purchase.domain.offer.OfferRepository;
-import com.smalaca.purchase.domain.offer.ProductManagementService;
+import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 import com.smalaca.purchase.domain.product.Product;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

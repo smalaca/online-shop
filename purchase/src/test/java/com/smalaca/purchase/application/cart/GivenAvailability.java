@@ -1,7 +1,7 @@
 package com.smalaca.purchase.application.cart;
 
-import com.smalaca.purchase.domain.offer.AvailableProduct;
-import com.smalaca.purchase.domain.offer.ProductManagementService;
+import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
+import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

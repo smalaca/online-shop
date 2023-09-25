@@ -17,7 +17,7 @@ import com.smalaca.purchase.domain.offer.OfferAssertion;
 import com.smalaca.purchase.domain.offer.OfferExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.offer.ProductManagementService;
+import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
 import org.assertj.core.api.AbstractThrowableAssert;
