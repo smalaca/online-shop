@@ -7,14 +7,14 @@ import java.math.BigDecimal;
 
 @ValueObject
 @EqualsAndHashCode
-class Price {
+public class Price {
     private final BigDecimal value;
 
     private Price(BigDecimal value) {
         this.value = value;
     }
 
-    static Price price(BigDecimal value) {
+    public static Price price(BigDecimal value) {
         return new Price(value);
     }
 }

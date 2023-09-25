@@ -8,14 +8,15 @@ import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.offer.AddressDto;
 import com.smalaca.purchase.domain.offer.Clock;
-import com.smalaca.purchase.domain.offer.DeliveryResponse;
 import com.smalaca.purchase.domain.offer.DeliveryRequest;
+import com.smalaca.purchase.domain.offer.DeliveryResponse;
 import com.smalaca.purchase.domain.offer.DeliveryService;
 import com.smalaca.purchase.domain.offer.DeliveryStatusCode;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferAssertion;
 import com.smalaca.purchase.domain.offer.OfferExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
+import com.smalaca.purchase.domain.offer.Price;
 import com.smalaca.purchase.domain.offer.ProductManagementService;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
@@ -63,6 +64,8 @@ class CartApplicationServiceTest {
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
     private static final UUID DELIVERY_METHOD_ID = randomId();
+    private static final Price NO_PRICE = null;
+    private static final Price DELIVERY_PRICE = Price.price(BigDecimal.valueOf(234.53));
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final CartRepository cartRepository = mock(CartRepository.class);
@@ -395,7 +398,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeUnsupportedDeliveryMethod() {
-        givenDeliveryResponseWith(UNSUPPORTED_METHOD);
+        givenDeliveryResponseWith(UNSUPPORTED_METHOD, NO_PRICE);
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .with(CART_ID);
@@ -409,7 +412,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeNotExistingDeliveryAddress() {
-        givenDeliveryResponseWith(NOT_EXISTING_ADDRESS);
+        givenDeliveryResponseWith(NOT_EXISTING_ADDRESS, NO_PRICE);
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .with(CART_ID);
@@ -513,12 +516,12 @@ class CartApplicationServiceTest {
     }
 
     private void givenValidDelivery() {
-        givenDeliveryResponseWith(SUCCESS);
+        givenDeliveryResponseWith(SUCCESS, DELIVERY_PRICE);
     }
 
-    private void givenDeliveryResponseWith(DeliveryStatusCode deliveryStatusCode) {
+    private void givenDeliveryResponseWith(DeliveryStatusCode deliveryStatusCode, Price price) {
         DeliveryRequest deliveryRequest = new DeliveryRequest(DELIVERY_METHOD_ID, ADDRESS_DTO);
-        DeliveryResponse deliveryResponse = new DeliveryResponse(deliveryStatusCode);
+        DeliveryResponse deliveryResponse = new DeliveryResponse(deliveryStatusCode, price);
 
         given(deliveryService.calculate(deliveryRequest)).willReturn(deliveryResponse);
     }
