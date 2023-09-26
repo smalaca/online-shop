@@ -20,6 +20,6 @@ class OfferNumber {
 
     static OfferNumber offerNumber(UUID buyerId, LocalDateTime creationDateTime) {
         String date = creationDateTime.format(DATE_TIME_FORMATTER);
-        return new OfferNumber(buyerId + "/" + date + "/" + UUID.randomUUID());
+        return new OfferNumber("Offer/" + buyerId + "/" + date + "/" + UUID.randomUUID());
     }
 }
