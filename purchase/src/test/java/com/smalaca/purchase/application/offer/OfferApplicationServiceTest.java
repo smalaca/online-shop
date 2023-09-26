@@ -4,10 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.smalaca.purchase.application.cart.GivenAvailabilityFactory;
 import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
-import com.smalaca.purchase.domain.deliveryservice.DeliveryRequest;
-import com.smalaca.purchase.domain.deliveryservice.DeliveryResponse;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
-import com.smalaca.purchase.domain.deliveryservice.DeliveryStatusCode;
+import com.smalaca.purchase.domain.deliveryservice.GivenDeliveryFactory;
 import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
@@ -31,7 +29,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
-import static com.smalaca.purchase.domain.deliveryservice.DeliveryStatusCode.SUCCESS;
 import static com.smalaca.purchase.domain.order.OrderAssertion.assertOrder;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -59,6 +56,7 @@ class OfferApplicationServiceTest {
     private final OfferApplicationService service = new OfferApplicationService(offerRepository, orderRepository);
 
     private final DeliveryService deliveryService = mock(DeliveryService.class);
+    private final GivenDeliveryFactory givenDelivery = new GivenDeliveryFactory(deliveryService);
 
     @Test
     void shouldAcceptOffer() {
@@ -70,7 +68,7 @@ class OfferApplicationServiceTest {
                 Product.product(PRODUCT_ID_TWO, 7),
                 Product.product(PRODUCT_ID_THREE, 3));
         ChooseProductsDomainCommand command = new ChooseProductsDomainCommand(BUYER_ID, products, DELIVERY_METHOD_ID, DELIVERY_ADDRESS);
-        givenValidDelivery();
+        givenDelivery.forRequest(DELIVERY_METHOD_ID, DELIVERY_ADDRESS).valid(DELIVERY_PRICE);
         given(clock.nowDateTime()).willReturn(CREATED_AT);
         new GivenAvailabilityFactory(productManagementService)
                 .available(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
@@ -99,22 +97,11 @@ class OfferApplicationServiceTest {
                 .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, 3, PRICE_THREE);
     }
 
-    private void givenValidDelivery() {
-        givenDeliveryResponseWith(SUCCESS, DELIVERY_PRICE);
-    }
-
     private OrderAssertion thenSavedOrder() {
         ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
         then(orderRepository).should().save(captor.capture());
 
         return assertOrder(captor.getValue());
-    }
-
-    private void givenDeliveryResponseWith(DeliveryStatusCode deliveryStatusCode, Price price) {
-        DeliveryRequest deliveryRequest = new DeliveryRequest(DELIVERY_METHOD_ID, DELIVERY_ADDRESS);
-        DeliveryResponse deliveryResponse = new DeliveryResponse(deliveryStatusCode, price);
-
-        given(deliveryService.calculate(deliveryRequest)).willReturn(deliveryResponse);
     }
 
     private static DeliveryAddress randomDeliveryAddress() {
