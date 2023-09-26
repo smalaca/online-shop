@@ -1,4 +1,4 @@
-package com.smalaca.purchase.domain.offer;
+package com.smalaca.purchase.domain.delivery;
 
 import com.smalaca.annotations.ddd.ValueObject;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
@@ -9,12 +9,12 @@ import java.util.UUID;
 
 @ValueObject
 @EqualsAndHashCode
-class Delivery {
+public class Delivery {
     private final UUID methodId;
     private final DeliveryAddress address;
     private final Price price;
 
-    Delivery(UUID methodId, DeliveryAddress address, Price price) {
+    public Delivery(UUID methodId, DeliveryAddress address, Price price) {
         this.methodId = methodId;
         this.address = address;
         this.price = price;

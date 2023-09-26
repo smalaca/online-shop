@@ -1,6 +1,7 @@
 package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.price.Price;
 
@@ -63,7 +64,7 @@ public class OfferAssertion {
     }
 
     public OfferAssertion hasDelivery(UUID expectedMethodId, DeliveryAddress expectedAddress, Price expectedPrice) {
-        Delivery expected = DeliveryTestFactory.delivery(expectedMethodId, expectedAddress, expectedPrice);
+        Delivery expected = new Delivery(expectedMethodId, expectedAddress, expectedPrice);
         assertThat(actual).extracting("delivery").isEqualTo(expected);
 
         return this;
