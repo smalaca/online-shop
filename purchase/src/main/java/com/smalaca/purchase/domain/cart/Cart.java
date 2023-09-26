@@ -18,6 +18,8 @@ import static java.util.stream.Collectors.toList;
 public class Cart {
     private final List<CartItem> items = new ArrayList<>();
 
+    Cart() {}
+
     @PrimaryPort
     public void add(List<Product> products) {
         products.forEach(product -> {
