@@ -1,7 +1,7 @@
 package com.smalaca.purchase.application.offer;
 
 import com.google.common.collect.ImmutableList;
-import com.smalaca.purchase.application.cart.GivenAvailabilityFactory;
+import com.smalaca.purchase.domain.productmanagementservice.GivenAvailabilityFactory;
 import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryService;

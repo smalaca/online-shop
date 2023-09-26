@@ -1,6 +1,4 @@
-package com.smalaca.purchase.application.cart;
-
-import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
+package com.smalaca.purchase.domain.productmanagementservice;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -12,7 +10,7 @@ public class GivenAvailabilityFactory {
         this.productManagementService = productManagementService;
     }
 
-    GivenAvailability notAvailable(UUID productId) {
+    public GivenAvailability notAvailable(UUID productId) {
         return new GivenAvailability(productManagementService).notAvailable(productId);
     }
 
