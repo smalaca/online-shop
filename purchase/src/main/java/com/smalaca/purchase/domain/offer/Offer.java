@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @AggregateRoot
 public class Offer {
+    private UUID offerId;
     private final LocalDateTime creationDateTime;
     private final List<OfferItem> items;
     private final Delivery delivery;
@@ -44,7 +45,13 @@ public class Offer {
     @PrimaryPort
     @Factory
     public Order accept() {
-        return new Order();
+        Order.Builder builder = new Order.Builder()
+                .offerId(offerId)
+                .delivery(delivery);
+
+        items.forEach(item -> item.addTo(builder));
+
+        return builder.build();
     }
 
     @Factory
