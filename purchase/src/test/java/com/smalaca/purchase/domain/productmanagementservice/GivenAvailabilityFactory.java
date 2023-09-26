@@ -11,10 +11,14 @@ public class GivenAvailabilityFactory {
     }
 
     public GivenAvailability notAvailable(UUID productId) {
-        return new GivenAvailability(productManagementService).notAvailable(productId);
+        return create().notAvailable(productId);
     }
 
     public GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
-        return new GivenAvailability(productManagementService).available(sellerId, productId, amount, price);
+        return create().available(sellerId, productId, amount, price);
+    }
+
+    public GivenAvailability create() {
+        return new GivenAvailability(productManagementService);
     }
 }

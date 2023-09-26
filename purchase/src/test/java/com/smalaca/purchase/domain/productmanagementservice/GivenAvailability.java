@@ -12,7 +12,7 @@ public class GivenAvailability {
     private final List<UUID> products = new ArrayList<>();
     private final List<AvailableProduct> availableProducts = new ArrayList<>();
 
-    GivenAvailability(ProductManagementService productManagementService) {
+    public GivenAvailability(ProductManagementService productManagementService) {
         this.productManagementService = productManagementService;
     }
 
