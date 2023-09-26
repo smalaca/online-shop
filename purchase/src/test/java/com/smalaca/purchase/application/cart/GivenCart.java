@@ -2,6 +2,7 @@ package com.smalaca.purchase.application.cart;
 
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartRepository;
+import com.smalaca.purchase.domain.cart.CartTestFactory;
 import com.smalaca.purchase.domain.product.Product;
 
 import java.util.ArrayList;
@@ -24,8 +25,7 @@ class GivenCart {
     }
 
     void with(UUID cartId) {
-        Cart cart = new Cart();
-        cart.add(products);
+        Cart cart = CartTestFactory.cart(products);
         given(cartRepository.findBy(cartId)).willReturn(cart);
     }
 }
