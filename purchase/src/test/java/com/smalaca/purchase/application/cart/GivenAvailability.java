@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import static org.mockito.BDDMockito.given;
 
-class GivenAvailability {
+public class GivenAvailability {
     private final ProductManagementService productManagementService;
     private final List<UUID> products = new ArrayList<>();
     private final List<AvailableProduct> availableProducts = new ArrayList<>();
@@ -24,13 +24,13 @@ class GivenAvailability {
         return this;
     }
 
-    GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
+    public GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
         products.add(productId);
         availableProducts.add(AvailableProduct.availableProduct(sellerId, productId, amount, price));
         return this;
     }
 
-    void set() {
+    public void set() {
         given(productManagementService.getAvailabilityOf(products)).willReturn(availableProducts);
     }
 }

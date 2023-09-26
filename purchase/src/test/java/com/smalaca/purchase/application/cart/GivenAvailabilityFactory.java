@@ -5,10 +5,10 @@ import com.smalaca.purchase.domain.productmanagementservice.ProductManagementSer
 import java.math.BigDecimal;
 import java.util.UUID;
 
-class GivenAvailabilityFactory {
+public class GivenAvailabilityFactory {
     private final ProductManagementService productManagementService;
 
-    GivenAvailabilityFactory(ProductManagementService productManagementService) {
+    public GivenAvailabilityFactory(ProductManagementService productManagementService) {
         this.productManagementService = productManagementService;
     }
 
@@ -16,7 +16,7 @@ class GivenAvailabilityFactory {
         return new GivenAvailability(productManagementService).notAvailable(productId);
     }
 
-    GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
+    public GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
         return new GivenAvailability(productManagementService).available(sellerId, productId, amount, price);
     }
 }
