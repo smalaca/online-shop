@@ -34,9 +34,9 @@ class OfferApplicationServiceTest {
     private static final UUID PRODUCT_ID_TWO = randomId();
     private static final UUID PRODUCT_ID_THREE = randomId();
     private static final LocalDateTime OFFER_CREATION_DATE_TIME = LocalDateTime.of(LocalDate.of(2023, 9, 25), LocalTime.now());
-    private static final BigDecimal PRICE_ONE = BigDecimal.valueOf(13.11);
-    private static final BigDecimal PRICE_TWO = BigDecimal.valueOf(43.223);
-    private static final BigDecimal PRICE_THREE = BigDecimal.valueOf(123.23);
+    private static final BigDecimal PRICE_ONE = randomPrice();
+    private static final BigDecimal PRICE_TWO = randomPrice();
+    private static final BigDecimal PRICE_THREE = randomPrice();
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
 
@@ -84,15 +84,13 @@ class OfferApplicationServiceTest {
                 .createdAt(OFFER_CREATION_DATE_TIME)
                 .withBuyerId(BUYER_ID)
                 .withDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
-                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
+                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, randomPrice())
+                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, 8, randomPrice())
+                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, 4, randomPrice())
                 .withId(OFFER_ID);
-        BigDecimal newPriceOne = BigDecimal.valueOf(50.23);
-        BigDecimal newPriceTwo = BigDecimal.valueOf(98.23);
         givenAvailability
-                .available(SELLER_ONE, PRODUCT_ID_ONE, 2, newPriceOne)
-                .available(SELLER_ONE, PRODUCT_ID_TWO, 8, newPriceTwo)
+                .available(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
                 .forReservingTo(BUYER_ID);
 
@@ -102,9 +100,13 @@ class OfferApplicationServiceTest {
                 .hasOfferId(OFFER_ID)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
-                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, newPriceOne)
-                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 8, newPriceTwo)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
                 .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE);
+    }
+
+    private static BigDecimal randomPrice() {
+        return BigDecimal.valueOf(FAKER.number().numberBetween(1, 1000));
     }
 
     private OrderAssertion thenSavedOrder() {
