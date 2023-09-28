@@ -19,7 +19,7 @@ public class OrderFactory {
                 .offerId(command.offerId())
                 .delivery(command.delivery());
 
-        List<AvailableProduct> availableProducts = productManagementService.reserve(command.products());
+        List<AvailableProduct> availableProducts = productManagementService.reserve(command.buyerId(), command.products());
 
         availableProducts.forEach(builder::item);
 

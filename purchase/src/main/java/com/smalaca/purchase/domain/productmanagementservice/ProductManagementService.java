@@ -10,5 +10,5 @@ import java.util.UUID;
 public interface ProductManagementService {
     List<AvailableProduct> getAvailabilityOf(List<UUID> productsIds);
 
-    List<AvailableProduct> reserve(List<Product> products);
+    List<AvailableProduct> reserve(UUID buyerId, List<Product> products);
 }

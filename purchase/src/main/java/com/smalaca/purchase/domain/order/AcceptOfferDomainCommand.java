@@ -6,5 +6,5 @@ import com.smalaca.purchase.domain.product.Product;
 import java.util.List;
 import java.util.UUID;
 
-public record AcceptOfferDomainCommand(UUID offerId, Delivery delivery, List<Product> products) {
+public record AcceptOfferDomainCommand(UUID buyerId, UUID offerId, Delivery delivery, List<Product> products) {
 }

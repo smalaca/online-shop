@@ -35,7 +35,7 @@ public class GivenAvailability {
         given(productManagementService.getAvailabilityOf(productsIds)).willReturn(availableProducts);
     }
 
-    public void forReserving() {
-        given(productManagementService.reserve(products)).willReturn(availableProducts);
+    public void forReservingTo(UUID buyerId) {
+        given(productManagementService.reserve(buyerId, products)).willReturn(availableProducts);
     }
 }

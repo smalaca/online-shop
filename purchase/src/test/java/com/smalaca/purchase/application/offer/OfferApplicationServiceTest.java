@@ -50,7 +50,6 @@ class OfferApplicationServiceTest {
 
     // at least one not available anymore
     // at least one with not enough amount
-    // rename GivenAvailabilityFactory into GivenProductManagementFactory
 
     @Test
     void shouldAcceptOffer() {
@@ -66,9 +65,9 @@ class OfferApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
-                .forReserving();
+                .forReservingTo(BUYER_ID);
 
-        service.accept(OFFER_ID);
+        service.accept(BUYER_ID, OFFER_ID);
 
         thenSavedOrder()
                 .hasOfferId(OFFER_ID)
@@ -95,9 +94,9 @@ class OfferApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, 2, newPriceOne)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 8, newPriceTwo)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
-                .forReserving();
+                .forReservingTo(BUYER_ID);
 
-        service.accept(OFFER_ID);
+        service.accept(BUYER_ID, OFFER_ID);
 
         thenSavedOrder()
                 .hasOfferId(OFFER_ID)

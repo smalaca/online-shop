@@ -49,8 +49,8 @@ public class Offer {
 
     @PrimaryPort
     @Factory
-    public Order accept(OrderFactory orderFactory) {
-        return orderFactory.create(new AcceptOfferDomainCommand(offerId, delivery, products()));
+    public Order accept(UUID buyerId, OrderFactory orderFactory) {
+        return orderFactory.create(new AcceptOfferDomainCommand(buyerId, offerId, delivery, products()));
     }
 
     private List<Product> products() {
