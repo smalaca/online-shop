@@ -2,8 +2,8 @@ package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.annotations.ddd.Entity;
 import com.smalaca.purchase.domain.amount.Amount;
-import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.price.Price;
+import com.smalaca.purchase.domain.product.Product;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
@@ -23,7 +23,7 @@ class OfferItem {
         this.price = price;
     }
 
-    void addTo(Order.Builder builder) {
-        builder.item(sellerId, productId, amount, price);
+    Product asProduct() {
+        return Product.product(productId, amount.getValue());
     }
 }

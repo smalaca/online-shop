@@ -1,5 +1,7 @@
 package com.smalaca.purchase.domain.productmanagementservice;
 
+import com.smalaca.purchase.domain.product.Product;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +11,8 @@ import static org.mockito.BDDMockito.given;
 
 public class GivenAvailability {
     private final ProductManagementService productManagementService;
-    private final List<UUID> products = new ArrayList<>();
+    private final List<UUID> productsIds = new ArrayList<>();
+    private final List<Product> products = new ArrayList<>();
     private final List<AvailableProduct> availableProducts = new ArrayList<>();
 
     public GivenAvailability(ProductManagementService productManagementService) {
@@ -17,17 +20,22 @@ public class GivenAvailability {
     }
 
     GivenAvailability notAvailable(UUID productId) {
-        products.add(productId);
+        productsIds.add(productId);
         return this;
     }
 
     public GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
-        products.add(productId);
+        productsIds.add(productId);
+        products.add(Product.product(productId, amount));
         availableProducts.add(AvailableProduct.availableProduct(sellerId, productId, amount, price));
         return this;
     }
 
-    public void set() {
-        given(productManagementService.getAvailabilityOf(products)).willReturn(availableProducts);
+    public void forChecking() {
+        given(productManagementService.getAvailabilityOf(productsIds)).willReturn(availableProducts);
+    }
+
+    public void forReserving() {
+        given(productManagementService.reserve(products)).willReturn(availableProducts);
     }
 }

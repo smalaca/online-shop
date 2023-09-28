@@ -436,7 +436,7 @@ class CartApplicationServiceTest {
                 .notAvailable(PRODUCT_ID_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_ONE)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_TWO)
-                .set();
+                .forChecking();
         ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
@@ -461,7 +461,7 @@ class CartApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, 1, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 6, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
-                .set();
+                .forChecking();
         ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
@@ -496,7 +496,7 @@ class CartApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
-                .set();
+                .forChecking();
         ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,

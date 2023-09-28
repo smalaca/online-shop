@@ -1,14 +1,15 @@
 package com.smalaca.purchase.domain.order;
 
-import com.smalaca.purchase.domain.amount.Amount;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.price.Price;
+import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smalaca.purchase.domain.productmanagementservice.AvailableProduct.availableProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrderAssertion {
@@ -35,8 +36,9 @@ public class OrderAssertion {
     public OrderAssertion containsProduct(UUID expectedSellerId, UUID expectedProductId, int expectedAmount, BigDecimal expectedPrice) {
         assertThat(actual).extracting("items")
                 .satisfies(actualItems -> {
-                    OrderItem expected = new OrderItem(
-                            expectedSellerId, expectedProductId, Amount.amount(expectedAmount), Price.price(expectedPrice));
+                    AvailableProduct availableProduct = availableProduct(
+                            expectedSellerId, expectedProductId, expectedAmount, expectedPrice);
+                    OrderItem expected = new OrderItem(availableProduct);
                     assertThat((List) actualItems).contains(expected);
                 });
         return this;

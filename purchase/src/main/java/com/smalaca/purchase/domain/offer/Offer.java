@@ -6,13 +6,18 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.amount.Amount;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
+import com.smalaca.purchase.domain.order.AcceptOfferDomainCommand;
 import com.smalaca.purchase.domain.order.Order;
+import com.smalaca.purchase.domain.order.OrderFactory;
 import com.smalaca.purchase.domain.price.Price;
+import com.smalaca.purchase.domain.product.Product;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.stream.Collectors.toList;
 
 @AggregateRoot
 public class Offer {
@@ -44,14 +49,14 @@ public class Offer {
 
     @PrimaryPort
     @Factory
-    public Order accept() {
-        Order.Builder builder = new Order.Builder()
-                .offerId(offerId)
-                .delivery(delivery);
+    public Order accept(OrderFactory orderFactory) {
+        return orderFactory.create(new AcceptOfferDomainCommand(offerId, delivery, products()));
+    }
 
-        items.forEach(item -> item.addTo(builder));
-
-        return builder.build();
+    private List<Product> products() {
+        return items.stream()
+                .map(OfferItem::asProduct)
+                .collect(toList());
     }
 
     @Factory

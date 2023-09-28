@@ -32,11 +32,19 @@ public class AvailableProduct {
         return this.productId == productId;
     }
 
-    public Price getPrice() {
-        return price;
-    }
-
     public UUID getSellerId() {
         return sellerId;
+    }
+
+    public UUID getProductId() {
+        return productId;
+    }
+
+    public Amount getAmount() {
+        return amount;
+    }
+
+    public Price getPrice() {
+        return price;
     }
 }

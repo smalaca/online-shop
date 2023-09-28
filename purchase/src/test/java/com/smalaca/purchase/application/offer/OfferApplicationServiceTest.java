@@ -6,6 +6,8 @@ import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.order.OrderAssertion;
 import com.smalaca.purchase.domain.order.OrderRepository;
 import com.smalaca.purchase.domain.price.Price;
+import com.smalaca.purchase.domain.productmanagementservice.GivenAvailabilityFactory;
+import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
 import org.junit.jupiter.api.Test;
@@ -40,9 +42,15 @@ class OfferApplicationServiceTest {
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final OrderRepository orderRepository = mock(OrderRepository.class);
-    private final OfferApplicationService service = new OfferApplicationService(offerRepository, orderRepository);
+    private final ProductManagementService productManagementService = mock(ProductManagementService.class);
+    private final OfferApplicationService service = OfferApplicationService.create(offerRepository, orderRepository, productManagementService);
 
     private final GivenOfferFactory givenOffer = GivenOfferFactory.create(offerRepository);
+    private final GivenAvailabilityFactory givenAvailability = new GivenAvailabilityFactory(productManagementService);
+
+    // at least one not available anymore
+    // at least one with not enough amount
+    // rename GivenAvailabilityFactory into GivenProductManagementFactory
 
     @Test
     void shouldAcceptOffer() {
@@ -54,6 +62,11 @@ class OfferApplicationServiceTest {
                 .withProduct(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
                 .withProduct(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
                 .withId(OFFER_ID);
+        givenAvailability
+                .available(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
+                .forReserving();
 
         service.accept(OFFER_ID);
 
@@ -63,6 +76,35 @@ class OfferApplicationServiceTest {
                 .hasProducts(3)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
+                .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE);
+    }
+
+    @Test
+    void shouldAcceptOfferWithUpdatedPrices() {
+        givenOffer
+                .createdAt(OFFER_CREATION_DATE_TIME)
+                .withBuyerId(BUYER_ID)
+                .withDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
+                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
+                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
+                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
+                .withId(OFFER_ID);
+        BigDecimal newPriceOne = BigDecimal.valueOf(50.23);
+        BigDecimal newPriceTwo = BigDecimal.valueOf(98.23);
+        givenAvailability
+                .available(SELLER_ONE, PRODUCT_ID_ONE, 2, newPriceOne)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, 8, newPriceTwo)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
+                .forReserving();
+
+        service.accept(OFFER_ID);
+
+        thenSavedOrder()
+                .hasOfferId(OFFER_ID)
+                .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
+                .hasProducts(3)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, 2, newPriceOne)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, 8, newPriceTwo)
                 .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE);
     }
 

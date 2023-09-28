@@ -6,6 +6,7 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.amount.Amount;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.price.Price;
+import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 import com.smalaca.purchase.domain.purchase.Purchase;
 
 import java.util.ArrayList;
@@ -36,27 +37,27 @@ public class Order {
     }
 
     @Factory
-    public static class Builder {
+    static class Builder {
         private UUID offerId;
         private Delivery delivery;
         private final List<OrderItem> items = new ArrayList<>();
 
-        public Order build() {
+        Order build() {
             return new Order(this);
         }
 
-        public Builder offerId(UUID offerId) {
+        Builder offerId(UUID offerId) {
             this.offerId = offerId;
             return this;
         }
 
-        public Builder delivery(Delivery delivery) {
+        Builder delivery(Delivery delivery) {
             this.delivery = delivery;
             return this;
         }
 
-        public void item(UUID sellerId, UUID productId, Amount amount, Price price) {
-            items.add(new OrderItem(sellerId, productId, amount, price));
+        void item(AvailableProduct product) {
+            items.add(new OrderItem(product));
         }
     }
 }

@@ -40,7 +40,7 @@ class GivenOffer {
     }
 
     void withId(UUID offerId) {
-        givenAvailability.set();
+        givenAvailability.forChecking();
         Offer offer = offerWith(offerId);
         given(offerRepository.findById(offerId)).willReturn(offer);
     }
