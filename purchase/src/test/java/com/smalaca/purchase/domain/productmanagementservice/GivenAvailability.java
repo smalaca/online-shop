@@ -36,7 +36,7 @@ public class GivenAvailability {
     }
 
     public void forReserving(UUID buyerId, List<Product> products) {
-        ProductReservation response = new ProductReservation(hasNoMissingProducts(), availableProducts, missingProductsIds);
+        ProductsReservation response = new ProductsReservation(hasNoMissingProducts(), availableProducts, missingProductsIds);
         given(productManagementService.reserve(buyerId, products)).willReturn(response);
     }
 
