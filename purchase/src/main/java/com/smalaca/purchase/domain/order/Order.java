@@ -4,6 +4,7 @@ import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.delivery.Delivery;
+import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
 import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 import com.smalaca.purchase.domain.purchase.Purchase;
 
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 @AggregateRoot
 public class Order {
-    private final OrderNumber documentNumber;
+    private final DocumentNumber documentNumber;
     private final UUID offerId;
     private final UUID buyerId;
     private final Delivery delivery;
@@ -43,7 +44,7 @@ public class Order {
 
     @Factory
     static class Builder {
-        private OrderNumber documentNumber;
+        private DocumentNumber documentNumber;
         private UUID offerId;
         private UUID buyerId;
         private Delivery delivery;
@@ -51,7 +52,7 @@ public class Order {
         private final List<OrderItem> items = new ArrayList<>();
 
         Order build() {
-            documentNumber = OrderNumber.orderNumber(buyerId, creationDateTime);
+            documentNumber = DocumentNumber.orderNumber(buyerId, creationDateTime);
             return new Order(this);
         }
 

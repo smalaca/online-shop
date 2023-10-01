@@ -9,14 +9,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
+import static com.smalaca.purchase.domain.documentnumber.DocumentNumberAssertion.assertDocumentNumber;
 import static com.smalaca.purchase.domain.productmanagementservice.AvailableProduct.availableProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrderAssertion {
-    private static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
-
     private final Order actual;
 
     private OrderAssertion(Order actual) {
@@ -69,11 +67,7 @@ public class OrderAssertion {
     }
 
     public OrderAssertion hasDocumentNumberThatStartsWith(String expected) {
-        assertThat(actual).extracting("documentNumber").extracting("value")
-                .satisfies(offerNumber -> {
-                    String actualOfferNumber = (String) offerNumber;
-                    assertThat(actualOfferNumber).matches(Pattern.compile("^" + expected + UUID_REGEX + "$"));
-                });
+        assertDocumentNumber(actual).hasDocumentNumberThatStartsWith(expected);
         return this;
     }
 }
