@@ -122,6 +122,7 @@ class OfferApplicationServiceTest {
 
         thenSavedOrder()
                 .hasOfferId(OFFER_ID)
+                .hasBuyerId(BUYER_ID)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
@@ -143,6 +144,7 @@ class OfferApplicationServiceTest {
 
         thenSavedOrder()
                 .hasOfferId(OFFER_ID)
+                .hasBuyerId(BUYER_ID)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, newPriceOne)

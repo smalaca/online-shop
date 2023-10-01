@@ -19,6 +19,7 @@ public class OrderFactory {
     public Order create(AcceptOfferDomainCommand command) {
         Order.Builder builder = new Order.Builder()
                 .offerId(command.offerId())
+                .buyerId(command.buyerId())
                 .delivery(command.delivery());
 
         ProductsReservation productsReservation = productManagementService.reserve(command.buyerId(), command.products());

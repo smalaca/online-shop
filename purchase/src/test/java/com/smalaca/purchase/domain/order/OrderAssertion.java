@@ -56,4 +56,8 @@ public class OrderAssertion {
         return this;
     }
 
+    public OrderAssertion hasBuyerId(UUID expected) {
+        assertThat(actual).extracting("buyerId").isEqualTo(expected);
+        return this;
+    }
 }
