@@ -7,6 +7,7 @@ import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 import com.smalaca.purchase.domain.purchase.Purchase;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,12 +17,14 @@ public class Order {
     private final UUID offerId;
     private final UUID buyerId;
     private final Delivery delivery;
+    private final LocalDateTime creationDateTime;
     private final List<OrderItem> items;
 
     private Order(Builder builder) {
         this.offerId = builder.offerId;
         this.buyerId = builder.buyerId;
         this.delivery = builder.delivery;
+        this.creationDateTime = builder.creationDateTime;
         this.items = builder.items;
     }
 
@@ -41,6 +44,7 @@ public class Order {
         private UUID offerId;
         private UUID buyerId;
         private Delivery delivery;
+        private LocalDateTime creationDateTime;
         private final List<OrderItem> items = new ArrayList<>();
 
         Order build() {
@@ -59,6 +63,11 @@ public class Order {
 
         Builder delivery(Delivery delivery) {
             this.delivery = delivery;
+            return this;
+        }
+
+        Builder creationDateTime(LocalDateTime creationDateTime) {
+            this.creationDateTime = creationDateTime;
             return this;
         }
 

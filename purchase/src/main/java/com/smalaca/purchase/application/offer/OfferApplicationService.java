@@ -3,6 +3,7 @@ package com.smalaca.purchase.application.offer;
 import com.smalaca.annotations.architectures.portadapter.PrimaryAdapter;
 import com.smalaca.annotations.ddd.ApplicationService;
 import com.smalaca.annotations.patterns.cqrs.Command;
+import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.order.Order;
@@ -26,8 +27,8 @@ public class OfferApplicationService {
     }
 
     public static OfferApplicationService create(
-            OfferRepository offerRepository, OrderRepository orderRepository, ProductManagementService productManagementService) {
-        OrderFactory orderFactory = new OrderFactory(productManagementService);
+            OfferRepository offerRepository, OrderRepository orderRepository, ProductManagementService productManagementService, Clock clock) {
+        OrderFactory orderFactory = new OrderFactory(productManagementService, clock);
         return new OfferApplicationService(offerRepository, orderRepository, orderFactory);
     }
 

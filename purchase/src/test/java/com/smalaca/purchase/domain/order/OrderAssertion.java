@@ -6,6 +6,7 @@ import com.smalaca.purchase.domain.price.Price;
 import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,6 +59,11 @@ public class OrderAssertion {
 
     public OrderAssertion hasBuyerId(UUID expected) {
         assertThat(actual).extracting("buyerId").isEqualTo(expected);
+        return this;
+    }
+
+    public OrderAssertion hasCreationDateTime(LocalDateTime expected) {
+        assertThat(actual).extracting("creationDateTime").isEqualTo(expected);
         return this;
     }
 }

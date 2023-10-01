@@ -1,6 +1,7 @@
 package com.smalaca.purchase.application.offer;
 
 import com.google.common.collect.ImmutableList;
+import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.order.Order;
@@ -29,6 +30,7 @@ import static com.smalaca.purchase.domain.order.OrderAssertion.assertOrder;
 import static com.smalaca.purchase.domain.order.OrderExceptionAssertion.assertOrderProductsException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -44,6 +46,7 @@ class OfferApplicationServiceTest {
     private static final UUID PRODUCT_ID_TWO = randomId();
     private static final UUID PRODUCT_ID_THREE = randomId();
     private static final LocalDateTime OFFER_CREATION_DATE_TIME = LocalDateTime.of(LocalDate.of(2023, 9, 25), LocalTime.now());
+    private static final LocalDateTime ORDER_CREATION_DATE_TIME = LocalDateTime.of(LocalDate.of(2023, 9, 26), LocalTime.now());
     private static final BigDecimal PRICE_ONE = randomPrice();
     private static final BigDecimal PRICE_TWO = randomPrice();
     private static final BigDecimal PRICE_THREE = randomPrice();
@@ -60,7 +63,8 @@ class OfferApplicationServiceTest {
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final ProductManagementService productManagementService = mock(ProductManagementService.class);
-    private final OfferApplicationService service = OfferApplicationService.create(offerRepository, orderRepository, productManagementService);
+    private final Clock clock = mock(Clock.class);
+    private final OfferApplicationService service = OfferApplicationService.create(offerRepository, orderRepository, productManagementService, clock);
 
     private final GivenAvailabilityFactory givenAvailability = new GivenAvailabilityFactory(productManagementService);
 
@@ -74,6 +78,11 @@ class OfferApplicationServiceTest {
                 .withProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
                 .withProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
                 .withId(OFFER_ID);
+    }
+
+    @BeforeEach
+    void givenNow() {
+        given(clock.nowDateTime()).willReturn(ORDER_CREATION_DATE_TIME);
     }
 
     @Test
@@ -123,6 +132,7 @@ class OfferApplicationServiceTest {
         thenSavedOrder()
                 .hasOfferId(OFFER_ID)
                 .hasBuyerId(BUYER_ID)
+                .hasCreationDateTime(ORDER_CREATION_DATE_TIME)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
@@ -145,6 +155,7 @@ class OfferApplicationServiceTest {
         thenSavedOrder()
                 .hasOfferId(OFFER_ID)
                 .hasBuyerId(BUYER_ID)
+                .hasCreationDateTime(ORDER_CREATION_DATE_TIME)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, newPriceOne)
