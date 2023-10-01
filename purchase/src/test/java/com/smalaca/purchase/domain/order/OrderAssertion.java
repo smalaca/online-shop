@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static com.smalaca.purchase.domain.productmanagementservice.AvailableProduct.availableProduct;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +65,15 @@ public class OrderAssertion {
 
     public OrderAssertion hasCreationDateTime(LocalDateTime expected) {
         assertThat(actual).extracting("creationDateTime").isEqualTo(expected);
+        return this;
+    }
+
+    public OrderAssertion hasOrderNumberThatStartsWith(String expected) {
+        assertThat(actual).extracting("orderNumber").extracting("value")
+                .satisfies(offerNumber -> {
+                    String actualOfferNumber = (String) offerNumber;
+                    assertThat(actualOfferNumber).matches(Pattern.compile("^" + expected + UUID_REGEX + "$"));
+                });
         return this;
     }
 }
