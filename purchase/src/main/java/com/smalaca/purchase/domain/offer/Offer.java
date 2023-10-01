@@ -6,6 +6,7 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.amount.Amount;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
+import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
 import com.smalaca.purchase.domain.order.AcceptOfferDomainCommand;
 import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.order.OrderFactory;
@@ -25,7 +26,7 @@ public class Offer {
     private final LocalDateTime creationDateTime;
     private final List<OfferItem> items;
     private final Delivery delivery;
-    private final OfferNumber documentNumber;
+    private final DocumentNumber documentNumber;
     private final UUID buyerId;
 
     private Offer(Builder builder) {
@@ -63,12 +64,12 @@ public class Offer {
     static class Builder {
         private final List<OfferItem> items = new ArrayList<>();
         private LocalDateTime creationDateTime;
-        private OfferNumber documentNumber;
+        private DocumentNumber documentNumber;
         private UUID buyerId;
         private Delivery delivery;
 
         Offer build() {
-            documentNumber = OfferNumber.offerNumber(buyerId, creationDateTime);
+            documentNumber = DocumentNumber.offerNumber(buyerId, creationDateTime);
             return new Offer(this);
         }
 
