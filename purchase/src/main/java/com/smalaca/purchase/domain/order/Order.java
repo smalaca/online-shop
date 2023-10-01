@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @AggregateRoot
 public class Order {
-    private final OrderNumber orderNumber;
+    private final OrderNumber documentNumber;
     private final UUID offerId;
     private final UUID buyerId;
     private final Delivery delivery;
@@ -22,7 +22,7 @@ public class Order {
     private final List<OrderItem> items;
 
     private Order(Builder builder) {
-        this.orderNumber = builder.orderNumber;
+        this.documentNumber = builder.documentNumber;
         this.offerId = builder.offerId;
         this.buyerId = builder.buyerId;
         this.delivery = builder.delivery;
@@ -43,7 +43,7 @@ public class Order {
 
     @Factory
     static class Builder {
-        private OrderNumber orderNumber;
+        private OrderNumber documentNumber;
         private UUID offerId;
         private UUID buyerId;
         private Delivery delivery;
@@ -51,7 +51,7 @@ public class Order {
         private final List<OrderItem> items = new ArrayList<>();
 
         Order build() {
-            orderNumber = OrderNumber.orderNumber(buyerId, creationDateTime);
+            documentNumber = OrderNumber.orderNumber(buyerId, creationDateTime);
             return new Order(this);
         }
 

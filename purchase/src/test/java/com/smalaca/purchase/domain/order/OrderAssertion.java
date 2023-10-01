@@ -68,8 +68,8 @@ public class OrderAssertion {
         return this;
     }
 
-    public OrderAssertion hasOrderNumberThatStartsWith(String expected) {
-        assertThat(actual).extracting("orderNumber").extracting("value")
+    public OrderAssertion hasDocumentNumberThatStartsWith(String expected) {
+        assertThat(actual).extracting("documentNumber").extracting("value")
                 .satisfies(offerNumber -> {
                     String actualOfferNumber = (String) offerNumber;
                     assertThat(actualOfferNumber).matches(Pattern.compile("^" + expected + UUID_REGEX + "$"));

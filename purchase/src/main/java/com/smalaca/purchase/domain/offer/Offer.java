@@ -25,14 +25,14 @@ public class Offer {
     private final LocalDateTime creationDateTime;
     private final List<OfferItem> items;
     private final Delivery delivery;
-    private final OfferNumber offerNumber;
+    private final OfferNumber documentNumber;
     private final UUID buyerId;
 
     private Offer(Builder builder) {
         this.creationDateTime = builder.creationDateTime;
         this.items = builder.items;
         this.delivery = builder.delivery;
-        this.offerNumber = builder.offerNumber;
+        this.documentNumber = builder.documentNumber;
         this.buyerId = builder.buyerId;
     }
 
@@ -63,12 +63,12 @@ public class Offer {
     static class Builder {
         private final List<OfferItem> items = new ArrayList<>();
         private LocalDateTime creationDateTime;
-        private OfferNumber offerNumber;
+        private OfferNumber documentNumber;
         private UUID buyerId;
         private Delivery delivery;
 
         Offer build() {
-            offerNumber = OfferNumber.offerNumber(buyerId, creationDateTime);
+            documentNumber = OfferNumber.offerNumber(buyerId, creationDateTime);
             return new Offer(this);
         }
 
