@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smalaca.purchase.domain.offer.OfferState.ACCEPTED;
 import static java.util.stream.Collectors.toList;
 
 @AggregateRoot
@@ -28,6 +29,7 @@ public class Offer {
     private final Delivery delivery;
     private final DocumentNumber documentNumber;
     private final UUID buyerId;
+    private OfferState offerState;
 
     private Offer(Builder builder) {
         this.creationDateTime = builder.creationDateTime;
@@ -51,6 +53,7 @@ public class Offer {
     @PrimaryPort
     @Factory
     public Order accept(UUID buyerId, OrderFactory orderFactory) {
+        offerState = ACCEPTED;
         return orderFactory.create(new AcceptOfferDomainCommand(buyerId, offerId, delivery, products()));
     }
 

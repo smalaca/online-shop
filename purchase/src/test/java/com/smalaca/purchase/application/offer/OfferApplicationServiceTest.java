@@ -3,6 +3,8 @@ package com.smalaca.purchase.application.offer;
 import com.google.common.collect.ImmutableList;
 import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
+import com.smalaca.purchase.domain.offer.Offer;
+import com.smalaca.purchase.domain.offer.OfferAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.order.OrderAssertion;
@@ -26,6 +28,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
 import static com.smalaca.purchase.domain.order.OrderAssertion.assertOrder;
 import static com.smalaca.purchase.domain.order.OrderExceptionAssertion.assertOrderProductsException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -129,6 +132,19 @@ class OfferApplicationServiceTest {
 
         service.accept(BUYER_ID, OFFER_ID);
 
+        thenSavedOffer().isAccepted();
+    }
+
+    @Test
+    void shouldCreateOrderWhenAcceptingOffer() {
+        givenAvailability
+                .available(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
+                .forReserving(BUYER_ID, PRODUCTS);
+
+        service.accept(BUYER_ID, OFFER_ID);
+
         thenSavedOrder()
                 .hasDocumentNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
                 .hasOfferId(OFFER_ID)
@@ -142,7 +158,7 @@ class OfferApplicationServiceTest {
     }
 
     @Test
-    void shouldAcceptOfferWithUpdatedPrices() {
+    void shouldCreateOrderWithUpdatedPricesWhenAcceptingOffer() {
         BigDecimal newPriceOne = randomPrice();
         BigDecimal newPriceTwo = randomPrice();
         givenAvailability
@@ -174,6 +190,13 @@ class OfferApplicationServiceTest {
         then(orderRepository).should().save(captor.capture());
 
         return assertOrder(captor.getValue());
+    }
+
+    private OfferAssertion thenSavedOffer() {
+        ArgumentCaptor<Offer> captor = ArgumentCaptor.forClass(Offer.class);
+        then(offerRepository).should().save(captor.capture());
+
+        return assertOffer(captor.getValue());
     }
 
     private static DeliveryAddress randomDeliveryAddress() {

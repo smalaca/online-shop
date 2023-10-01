@@ -63,4 +63,9 @@ public class OfferAssertion {
 
         return this;
     }
+
+    public OfferAssertion isAccepted() {
+        assertThat(actual).extracting("offerState").isEqualTo(OfferState.ACCEPTED);
+        return this;
+    }
 }

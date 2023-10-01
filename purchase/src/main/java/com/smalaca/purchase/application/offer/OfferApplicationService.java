@@ -41,6 +41,7 @@ public class OfferApplicationService {
         Order order = offer.accept(buyerId, orderFactory);
 
         orderRepository.save(order);
+        offerRepository.save(offer);
     }
 
     @PrimaryAdapter
