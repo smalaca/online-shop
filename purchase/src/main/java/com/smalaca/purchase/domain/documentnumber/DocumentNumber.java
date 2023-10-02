@@ -11,7 +11,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 
 @ValueObject
 @EqualsAndHashCode
-public class DocumentNumber {
+public final class DocumentNumber {
     private static final String SEPARATOR = "/";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("yyyy" + SEPARATOR + "MM" + SEPARATOR + "dd");
     private static final String ORDER = "Order";
