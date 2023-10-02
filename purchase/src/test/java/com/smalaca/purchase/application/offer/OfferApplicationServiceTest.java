@@ -72,24 +72,13 @@ class OfferApplicationServiceTest {
     private final GivenAvailabilityFactory givenAvailability = new GivenAvailabilityFactory(productManagementService);
 
     @BeforeEach
-    void givenOffer() {
-        GivenOfferFactory.create(offerRepository)
-                .createdAt(OFFER_CREATION_DATE_TIME)
-                .withBuyerId(BUYER_ID)
-                .withDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
-                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
-                .withId(OFFER_ID);
-    }
-
-    @BeforeEach
     void givenNow() {
         given(clock.nowDateTime()).willReturn(ORDER_CREATION_DATE_TIME);
     }
 
     @Test
     void shouldRecognizeProductIsNotAvailableAnymoreWhenAccepting() {
+        givenOffer().created();
         givenAvailability
                 .notAvailable(PRODUCT_ID_ONE)
                 .notAvailable(PRODUCT_ID_TWO)
@@ -111,7 +100,6 @@ class OfferApplicationServiceTest {
         thenOrderNotSaved();
 
         return assertOrderProductsException(actual);
-
     }
 
     private void thenOfferNotSaved() {
@@ -124,6 +112,7 @@ class OfferApplicationServiceTest {
 
     @Test
     void shouldAcceptOffer() {
+        givenOffer().created();
         givenAvailability
                 .available(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
@@ -137,6 +126,7 @@ class OfferApplicationServiceTest {
 
     @Test
     void shouldCreateOrderWhenAcceptingOffer() {
+        givenOffer().created();
         givenAvailability
                 .available(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
@@ -159,6 +149,7 @@ class OfferApplicationServiceTest {
 
     @Test
     void shouldCreateOrderWithUpdatedPricesWhenAcceptingOffer() {
+        givenOffer().created();
         BigDecimal newPriceOne = randomPrice();
         BigDecimal newPriceTwo = randomPrice();
         givenAvailability
@@ -179,6 +170,17 @@ class OfferApplicationServiceTest {
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, newPriceOne)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, newPriceTwo)
                 .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE);
+    }
+
+    private GivenOffer givenOffer() {
+        return GivenOfferFactory.create(offerRepository)
+                .createdAt(OFFER_CREATION_DATE_TIME)
+                .withBuyerId(BUYER_ID)
+                .withDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
+                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
+                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
+                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
+                .withId(OFFER_ID);
     }
 
     private static BigDecimal randomPrice() {

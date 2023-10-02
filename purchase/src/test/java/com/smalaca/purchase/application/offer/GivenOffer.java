@@ -25,6 +25,7 @@ class GivenOffer {
     private final GivenAvailability givenAvailability;
 
     private final List<Product> products = new ArrayList<>();
+    private UUID offerId;
     private UUID buyerId;
     private UUID deliveryMethodId;
     private DeliveryAddress deliveryAddress;
@@ -39,7 +40,12 @@ class GivenOffer {
         this.givenAvailability = givenAvailability;
     }
 
-    void withId(UUID offerId) {
+    GivenOffer withId(UUID offerId) {
+        this.offerId = offerId;
+        return this;
+    }
+
+    void created() {
         givenAvailability.forChecking();
         Offer offer = offerWith(offerId);
         given(offerRepository.findById(offerId)).willReturn(offer);
