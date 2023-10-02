@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.smalaca.purchase.domain.offer.OfferState.ACCEPTED;
+import static com.smalaca.purchase.domain.offer.OfferState.CREATED;
 import static java.util.stream.Collectors.toList;
 
 @AggregateRoot
@@ -37,13 +38,22 @@ public class Offer {
         this.delivery = builder.delivery;
         this.documentNumber = builder.documentNumber;
         this.buyerId = builder.buyerId;
+        this.offerState = builder.offerState;
     }
 
     @PrimaryPort
     @Factory
     public Order accept(UUID buyerId, OrderFactory orderFactory) {
+        if (cannotBeAccepted()) {
+            throw OfferException.alreadyAccepted(offerId);
+        }
+
         offerState = ACCEPTED;
         return orderFactory.create(new AcceptOfferDomainCommand(buyerId, offerId, delivery, products()));
+    }
+
+    private boolean cannotBeAccepted() {
+        return offerState.cannotBeAccepted();
     }
 
     private List<Product> products() {
@@ -55,6 +65,7 @@ public class Offer {
     @Factory
     static class Builder {
         private final List<OfferItem> items = new ArrayList<>();
+        private final OfferState offerState = CREATED;
         private LocalDateTime creationDateTime;
         private DocumentNumber documentNumber;
         private UUID buyerId;

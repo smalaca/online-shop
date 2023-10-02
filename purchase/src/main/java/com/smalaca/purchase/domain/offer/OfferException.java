@@ -32,4 +32,8 @@ class OfferException extends RuntimeException {
 
         return exception;
     }
+
+    static RuntimeException alreadyAccepted(UUID offerId) {
+        return new OfferException("Offer " + offerId + " already accepted");
+    }
 }

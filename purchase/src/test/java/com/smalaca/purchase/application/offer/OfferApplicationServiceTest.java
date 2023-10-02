@@ -5,6 +5,7 @@ import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferAssertion;
+import com.smalaca.purchase.domain.offer.OfferExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.order.OrderAssertion;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
+import static com.smalaca.purchase.domain.offer.OfferExceptionAssertion.assertOfferProductsException;
 import static com.smalaca.purchase.domain.order.OrderAssertion.assertOrder;
 import static com.smalaca.purchase.domain.order.OrderExceptionAssertion.assertOrderProductsException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -102,6 +104,25 @@ class OfferApplicationServiceTest {
         return assertOrderProductsException(actual);
     }
 
+    @Test
+    void shouldRecognizeOfferWasAlreadyAccepted() {
+        givenOffer().accepted();
+        givenAvailabilityForReserving();
+
+        Executable executable = () -> service.accept(BUYER_ID, OFFER_ID);
+
+        thenOrderNotCreatedDueToOfferExceptionThat(executable)
+                .hasMessage("Offer " + OFFER_ID + " already accepted");
+    }
+
+    private OfferExceptionAssertion thenOrderNotCreatedDueToOfferExceptionThat(Executable executable) {
+        RuntimeException actual = assertThrows(RuntimeException.class, executable);
+        thenOfferNotSaved();
+        thenOrderNotSaved();
+
+        return assertOfferProductsException(actual);
+    }
+
     private void thenOfferNotSaved() {
         then(offerRepository).should(never()).save(any());
     }
@@ -113,11 +134,7 @@ class OfferApplicationServiceTest {
     @Test
     void shouldAcceptOffer() {
         givenOffer().created();
-        givenAvailability
-                .available(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
-                .available(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
-                .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, PRODUCTS);
+        givenAvailabilityForReserving();
 
         service.accept(BUYER_ID, OFFER_ID);
 
@@ -127,11 +144,7 @@ class OfferApplicationServiceTest {
     @Test
     void shouldCreateOrderWhenAcceptingOffer() {
         givenOffer().created();
-        givenAvailability
-                .available(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
-                .available(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
-                .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, PRODUCTS);
+        givenAvailabilityForReserving();
 
         service.accept(BUYER_ID, OFFER_ID);
 
@@ -145,6 +158,14 @@ class OfferApplicationServiceTest {
                 .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
                 .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
                 .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE);
+    }
+
+    private void givenAvailabilityForReserving() {
+        givenAvailability
+                .available(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
+                .forReserving(BUYER_ID, PRODUCTS);
     }
 
     @Test

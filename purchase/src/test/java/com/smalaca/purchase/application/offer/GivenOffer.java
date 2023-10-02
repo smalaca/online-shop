@@ -6,6 +6,7 @@ import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
 import com.smalaca.purchase.domain.offer.OfferRepository;
+import com.smalaca.purchase.domain.order.OrderFactory;
 import com.smalaca.purchase.domain.price.Price;
 import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.productmanagementservice.GivenAvailability;
@@ -29,15 +30,17 @@ class GivenOffer {
     private UUID buyerId;
     private UUID deliveryMethodId;
     private DeliveryAddress deliveryAddress;
+    private OrderFactory orderFactory;
 
 
     GivenOffer(
             OfferRepository offerRepository, OfferFactory offerFactory,
-            GivenDeliveryFactory givenDelivery, GivenAvailability givenAvailability) {
+            GivenDeliveryFactory givenDelivery, GivenAvailability givenAvailability, OrderFactory orderFactory) {
         this.offerRepository = offerRepository;
         this.offerFactory = offerFactory;
         this.givenDelivery = givenDelivery;
         this.givenAvailability = givenAvailability;
+        this.orderFactory = orderFactory;
     }
 
     GivenOffer withId(UUID offerId) {
@@ -46,9 +49,21 @@ class GivenOffer {
     }
 
     void created() {
-        givenAvailability.forChecking();
-        Offer offer = offerWith(offerId);
+        Offer offer = offer();
         given(offerRepository.findById(offerId)).willReturn(offer);
+    }
+
+    void accepted() {
+        Offer offer = offer();
+        givenAvailability.forReserving(buyerId, products);
+        offer.accept(buyerId, orderFactory);
+
+        given(offerRepository.findById(offerId)).willReturn(offer);
+    }
+
+    private Offer offer() {
+        givenAvailability.forChecking();
+        return offerWith(offerId);
     }
 
     private Offer offerWith(UUID offerId) {
