@@ -6,57 +6,73 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.amount.Amount;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
+import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
+import com.smalaca.purchase.domain.order.AcceptOfferDomainCommand;
 import com.smalaca.purchase.domain.order.Order;
+import com.smalaca.purchase.domain.order.OrderFactory;
 import com.smalaca.purchase.domain.price.Price;
+import com.smalaca.purchase.domain.product.Product;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smalaca.purchase.domain.offer.OfferState.ACCEPTED;
+import static com.smalaca.purchase.domain.offer.OfferState.CREATED;
+import static java.util.stream.Collectors.toList;
+
 @AggregateRoot
 public class Offer {
+    private UUID offerId;
     private final LocalDateTime creationDateTime;
     private final List<OfferItem> items;
     private final Delivery delivery;
-    private final OfferNumber offerNumber;
+    private final DocumentNumber documentNumber;
     private final UUID buyerId;
+    private OfferState offerState;
 
     private Offer(Builder builder) {
         this.creationDateTime = builder.creationDateTime;
         this.items = builder.items;
         this.delivery = builder.delivery;
-        this.offerNumber = builder.offerNumber;
+        this.documentNumber = builder.documentNumber;
         this.buyerId = builder.buyerId;
-    }
-
-    @PrimaryPort
-    public void reject() {
-
+        this.offerState = builder.offerState;
     }
 
     @PrimaryPort
     @Factory
-    public Offer recreate() {
-        return new Offer(null);
+    public Order accept(OrderFactory orderFactory) {
+        if (cannotBeAccepted()) {
+            throw OfferException.alreadyAccepted(offerId);
+        }
+
+        offerState = ACCEPTED;
+        return orderFactory.create(new AcceptOfferDomainCommand(buyerId, offerId, delivery, products()));
     }
 
-    @PrimaryPort
-    @Factory
-    public Order accept() {
-        return new Order();
+    private boolean cannotBeAccepted() {
+        return offerState.cannotBeAccepted();
+    }
+
+    private List<Product> products() {
+        return items.stream()
+                .map(OfferItem::asProduct)
+                .collect(toList());
     }
 
     @Factory
     static class Builder {
         private final List<OfferItem> items = new ArrayList<>();
+        private final OfferState offerState = CREATED;
         private LocalDateTime creationDateTime;
-        private OfferNumber offerNumber;
+        private DocumentNumber documentNumber;
         private UUID buyerId;
         private Delivery delivery;
 
         Offer build() {
-            offerNumber = OfferNumber.offerNumber(buyerId, creationDateTime);
+            documentNumber = DocumentNumber.offerNumber(buyerId, creationDateTime);
             return new Offer(this);
         }
 

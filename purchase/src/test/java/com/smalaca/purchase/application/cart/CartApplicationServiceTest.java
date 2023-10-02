@@ -7,15 +7,15 @@ import com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
-import com.smalaca.purchase.domain.deliveryservice.DeliveryRequest;
-import com.smalaca.purchase.domain.deliveryservice.DeliveryResponse;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
-import com.smalaca.purchase.domain.deliveryservice.DeliveryStatusCode;
+import com.smalaca.purchase.domain.deliveryservice.GivenDelivery;
+import com.smalaca.purchase.domain.deliveryservice.GivenDeliveryFactory;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferAssertion;
 import com.smalaca.purchase.domain.offer.OfferExceptionAssertion;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.price.Price;
+import com.smalaca.purchase.domain.productmanagementservice.GivenAvailabilityFactory;
 import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
@@ -33,9 +33,6 @@ import java.util.UUID;
 
 import static com.smalaca.purchase.domain.cart.CartAssertion.assertCart;
 import static com.smalaca.purchase.domain.cart.CartProductsExceptionAssertion.assertCartProductsException;
-import static com.smalaca.purchase.domain.deliveryservice.DeliveryStatusCode.NOT_EXISTING_ADDRESS;
-import static com.smalaca.purchase.domain.deliveryservice.DeliveryStatusCode.SUCCESS;
-import static com.smalaca.purchase.domain.deliveryservice.DeliveryStatusCode.UNSUPPORTED_METHOD;
 import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
 import static com.smalaca.purchase.domain.offer.OfferExceptionAssertion.assertOfferProductsException;
 import static java.util.Collections.emptyMap;
@@ -66,7 +63,6 @@ class CartApplicationServiceTest {
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
     private static final UUID DELIVERY_METHOD_ID = randomId();
-    private static final Price NO_PRICE = null;
     private static final Price DELIVERY_PRICE = Price.price(BigDecimal.valueOf(234.53));
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
@@ -79,6 +75,7 @@ class CartApplicationServiceTest {
 
     private final GivenCartFactory givenCart = new GivenCartFactory(cartRepository);
     private final GivenAvailabilityFactory givenAvailability = new GivenAvailabilityFactory(productManagementService);
+    private final GivenDeliveryFactory givenDelivery = new GivenDeliveryFactory(deliveryService);
 
     @Test
     void shouldAddNothingWhenNothingGiven() {
@@ -400,7 +397,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeUnsupportedDeliveryMethod() {
-        givenDeliveryResponseWith(UNSUPPORTED_METHOD, NO_PRICE);
+        givenDelivery().unsupportedMethod();
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .with(CART_ID);
@@ -414,7 +411,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeNotExistingDeliveryAddress() {
-        givenDeliveryResponseWith(NOT_EXISTING_ADDRESS, NO_PRICE);
+        givenDelivery().notExistingAddress();
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .with(CART_ID);
@@ -429,7 +426,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeProductsThatAreNotAvailableAnymore() {
-        givenValidDelivery();
+        givenDelivery().valid(DELIVERY_PRICE);
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 2)
                 .withProduct(PRODUCT_ID_TWO, 7)
@@ -439,7 +436,7 @@ class CartApplicationServiceTest {
                 .notAvailable(PRODUCT_ID_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 7, PRICE_ONE)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_TWO)
-                .set();
+                .forChecking();
         ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
@@ -454,7 +451,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldRecognizeProductsWithNotEnoughAmountAnymore() {
-        givenValidDelivery();
+        givenDelivery().valid(DELIVERY_PRICE);
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 2)
                 .withProduct(PRODUCT_ID_TWO, 7)
@@ -464,7 +461,7 @@ class CartApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, 1, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 6, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
-                .set();
+                .forChecking();
         ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
@@ -488,7 +485,7 @@ class CartApplicationServiceTest {
 
     @Test
     void shouldCreateOffer() {
-        givenValidDelivery();
+        givenDelivery().valid(DELIVERY_PRICE);
         given(clock.nowDateTime()).willReturn(CREATED_AT);
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 2)
@@ -499,7 +496,7 @@ class CartApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, 2, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, 8, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, 4, PRICE_THREE)
-                .set();
+                .forChecking();
         ChooseProductsCommand command = chooseProductsCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 2,
                 PRODUCT_ID_TWO, 7,
@@ -509,7 +506,7 @@ class CartApplicationServiceTest {
 
         thenSavedOffer()
                 .hasBuyerId(BUYER_ID)
-                .hasOfferNumberThatStartsWith("Offer/" + BUYER_ID + "/2023/09/25/")
+                .hasDocumentNumberThatStartsWith("Offer/" + BUYER_ID + "/2023/09/25/")
                 .hasCreationDateTime(CREATED_AT)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
@@ -518,15 +515,8 @@ class CartApplicationServiceTest {
                 .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, 3, PRICE_THREE);
     }
 
-    private void givenValidDelivery() {
-        givenDeliveryResponseWith(SUCCESS, DELIVERY_PRICE);
-    }
-
-    private void givenDeliveryResponseWith(DeliveryStatusCode deliveryStatusCode, Price price) {
-        DeliveryRequest deliveryRequest = new DeliveryRequest(DELIVERY_METHOD_ID, DELIVERY_ADDRESS);
-        DeliveryResponse deliveryResponse = new DeliveryResponse(deliveryStatusCode, price);
-
-        given(deliveryService.calculate(deliveryRequest)).willReturn(deliveryResponse);
+    private GivenDelivery givenDelivery() {
+        return givenDelivery.forRequest(DELIVERY_METHOD_ID, DELIVERY_ADDRESS);
     }
 
     private void thenOfferNotSaved() {

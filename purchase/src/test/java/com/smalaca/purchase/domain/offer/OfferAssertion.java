@@ -9,13 +9,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
+import static com.smalaca.purchase.domain.documentnumber.DocumentNumberAssertion.assertDocumentNumber;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OfferAssertion {
-    private static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
-
     private final Offer actual;
 
     private OfferAssertion(Offer actual) {
@@ -49,12 +47,8 @@ public class OfferAssertion {
         return this;
     }
 
-    public OfferAssertion hasOfferNumberThatStartsWith(String expected) {
-        assertThat(actual).extracting("offerNumber").extracting("value")
-                .satisfies(offerNumber -> {
-                    String actualOfferNumber = (String) offerNumber;
-                    assertThat(actualOfferNumber).matches(Pattern.compile("^" + expected + UUID_REGEX + "$"));
-                });
+    public OfferAssertion hasDocumentNumberThatStartsWith(String expected) {
+        assertDocumentNumber(actual).hasDocumentNumberThatStartsWith(expected);
         return this;
     }
 
@@ -67,6 +61,11 @@ public class OfferAssertion {
         Delivery expected = new Delivery(expectedMethodId, expectedAddress, expectedPrice);
         assertThat(actual).extracting("delivery").isEqualTo(expected);
 
+        return this;
+    }
+
+    public OfferAssertion isAccepted() {
+        assertThat(actual).extracting("offerState").isEqualTo(OfferState.ACCEPTED);
         return this;
     }
 }

@@ -39,4 +39,8 @@ public class Amount {
     public Amount decrease(Amount amount) {
         return new Amount(this.value - amount.value);
     }
+
+    public Integer getValue() {
+        return value;
+    }
 }
