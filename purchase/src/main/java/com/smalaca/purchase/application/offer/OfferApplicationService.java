@@ -43,27 +43,4 @@ public class OfferApplicationService {
         orderRepository.save(order);
         offerRepository.save(offer);
     }
-
-    @PrimaryAdapter
-    @Command
-    @Transactional
-    public void reject(UUID offerId) {
-        Offer offer = offerRepository.findById(offerId);
-
-        offer.reject();
-
-        offerRepository.save(offer);
-    }
-
-    @PrimaryAdapter
-    @Command
-    @Transactional
-    public void recreate(UUID offerId) {
-        Offer offer = offerRepository.findById(offerId);
-
-        Offer recreated = offer.recreate();
-
-        offerRepository.save(offer);
-        offerRepository.save(recreated);
-    }
 }

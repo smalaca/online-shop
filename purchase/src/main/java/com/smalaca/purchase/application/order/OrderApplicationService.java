@@ -24,17 +24,6 @@ public class OrderApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void reject(UUID orderId) {
-        Order order = orderRepository.findById(orderId);
-
-        order.reject();
-
-        orderRepository.save(order);
-    }
-
-    @PrimaryAdapter
-    @Command
-    @Transactional
     public void purchase(UUID orderId) {
         Order order = orderRepository.findById(orderId);
 

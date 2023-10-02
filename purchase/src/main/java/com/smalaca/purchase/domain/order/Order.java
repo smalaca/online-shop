@@ -32,11 +32,6 @@ public class Order {
     }
 
     @PrimaryPort
-    public void reject() {
-
-    }
-
-    @PrimaryPort
     @Factory
     public Purchase purchase() {
         return new Purchase();

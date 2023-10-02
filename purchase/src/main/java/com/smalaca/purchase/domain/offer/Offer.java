@@ -40,17 +40,6 @@ public class Offer {
     }
 
     @PrimaryPort
-    public void reject() {
-
-    }
-
-    @PrimaryPort
-    @Factory
-    public Offer recreate() {
-        return new Offer(null);
-    }
-
-    @PrimaryPort
     @Factory
     public Order accept(UUID buyerId, OrderFactory orderFactory) {
         offerState = ACCEPTED;
