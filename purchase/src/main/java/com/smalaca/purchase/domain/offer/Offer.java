@@ -43,7 +43,7 @@ public class Offer {
 
     @PrimaryPort
     @Factory
-    public Order accept(UUID buyerId, OrderFactory orderFactory) {
+    public Order accept(OrderFactory orderFactory) {
         if (cannotBeAccepted()) {
             throw OfferException.alreadyAccepted(offerId);
         }

@@ -56,7 +56,7 @@ class GivenOffer {
     void accepted() {
         Offer offer = offer();
         givenAvailability.forReserving(buyerId, products);
-        offer.accept(buyerId, orderFactory);
+        offer.accept(orderFactory);
 
         given(offerRepository.findById(offerId)).willReturn(offer);
     }

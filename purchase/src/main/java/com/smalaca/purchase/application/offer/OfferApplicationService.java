@@ -35,10 +35,10 @@ public class OfferApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void accept(UUID buyerId, UUID offerId) {
+    public void accept(UUID offerId) {
         Offer offer = offerRepository.findById(offerId);
 
-        Order order = offer.accept(buyerId, orderFactory);
+        Order order = offer.accept(orderFactory);
 
         orderRepository.save(order);
         offerRepository.save(offer);

@@ -87,7 +87,7 @@ class OfferApplicationServiceTest {
                 .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
                 .forReserving(BUYER_ID, PRODUCTS);
 
-        Executable executable = () -> service.accept(BUYER_ID, OFFER_ID);
+        Executable executable = () -> service.accept(OFFER_ID);
 
         thenOrderNotCreatedDueToOrderExceptionThat(executable)
                 .hasMessage("Cannot create Order because products are not available anymore.")
@@ -109,7 +109,7 @@ class OfferApplicationServiceTest {
         givenOffer().accepted();
         givenAvailabilityForReserving();
 
-        Executable executable = () -> service.accept(BUYER_ID, OFFER_ID);
+        Executable executable = () -> service.accept(OFFER_ID);
 
         thenOrderNotCreatedDueToOfferExceptionThat(executable)
                 .hasMessage("Offer " + OFFER_ID + " already accepted");
@@ -136,7 +136,7 @@ class OfferApplicationServiceTest {
         givenOffer().created();
         givenAvailabilityForReserving();
 
-        service.accept(BUYER_ID, OFFER_ID);
+        service.accept(OFFER_ID);
 
         thenSavedOffer().isAccepted();
     }
@@ -146,7 +146,7 @@ class OfferApplicationServiceTest {
         givenOffer().created();
         givenAvailabilityForReserving();
 
-        service.accept(BUYER_ID, OFFER_ID);
+        service.accept(OFFER_ID);
 
         thenSavedOrder()
                 .hasDocumentNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
@@ -179,7 +179,7 @@ class OfferApplicationServiceTest {
                 .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
                 .forReserving(BUYER_ID, PRODUCTS);
 
-        service.accept(BUYER_ID, OFFER_ID);
+        service.accept(OFFER_ID);
 
         thenSavedOrder()
                 .hasDocumentNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
