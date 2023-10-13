@@ -47,7 +47,7 @@ public class OfferAssertion {
         return this;
     }
 
-    public OfferAssertion hasDocumentNumberThatStartsWith(String expected) {
+    public OfferAssertion hasOfferNumberThatStartsWith(String expected) {
         assertDocumentNumber(actual).hasDocumentNumberThatStartsWith(expected);
         return this;
     }

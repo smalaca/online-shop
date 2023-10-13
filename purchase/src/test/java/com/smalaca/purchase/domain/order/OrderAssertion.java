@@ -66,7 +66,7 @@ public class OrderAssertion {
         return this;
     }
 
-    public OrderAssertion hasDocumentNumberThatStartsWith(String expected) {
+    public OrderAssertion hasOrderNumberThatStartsWith(String expected) {
         assertDocumentNumber(actual).hasDocumentNumberThatStartsWith(expected);
         return this;
     }

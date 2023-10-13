@@ -7,6 +7,7 @@ import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
 import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 import com.smalaca.purchase.domain.purchase.Purchase;
+import com.smalaca.purchase.domain.purchase.PurchaseFactory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,8 +35,8 @@ public class Order {
 
     @PrimaryPort
     @Factory
-    public Purchase purchase() {
-        return new Purchase(orderId);
+    public Purchase purchase(PurchaseFactory purchaseFactory) {
+        return purchaseFactory.create(buyerId, orderId);
     }
 
     @Factory

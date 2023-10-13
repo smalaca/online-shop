@@ -506,7 +506,7 @@ class CartApplicationServiceTest {
 
         thenSavedOffer()
                 .hasBuyerId(BUYER_ID)
-                .hasDocumentNumberThatStartsWith("Offer/" + BUYER_ID + "/2023/09/25/")
+                .hasOfferNumberThatStartsWith("Offer/" + BUYER_ID + "/2023/09/25/")
                 .hasCreationDateTime(CREATED_AT)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)

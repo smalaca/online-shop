@@ -1,5 +1,6 @@
 package com.smalaca.purchase.application.order;
 
+import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.order.OrderRepository;
 import com.smalaca.purchase.domain.price.Price;
@@ -8,6 +9,7 @@ import com.smalaca.purchase.domain.purchase.PurchaseAssertion;
 import com.smalaca.purchase.domain.purchase.PurchaseRepository;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -18,6 +20,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import static com.smalaca.purchase.domain.purchase.PurchaseAssertion.assertPurchase;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -48,9 +51,15 @@ class OrderApplicationServiceTest {
 
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final PurchaseRepository purchaseRepository = mock(PurchaseRepository.class);
-    private final OrderApplicationService service = new OrderApplicationService(orderRepository, purchaseRepository);
+    private final Clock clock = mock(Clock.class);
+    private final OrderApplicationService service = OrderApplicationService.create(orderRepository, purchaseRepository, clock);
 
     private final GivenOrderFactory givenOrder = GivenOrderFactory.create(orderRepository);
+
+    @BeforeEach
+    void givenNow() {
+        given(clock.nowDateTime()).willReturn(PURCHASE_CREATION_DATE_TIME);
+    }
 
     @Test
     void shouldCreatePurchaseWhenPurchasingOrder() {
@@ -59,9 +68,10 @@ class OrderApplicationServiceTest {
         service.purchase(ORDER_ID);
 
         thenSavedPurchase()
+                .hasPurchaseNumberThatStartsWith("Purchase/" + BUYER_ID + "/2023/09/27/")
                 .hasOrderId(ORDER_ID)
-//                .hasBuyerId(BUYER_ID)
-//                .hasCreationDateTime(PURCHASE_CREATION_DATE_TIME)
+                .hasBuyerId(BUYER_ID)
+                .hasCreationDateTime(PURCHASE_CREATION_DATE_TIME)
 //                .hasPaymentMethod(PAYMENT_METHOD_ID)
 //                .hasTotalPrice(TOTAL_PRICE)
         ;

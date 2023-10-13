@@ -16,6 +16,7 @@ public final class DocumentNumber {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("yyyy" + SEPARATOR + "MM" + SEPARATOR + "dd");
     private static final String ORDER = "Order";
     private static final String OFFER = "Offer";
+    private static final String PURCHASE = "Purchase";
 
     private final String value;
 
@@ -29,6 +30,10 @@ public final class DocumentNumber {
 
     public static DocumentNumber orderNumber(UUID buyerId, LocalDateTime creationDateTime) {
         return create(ORDER, buyerId, creationDateTime);
+    }
+
+    public static DocumentNumber purchaseNumber(UUID buyerId, LocalDateTime creationDateTime) {
+        return create(PURCHASE, buyerId, creationDateTime);
     }
 
     private static DocumentNumber create(String documentType, UUID buyerId, LocalDateTime creationDateTime) {

@@ -149,7 +149,7 @@ class OfferApplicationServiceTest {
         service.accept(OFFER_ID);
 
         thenSavedOrder()
-                .hasDocumentNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
+                .hasOrderNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
                 .hasOfferId(OFFER_ID)
                 .hasBuyerId(BUYER_ID)
                 .hasCreationDateTime(ORDER_CREATION_DATE_TIME)
@@ -182,7 +182,7 @@ class OfferApplicationServiceTest {
         service.accept(OFFER_ID);
 
         thenSavedOrder()
-                .hasDocumentNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
+                .hasOrderNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
                 .hasOfferId(OFFER_ID)
                 .hasBuyerId(BUYER_ID)
                 .hasCreationDateTime(ORDER_CREATION_DATE_TIME)
