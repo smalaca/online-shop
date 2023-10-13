@@ -8,17 +8,23 @@ public class DocumentNumberAssertion {
     private static final String UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
 
     private final Object actual;
+    private final String fieldName;
 
-    private DocumentNumberAssertion(Object actual) {
+    private DocumentNumberAssertion(Object actual, String fieldName) {
         this.actual = actual;
+        this.fieldName = fieldName;
     }
 
     public static DocumentNumberAssertion assertDocumentNumber(Object actual) {
-        return new DocumentNumberAssertion(actual);
+        return assertDocumentNumber(actual, "documentNumber");
+    }
+
+    public static DocumentNumberAssertion assertDocumentNumber(Object actual, String fieldName) {
+        return new DocumentNumberAssertion(actual, fieldName);
     }
 
     public void hasDocumentNumberThatStartsWith(String expected) {
-        assertThat(actual).extracting("documentNumber").extracting("value")
+        assertThat(actual).extracting(fieldName).extracting("value")
                 .satisfies(offerNumber -> {
                     String actualOfferNumber = (String) offerNumber;
                     assertThat(actualOfferNumber).matches(Pattern.compile("^" + expected + UUID_REGEX + "$"));

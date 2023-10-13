@@ -196,12 +196,12 @@ class OfferApplicationServiceTest {
     private GivenOffer givenOffer() {
         return GivenOfferFactory.create(offerRepository)
                 .createdAt(OFFER_CREATION_DATE_TIME)
+                .withOfferId(OFFER_ID)
                 .withBuyerId(BUYER_ID)
                 .withDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .withProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
                 .withProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
-                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
-                .withId(OFFER_ID);
+                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE);
     }
 
     private static BigDecimal randomPrice() {

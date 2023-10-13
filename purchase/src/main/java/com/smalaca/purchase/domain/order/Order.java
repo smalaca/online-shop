@@ -15,6 +15,7 @@ import java.util.UUID;
 
 @AggregateRoot
 public class Order {
+    private UUID orderId;
     private final DocumentNumber documentNumber;
     private final UUID offerId;
     private final UUID buyerId;
@@ -34,7 +35,7 @@ public class Order {
     @PrimaryPort
     @Factory
     public Purchase purchase() {
-        return new Purchase();
+        return new Purchase(orderId);
     }
 
     @Factory

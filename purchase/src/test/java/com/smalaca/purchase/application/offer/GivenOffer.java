@@ -43,7 +43,7 @@ class GivenOffer {
         this.orderFactory = orderFactory;
     }
 
-    GivenOffer withId(UUID offerId) {
+    GivenOffer withOfferId(UUID offerId) {
         this.offerId = offerId;
         return this;
     }
