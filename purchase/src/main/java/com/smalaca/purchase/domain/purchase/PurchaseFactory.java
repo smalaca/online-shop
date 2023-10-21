@@ -2,6 +2,10 @@ package com.smalaca.purchase.domain.purchase;
 
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.clock.Clock;
+import com.smalaca.purchase.domain.price.Price;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
+
+import java.util.List;
 
 @Factory
 public class PurchaseFactory {
@@ -17,6 +21,13 @@ public class PurchaseFactory {
                 .orderId(command.orderId())
                 .creationDateTime(clock.nowDateTime())
                 .paymentMethodId(command.paymentMethodId())
+                .totalPrice(totalPrice(command.quantitativeProducts()))
                 .build();
+    }
+
+    private Price totalPrice(List<QuantitativeProduct> products) {
+        return products.stream()
+                .map(product -> product.getPrice().multiply(product.getQuantity()))
+                .reduce(Price.ZERO, Price::add);
     }
 }

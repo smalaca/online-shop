@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
+
 @AggregateRoot
 public class Order {
     private UUID orderId;
@@ -37,7 +39,13 @@ public class Order {
     @PrimaryPort
     @Factory
     public Purchase purchase(UUID paymentMethodId, PurchaseFactory purchaseFactory) {
-        return purchaseFactory.create(new AcceptOrderCommand(buyerId, orderId, paymentMethodId));
+        return purchaseFactory.create(new AcceptOrderCommand(buyerId, orderId, paymentMethodId, quantitativeProducts()));
+    }
+
+    private List<QuantitativeProduct> quantitativeProducts() {
+        return items.stream()
+                .map(OrderItem::asQuantitativeProduct)
+                .collect(toList());
     }
 
     @Factory

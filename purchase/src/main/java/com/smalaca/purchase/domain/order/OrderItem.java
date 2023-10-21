@@ -22,4 +22,8 @@ class OrderItem {
         this.quantity = product.getQuantity();
         this.price = product.getPrice();
     }
+
+    QuantitativeProduct asQuantitativeProduct() {
+        return new QuantitativeProduct(sellerId, productId, quantity, price);
+    }
 }

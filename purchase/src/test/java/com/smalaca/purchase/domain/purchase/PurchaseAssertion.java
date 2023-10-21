@@ -1,5 +1,7 @@
 package com.smalaca.purchase.domain.purchase;
 
+import com.smalaca.purchase.domain.price.Price;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -39,6 +41,11 @@ public class PurchaseAssertion {
 
     public PurchaseAssertion hasPaymentMethod(UUID expected) {
         assertThat(actual).extracting("paymentMethodId").isEqualTo(expected);
+        return this;
+    }
+
+    public PurchaseAssertion hasTotalPrice(Price expected) {
+        assertThat(actual).extracting("totalPrice").isEqualTo(expected);
         return this;
     }
 }

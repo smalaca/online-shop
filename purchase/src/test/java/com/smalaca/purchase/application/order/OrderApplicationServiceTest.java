@@ -39,15 +39,15 @@ class OrderApplicationServiceTest {
     private static final UUID PRODUCT_ID_THREE = randomId();
     private static final LocalDateTime ORDER_CREATION_DATE_TIME = LocalDateTime.of(LocalDate.of(2023, 9, 26), LocalTime.now());
     private static final LocalDateTime PURCHASE_CREATION_DATE_TIME = LocalDateTime.of(LocalDate.of(2023, 9, 27), LocalTime.now());
-    private static final BigDecimal PRICE_ONE = randomPrice();
-    private static final BigDecimal PRICE_TWO = randomPrice();
-    private static final BigDecimal PRICE_THREE = randomPrice();
-    private static final BigDecimal TOTAL_PRICE = randomPrice();
+    private static final BigDecimal PRICE_ONE = BigDecimal.valueOf(123.32);
+    private static final BigDecimal PRICE_TWO = BigDecimal.valueOf(430.2);
+    private static final BigDecimal PRICE_THREE = BigDecimal.valueOf(13);
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
-    protected static final int QUANTITY_ONE = 2;
-    protected static final int QUANTITY_TWO = 8;
-    protected static final int QUANTITY_THREE = 4;
+    private static final int AMOUNT_ONE = 2;
+    private static final int AMOUNT_TWO = 8;
+    private static final int AMOUNT_THREE = 4;
+    private static final Price TOTAL_PRICE = Price.price(BigDecimal.valueOf(3740.24));
 
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final PurchaseRepository purchaseRepository = mock(PurchaseRepository.class);
@@ -73,8 +73,7 @@ class OrderApplicationServiceTest {
                 .hasBuyerId(BUYER_ID)
                 .hasCreationDateTime(PURCHASE_CREATION_DATE_TIME)
                 .hasPaymentMethod(PAYMENT_METHOD_ID)
-//                .hasTotalPrice(TOTAL_PRICE)
-        ;
+                .hasTotalPrice(TOTAL_PRICE);
     }
 
     private GivenOrder givenOrder() {
@@ -84,9 +83,9 @@ class OrderApplicationServiceTest {
                 .withOfferId(OFFER_ID)
                 .withOrderId(ORDER_ID)
                 .withDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO)
-                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE);
+                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
+                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
+                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE);
     }
 
     private PurchaseAssertion thenSavedPurchase() {
@@ -94,10 +93,6 @@ class OrderApplicationServiceTest {
         then(purchaseRepository).should().save(captor.capture());
 
         return assertPurchase(captor.getValue());
-    }
-
-    private static BigDecimal randomPrice() {
-        return BigDecimal.valueOf(FAKER.number().numberBetween(1, 1000));
     }
 
     private static DeliveryAddress randomDeliveryAddress() {
