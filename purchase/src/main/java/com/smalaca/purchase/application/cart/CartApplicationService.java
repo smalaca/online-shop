@@ -10,12 +10,9 @@ import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
 import com.smalaca.purchase.domain.offer.OfferRepository;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @ApplicationService
@@ -44,10 +41,9 @@ public class CartApplicationService {
     @Command
     @Transactional
     public void addProducts(AddProductsCommand command) {
-        List<Product> products = command.asProducts();
         Cart cart = cartRepository.findBy(command.cartId());
 
-        cart.add(products);
+        cart.add(command.selections());
 
         cartRepository.save(cart);
     }

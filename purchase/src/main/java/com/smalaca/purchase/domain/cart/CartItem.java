@@ -3,6 +3,7 @@ package com.smalaca.purchase.domain.cart;
 import com.smalaca.annotations.ddd.Entity;
 import com.smalaca.purchase.domain.quantity.Quantity;
 import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.selection.Selection;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
@@ -18,12 +19,12 @@ class CartItem {
         this.quantity = quantity;
     }
 
-    boolean isFor(Product product) {
-        return product.hasProductIdSameAs(productId);
+    boolean isFor(Selection selection) {
+        return selection.hasProductIdSameAs(productId);
     }
 
     boolean isEnoughOf(Product product) {
-        return isFor(product) && product.hasLessOrEqualThan(quantity);
+        return isFor(product.asSelection()) && product.hasLessOrEqualThan(quantity);
     }
 
     void increase(Quantity quantity) {

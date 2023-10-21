@@ -3,6 +3,8 @@ package com.smalaca.purchase.domain.product;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.annotations.ddd.ValueObject;
 import com.smalaca.purchase.domain.quantity.Quantity;
+import com.smalaca.purchase.domain.selection.Selection;
+import com.smalaca.purchase.domain.selection.SelectionFactory;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
@@ -41,5 +43,9 @@ public class Product {
 
     public boolean hasLessOrEqualThan(Quantity quantity) {
         return this.quantity.isLowerOrEqualThan(quantity);
+    }
+
+    public Selection asSelection() {
+        return SelectionFactory.selection(getProductId(), getQuantity().getValue());
     }
 }
