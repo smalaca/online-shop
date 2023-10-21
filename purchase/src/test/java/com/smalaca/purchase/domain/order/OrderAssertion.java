@@ -3,7 +3,7 @@ package com.smalaca.purchase.domain.order;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.smalaca.purchase.domain.documentnumber.DocumentNumberAssertion.assertDocumentNumber;
-import static com.smalaca.purchase.domain.productmanagementservice.AvailableProduct.availableProduct;
+import static com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProductTestFactory.quantitativeProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrderAssertion {
@@ -36,9 +36,9 @@ public class OrderAssertion {
     public OrderAssertion containsProduct(UUID expectedSellerId, UUID expectedProductId, int expectedQuantity, BigDecimal expectedPrice) {
         assertThat(actual).extracting("items")
                 .satisfies(actualItems -> {
-                    AvailableProduct availableProduct = availableProduct(
+                    QuantitativeProduct quantitativeProduct = quantitativeProduct(
                             expectedSellerId, expectedProductId, expectedQuantity, expectedPrice);
-                    OrderItem expected = new OrderItem(availableProduct);
+                    OrderItem expected = new OrderItem(quantitativeProduct);
                     assertThat((List) actualItems).contains(expected);
                 });
         return this;

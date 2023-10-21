@@ -91,8 +91,8 @@ public class Offer {
             return this;
         }
 
-        void item(UUID sellerId, UUID productId, Quantity quantity, Price price) {
-            items.add(new OfferItem(sellerId, productId, quantity, price));
+        void item(QuantitativeProduct product, Quantity quantity) {
+            items.add(new OfferItem(product.getSellerId(), product.getProductId(), quantity, product.getPrice()));
         }
     }
 }

@@ -5,10 +5,10 @@ import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
-import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 import com.smalaca.purchase.domain.purchase.AcceptOrderCommand;
 import com.smalaca.purchase.domain.purchase.Purchase;
 import com.smalaca.purchase.domain.purchase.PurchaseFactory;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class Order {
             return this;
         }
 
-        void item(AvailableProduct product) {
+        void item(QuantitativeProduct product) {
             items.add(new OrderItem(product));
         }
     }

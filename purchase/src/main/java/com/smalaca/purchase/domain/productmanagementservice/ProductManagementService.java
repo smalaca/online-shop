@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @SecondaryPort
 public interface ProductManagementService {
-    List<AvailableProduct> getAvailabilityOf(List<UUID> productsIds);
+    List<QuantitativeProduct> getAvailabilityOf(List<UUID> productsIds);
 
     ProductsReservation reserve(UUID buyerId, List<QuantitativeProduct> quantitativeProducts);
 }

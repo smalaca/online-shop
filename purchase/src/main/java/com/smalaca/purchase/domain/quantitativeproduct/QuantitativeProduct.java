@@ -3,6 +3,7 @@ package com.smalaca.purchase.domain.quantitativeproduct;
 import com.smalaca.annotations.ddd.ValueObject;
 import com.smalaca.purchase.domain.price.Price;
 import com.smalaca.purchase.domain.quantity.Quantity;
+import com.smalaca.purchase.domain.selection.Selection;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
@@ -28,5 +29,21 @@ public class QuantitativeProduct {
 
     public Quantity getQuantity() {
         return quantity;
+    }
+
+    public UUID getSellerId() {
+        return sellerId;
+    }
+
+    public Price getPrice() {
+        return price;
+    }
+
+    public boolean isAvailableFor(Selection selection) {
+        return selection.hasProductIdSameAs(productId) && selection.hasLessOrEqualThan(quantity);
+    }
+
+    public boolean isFor(UUID productId) {
+        return this.productId == productId;
     }
 }
