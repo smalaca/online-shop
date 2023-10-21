@@ -65,14 +65,14 @@ class OrderApplicationServiceTest {
     void shouldCreatePurchaseWhenPurchasingOrder() {
         givenOrder().created();
 
-        service.purchase(ORDER_ID);
+        service.purchase(ORDER_ID, PAYMENT_METHOD_ID);
 
         thenSavedPurchase()
                 .hasPurchaseNumberThatStartsWith("Purchase/" + BUYER_ID + "/2023/09/27/")
                 .hasOrderId(ORDER_ID)
                 .hasBuyerId(BUYER_ID)
                 .hasCreationDateTime(PURCHASE_CREATION_DATE_TIME)
-//                .hasPaymentMethod(PAYMENT_METHOD_ID)
+                .hasPaymentMethod(PAYMENT_METHOD_ID)
 //                .hasTotalPrice(TOTAL_PRICE)
         ;
     }

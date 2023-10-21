@@ -33,10 +33,10 @@ public class OrderApplicationService {
     @PrimaryAdapter
     @Command
     @Transactional
-    public void purchase(UUID orderId) {
+    public void purchase(UUID orderId, UUID paymentMethodId) {
         Order order = orderRepository.findById(orderId);
 
-        Purchase purchase = order.purchase(purchaseFactory);
+        Purchase purchase = order.purchase(paymentMethodId, purchaseFactory);
 
         purchaseRepository.save(purchase);
     }

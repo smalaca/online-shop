@@ -36,4 +36,9 @@ public class PurchaseAssertion {
         assertThat(actual).extracting("buyerId").isEqualTo(expected);
         return this;
     }
+
+    public PurchaseAssertion hasPaymentMethod(UUID expected) {
+        assertThat(actual).extracting("paymentMethodId").isEqualTo(expected);
+        return this;
+    }
 }

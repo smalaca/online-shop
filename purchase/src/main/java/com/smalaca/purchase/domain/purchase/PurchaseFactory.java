@@ -13,11 +13,12 @@ public class PurchaseFactory {
         this.clock = clock;
     }
 
-    public Purchase create(UUID buyerId, UUID orderId) {
+    public Purchase create(UUID buyerId, UUID orderId, UUID paymentMethodId) {
         return new Purchase.Builder()
                 .buyerId(buyerId)
                 .orderId(orderId)
                 .creationDateTime(clock.nowDateTime())
+                .paymentMethodId(paymentMethodId)
                 .build();
     }
 }

@@ -35,8 +35,8 @@ public class Order {
 
     @PrimaryPort
     @Factory
-    public Purchase purchase(PurchaseFactory purchaseFactory) {
-        return purchaseFactory.create(buyerId, orderId);
+    public Purchase purchase(UUID paymentMethodId, PurchaseFactory purchaseFactory) {
+        return purchaseFactory.create(buyerId, orderId, paymentMethodId);
     }
 
     @Factory

@@ -9,16 +9,18 @@ import java.util.UUID;
 
 @AggregateRoot
 public class Purchase {
-    private final UUID orderId;
     private final UUID buyerId;
+    private final UUID orderId;
     private final LocalDateTime creationDateTime;
     private final DocumentNumber documentNumber;
+    private final UUID paymentMethodId;
 
     private Purchase(Builder builder) {
         this.orderId = builder.orderId;
         this.buyerId = builder.buyerId;
         this.creationDateTime = builder.creationDateTime;
         this.documentNumber = builder.documentNumber;
+        this.paymentMethodId = builder.paymentMethodId;
     }
 
     @Factory
@@ -27,6 +29,7 @@ public class Purchase {
         private UUID buyerId;
         private LocalDateTime creationDateTime;
         private DocumentNumber documentNumber;
+        private UUID paymentMethodId;
 
         Purchase build() {
             documentNumber = DocumentNumber.purchaseNumber(buyerId, creationDateTime);
@@ -45,6 +48,11 @@ public class Purchase {
 
         Builder creationDateTime(LocalDateTime creationDateTime) {
             this.creationDateTime = creationDateTime;
+            return this;
+        }
+
+        Builder paymentMethodId(UUID paymentMethodId) {
+            this.paymentMethodId = paymentMethodId;
             return this;
         }
     }
