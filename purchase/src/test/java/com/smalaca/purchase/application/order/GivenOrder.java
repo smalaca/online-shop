@@ -7,8 +7,9 @@ import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.order.OrderFactory;
 import com.smalaca.purchase.domain.order.OrderRepository;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.productmanagementservice.GivenAvailability;
+import com.smalaca.purchase.domain.selection.Selection;
+import com.smalaca.purchase.domain.selection.SelectionTestFactory;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -23,7 +24,7 @@ class GivenOrder {
     private final OrderFactory orderFactory;
     private final GivenAvailability givenAvailability;
 
-    private final List<Product> products = new ArrayList<>();
+    private final List<Selection> selections = new ArrayList<>();
     private UUID buyerId;
     private UUID offerId;
     private UUID orderId;
@@ -57,7 +58,7 @@ class GivenOrder {
 
     GivenOrder withProduct(UUID sellerId, UUID productId, int quantity, BigDecimal price) {
         givenAvailability.available(sellerId, productId, quantity, price);
-        products.add(Product.product(productId, quantity));
+        selections.add(SelectionTestFactory.selection(productId, quantity));
         return this;
     }
 
@@ -67,14 +68,14 @@ class GivenOrder {
     }
 
     private Order order() {
-        givenAvailability.forReserving(buyerId, products);
+        givenAvailability.forReserving(buyerId, selections);
         Order order = orderFactory.create(command());
 
         return orderWithId(order);
     }
 
     private AcceptOfferDomainCommand command() {
-        return new AcceptOfferDomainCommand(buyerId, offerId, delivery, products);
+        return new AcceptOfferDomainCommand(buyerId, offerId, delivery, selections);
     }
 
     private Order orderWithId(Order order) {

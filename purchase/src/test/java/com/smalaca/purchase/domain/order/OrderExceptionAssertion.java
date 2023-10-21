@@ -1,6 +1,7 @@
 package com.smalaca.purchase.domain.order;
 
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.selection.Selection;
+import com.smalaca.purchase.domain.selection.SelectionTestFactory;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,16 +25,16 @@ public class OrderExceptionAssertion {
     }
 
     public OrderExceptionAssertion hasProducts(int expected) {
-        assertThat(actual).extracting("products").satisfies(products -> {
-            assertThat((List<Product>) products).hasSize(expected);
+        assertThat(actual).extracting("selections").satisfies(products -> {
+            assertThat((List<Selection>) products).hasSize(expected);
         });
 
         return this;
     }
 
     public OrderExceptionAssertion containsProduct(UUID expectedProductId, int expectedQuantity) {
-        assertThat(actual).extracting("products").satisfies(products -> {
-            assertThat((List<Product>) products).contains(Product.product(expectedProductId, expectedQuantity));
+        assertThat(actual).extracting("selections").satisfies(products -> {
+            assertThat((List< Selection>) products).contains(SelectionTestFactory.selection(expectedProductId, expectedQuantity));
         });
 
         return this;

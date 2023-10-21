@@ -4,9 +4,9 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryResponse;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
+import com.smalaca.purchase.domain.selection.Selection;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,15 +36,15 @@ public class OfferFactory {
             throw OfferException.notExistingAddress(command.deliveryAddress());
         }
 
-        List<AvailableProduct> availableProducts = availableProductsFor(command.products());
-        List<Product> notAvailable = notAvailableOf(command.products(), availableProducts);
+        List<AvailableProduct> availableProducts = availableProductsFor(command.selections());
+        List<Selection> notAvailable = notAvailableOf(command.selections(), availableProducts);
 
         if (!notAvailable.isEmpty()) {
             throw OfferException.notAvailableProducts(notAvailable);
         }
 
         Offer.Builder builder = new Offer.Builder();
-        command.products().forEach(product -> {
+        command.selections().forEach(product -> {
             AvailableProduct availableProduct = availableProductFor(product.getProductId(), availableProducts);
             builder.item(availableProduct.getSellerId(), product.getProductId(), product.getQuantity(), availableProduct.getPrice());
         });
@@ -64,18 +64,18 @@ public class OfferFactory {
                 .get();
     }
 
-    private List<AvailableProduct> availableProductsFor(List<Product> products) {
-        List<UUID> productIds = products.stream().map(Product::getProductId).collect(toList());
+    private List<AvailableProduct> availableProductsFor(List<Selection> selections) {
+        List<UUID> productIds = selections.stream().map(Selection::getProductId).collect(toList());
         return productManagementService.getAvailabilityOf(productIds);
     }
 
-    private List<Product> notAvailableOf(List<Product> products, List<AvailableProduct> available) {
-        return products.stream()
-                .filter(product -> isAvailabilityNotSatisfied(available, product))
+    private List<Selection> notAvailableOf(List<Selection> selections, List<AvailableProduct> available) {
+        return selections.stream()
+                .filter(selection -> isAvailabilityNotSatisfied(available, selection))
                 .collect(toList());
     }
 
-    private boolean isAvailabilityNotSatisfied(List<AvailableProduct> products, Product product) {
-        return products.stream().noneMatch(available -> available.isAvailableFor(product));
+    private boolean isAvailabilityNotSatisfied(List<AvailableProduct> products, Selection selection) {
+        return products.stream().noneMatch(available -> available.isAvailableFor(selection));
     }
 }

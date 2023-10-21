@@ -15,8 +15,4 @@ public class SelectionFactory {
                 .map(entry -> Selection.selection(entry.getKey(), entry.getValue()))
                 .collect(toList());
     }
-
-    public static Selection selection(UUID productId, int quantity) {
-        return Selection.selection(productId, quantity);
-    }
 }

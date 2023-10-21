@@ -1,9 +1,9 @@
 package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.annotations.ddd.Entity;
-import com.smalaca.purchase.domain.quantity.Quantity;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.quantity.Quantity;
+import com.smalaca.purchase.domain.selection.Selection;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
@@ -23,7 +23,7 @@ class OfferItem {
         this.price = price;
     }
 
-    Product asProduct() {
-        return Product.product(productId, quantity.getValue());
+    Selection asSelection() {
+        return Selection.selection(productId, quantity.getValue());
     }
 }

@@ -1,6 +1,6 @@
 package com.smalaca.purchase.domain.productmanagementservice;
 
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.selection.Selection;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,9 +35,9 @@ public class GivenAvailability {
         given(productManagementService.getAvailabilityOf(productsIds)).willReturn(availableProducts);
     }
 
-    public void forReserving(UUID buyerId, List<Product> products) {
+    public void forReserving(UUID buyerId, List<Selection> selections) {
         ProductsReservation response = new ProductsReservation(hasNoMissingProducts(), availableProducts, missingProductsIds);
-        given(productManagementService.reserve(buyerId, products)).willReturn(response);
+        given(productManagementService.reserve(buyerId, selections)).willReturn(response);
     }
 
     private boolean hasNoMissingProducts() {

@@ -2,9 +2,9 @@ package com.smalaca.purchase.domain.order;
 
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.clock.Clock;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
 import com.smalaca.purchase.domain.productmanagementservice.ProductsReservation;
+import com.smalaca.purchase.domain.selection.Selection;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +26,7 @@ public class OrderFactory {
                 .delivery(command.delivery())
                 .creationDateTime(clock.nowDateTime());
 
-        ProductsReservation productsReservation = productManagementService.reserve(command.buyerId(), command.products());
+        ProductsReservation productsReservation = productManagementService.reserve(command.buyerId(), command.selections());
 
         if (productsReservation.wasNotReserved()) {
             throw OrderException.notAvailableProducts(notAvailableProducts(command, productsReservation));
@@ -37,11 +37,11 @@ public class OrderFactory {
         return builder.build();
     }
 
-    private List<Product> notAvailableProducts(AcceptOfferDomainCommand command, ProductsReservation productsReservation) {
+    private List<Selection> notAvailableProducts(AcceptOfferDomainCommand command, ProductsReservation productsReservation) {
         List<UUID> missingProducts = productsReservation.missingProducts();
 
-        return command.products().stream()
-                .filter(product -> missingProducts.contains(product.getProductId()))
+        return command.selections().stream()
+                .filter(selection -> missingProducts.contains(selection.getProductId()))
                 .toList();
     }
 }

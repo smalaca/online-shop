@@ -2,7 +2,6 @@ package com.smalaca.purchase.domain.cart;
 
 import com.smalaca.annotations.ddd.Entity;
 import com.smalaca.purchase.domain.quantity.Quantity;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.selection.Selection;
 import lombok.EqualsAndHashCode;
 
@@ -23,8 +22,8 @@ class CartItem {
         return selection.hasProductIdSameAs(productId);
     }
 
-    boolean isEnoughOf(Product product) {
-        return isFor(product.asSelection()) && product.hasLessOrEqualThan(quantity);
+    boolean isEnoughOf(Selection selection) {
+        return isFor(selection) && selection.hasLessOrEqualThan(quantity);
     }
 
     void increase(Quantity quantity) {

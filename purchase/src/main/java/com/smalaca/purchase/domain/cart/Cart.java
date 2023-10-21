@@ -6,7 +6,6 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.selection.Selection;
 
 import java.util.ArrayList;
@@ -58,11 +57,11 @@ public class Cart {
     @PrimaryPort
     @Factory
     public Offer choose(ChooseProductsDomainCommand command, OfferFactory offerFactory) {
-        if (command.hasNoProducts()) {
+        if (command.hasNothingSelected()) {
             throw CartProductsException.choseNothing();
         }
 
-        List<Product> missing = getMissingOf(command.products());
+        List<Selection> missing = getMissingOf(command.selections());
 
         if (!missing.isEmpty()) {
             throw CartProductsException.missing(missing);
@@ -71,15 +70,15 @@ public class Cart {
         return offerFactory.create(command);
     }
 
-    private List<Product> getMissingOf(List<Product> products) {
-        return products.stream()
+    private List<Selection> getMissingOf(List<Selection> selections) {
+        return selections.stream()
                 .filter(this::isMissing)
                 .collect(toList());
     }
 
-    private boolean isMissing(Product product) {
+    private boolean isMissing(Selection selection) {
         Optional<CartItem> existing = items.stream()
-                .filter(cartItem -> cartItem.isEnoughOf(product))
+                .filter(cartItem -> cartItem.isEnoughOf(selection))
                 .findFirst();
 
         return existing.isEmpty();

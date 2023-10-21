@@ -12,9 +12,10 @@ import com.smalaca.purchase.domain.order.OrderAssertion;
 import com.smalaca.purchase.domain.order.OrderExceptionAssertion;
 import com.smalaca.purchase.domain.order.OrderRepository;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.productmanagementservice.GivenAvailabilityFactory;
 import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
+import com.smalaca.purchase.domain.selection.Selection;
+import com.smalaca.purchase.domain.selection.SelectionTestFactory;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,10 +61,10 @@ class OfferApplicationServiceTest {
     protected static final int QUANTITY_ONE = 2;
     protected static final int QUANTITY_TWO = 8;
     protected static final int QUANTITY_THREE = 4;
-    private static final List<Product> PRODUCTS = ImmutableList.of(
-            Product.product(PRODUCT_ID_ONE, QUANTITY_ONE),
-            Product.product(PRODUCT_ID_TWO, QUANTITY_TWO),
-            Product.product(PRODUCT_ID_THREE, QUANTITY_THREE));
+    private static final List<Selection> SELECTIONS = ImmutableList.of(
+            SelectionTestFactory.selection(PRODUCT_ID_ONE, QUANTITY_ONE),
+            SelectionTestFactory.selection(PRODUCT_ID_TWO, QUANTITY_TWO),
+            SelectionTestFactory.selection(PRODUCT_ID_THREE, QUANTITY_THREE));
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final OrderRepository orderRepository = mock(OrderRepository.class);
@@ -85,7 +86,7 @@ class OfferApplicationServiceTest {
                 .notAvailable(PRODUCT_ID_ONE)
                 .notAvailable(PRODUCT_ID_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, PRODUCTS);
+                .forReserving(BUYER_ID, SELECTIONS);
 
         Executable executable = () -> service.accept(OFFER_ID);
 
@@ -165,7 +166,7 @@ class OfferApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, PRODUCTS);
+                .forReserving(BUYER_ID, SELECTIONS);
     }
 
     @Test
@@ -177,7 +178,7 @@ class OfferApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, newPriceOne)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, newPriceTwo)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, PRODUCTS);
+                .forReserving(BUYER_ID, SELECTIONS);
 
         service.accept(OFFER_ID);
 

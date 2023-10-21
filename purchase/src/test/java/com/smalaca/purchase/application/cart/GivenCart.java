@@ -4,7 +4,7 @@ import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.cart.CartTestFactory;
 import com.smalaca.purchase.domain.selection.Selection;
-import com.smalaca.purchase.domain.selection.SelectionFactory;
+import com.smalaca.purchase.domain.selection.SelectionTestFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ class GivenCart {
     }
 
     GivenCart withProduct(UUID productId, int quantity) {
-        selections.add(SelectionFactory.selection(productId, quantity));
+        selections.add(SelectionTestFactory.selection(productId, quantity));
         return this;
     }
 

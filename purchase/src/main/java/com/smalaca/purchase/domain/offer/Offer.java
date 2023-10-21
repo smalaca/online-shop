@@ -11,7 +11,7 @@ import com.smalaca.purchase.domain.order.AcceptOfferDomainCommand;
 import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.order.OrderFactory;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.selection.Selection;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,16 +49,16 @@ public class Offer {
         }
 
         offerState = ACCEPTED;
-        return orderFactory.create(new AcceptOfferDomainCommand(buyerId, offerId, delivery, products()));
+        return orderFactory.create(new AcceptOfferDomainCommand(buyerId, offerId, delivery, selections()));
     }
 
     private boolean cannotBeAccepted() {
         return offerState.cannotBeAccepted();
     }
 
-    private List<Product> products() {
+    private List<Selection> selections() {
         return items.stream()
-                .map(OfferItem::asProduct)
+                .map(OfferItem::asSelection)
                 .collect(toList());
     }
 

@@ -2,7 +2,7 @@ package com.smalaca.purchase.domain.productmanagementservice;
 
 import com.smalaca.purchase.domain.quantity.Quantity;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.selection.Selection;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -24,8 +24,8 @@ public class AvailableProduct {
         return new AvailableProduct(sellerId, productId, Quantity.quantity(quantity), Price.price(price));
     }
 
-    public boolean isAvailableFor(Product product) {
-        return product.hasProductIdSameAs(productId) && product.hasLessOrEqualThan(quantity);
+    public boolean isAvailableFor(Selection selection) {
+        return selection.hasProductIdSameAs(productId) && selection.hasLessOrEqualThan(quantity);
     }
 
     public boolean isFor(UUID productId) {

@@ -18,8 +18,9 @@ public class Selection {
         this.quantity = quantity;
     }
 
+    // to do - should be packaget private after removed in OfferItem
     @Factory
-    static Selection selection(UUID productId, Integer quantity) {
+    public static Selection selection(UUID productId, Integer quantity) {
         return new Selection(productId, Quantity.quantity(quantity));
     }
 
@@ -37,5 +38,9 @@ public class Selection {
 
     public boolean hasLessThan(Quantity quantity) {
         return this.quantity.isLowerThan(quantity);
+    }
+
+    public boolean hasLessOrEqualThan(Quantity quantity) {
+        return this.quantity.isLowerOrEqualThan(quantity);
     }
 }
