@@ -34,4 +34,8 @@ public class Selection {
     public Quantity getQuantity() {
         return quantity;
     }
+
+    public boolean hasLessThan(Quantity quantity) {
+        return this.quantity.isLowerThan(quantity);
+    }
 }

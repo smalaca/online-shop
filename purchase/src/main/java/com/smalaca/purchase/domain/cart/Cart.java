@@ -43,11 +43,11 @@ public class Cart {
     }
 
     @PrimaryPort
-    public void remove(List<Product> products) {
-        products.forEach(product -> {
-            cartItemFor(product.asSelection()).ifPresent(cartItem -> {
-                if (cartItem.hasMoreThan(product)){
-                    cartItem.decrease(product.getQuantity());
+    public void remove(List<Selection> selections) {
+        selections.forEach(selection -> {
+            cartItemFor(selection).ifPresent(cartItem -> {
+                if (cartItem.hasMoreThan(selection)){
+                    cartItem.decrease(selection.getQuantity());
                 } else {
                     items.remove(cartItem);
                 }

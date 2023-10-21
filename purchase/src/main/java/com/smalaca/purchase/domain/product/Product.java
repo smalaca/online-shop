@@ -37,10 +37,6 @@ public class Product {
         return productId;
     }
 
-    public boolean hasLessThan(Quantity quantity) {
-        return this.quantity.isLowerThan(quantity);
-    }
-
     public boolean hasLessOrEqualThan(Quantity quantity) {
         return this.quantity.isLowerOrEqualThan(quantity);
     }

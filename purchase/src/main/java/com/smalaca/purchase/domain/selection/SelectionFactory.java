@@ -10,7 +10,7 @@ import static java.util.stream.Collectors.toList;
 
 @Factory
 public class SelectionFactory {
-    public static List<Selection> create(Map<UUID, Integer> products) {
+    public static List<Selection> selections(Map<UUID, Integer> products) {
         return products.entrySet().stream()
                 .map(entry -> Selection.selection(entry.getKey(), entry.getValue()))
                 .collect(toList());

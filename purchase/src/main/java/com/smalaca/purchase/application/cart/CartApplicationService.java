@@ -54,7 +54,7 @@ public class CartApplicationService {
     public void removeProducts(RemoveProductsCommand command) {
         Cart cart = cartRepository.findBy(command.cartId());
 
-        cart.remove(command.asProducts());
+        cart.remove(command.selections());
 
         cartRepository.save(cart);
     }

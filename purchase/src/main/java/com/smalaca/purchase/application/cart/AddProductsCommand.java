@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public record AddProductsCommand(UUID cartId, Map<UUID, Integer> products) {
     List<Selection> selections() {
-        return SelectionFactory.create(products);
+        return SelectionFactory.selections(products);
     }
 }
