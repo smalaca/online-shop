@@ -55,9 +55,9 @@ class GivenOrder {
         return this;
     }
 
-    GivenOrder withProduct(UUID sellerId, UUID productId, int amount, BigDecimal price) {
-        givenAvailability.available(sellerId, productId, amount, price);
-        products.add(Product.product(productId, amount));
+    GivenOrder withProduct(UUID sellerId, UUID productId, int quantity, BigDecimal price) {
+        givenAvailability.available(sellerId, productId, quantity, price);
+        products.add(Product.product(productId, quantity));
         return this;
     }
 

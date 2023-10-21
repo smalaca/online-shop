@@ -1,6 +1,6 @@
 package com.smalaca.purchase.domain.productmanagementservice;
 
-import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.quantity.Quantity;
 import com.smalaca.purchase.domain.price.Price;
 import com.smalaca.purchase.domain.product.Product;
 
@@ -10,22 +10,22 @@ import java.util.UUID;
 public class AvailableProduct {
     private final UUID sellerId;
     private final UUID productId;
-    private final Amount amount;
+    private final Quantity quantity;
     private final Price price;
 
-    private AvailableProduct(UUID sellerId, UUID productId, Amount amount, Price price) {
+    private AvailableProduct(UUID sellerId, UUID productId, Quantity quantity, Price price) {
         this.sellerId = sellerId;
         this.productId = productId;
-        this.amount = amount;
+        this.quantity = quantity;
         this.price = price;
     }
 
-    public static AvailableProduct availableProduct(UUID sellerId, UUID productId, Integer amount, BigDecimal price) {
-        return new AvailableProduct(sellerId, productId, Amount.amount(amount), Price.price(price));
+    public static AvailableProduct availableProduct(UUID sellerId, UUID productId, Integer quantity, BigDecimal price) {
+        return new AvailableProduct(sellerId, productId, Quantity.quantity(quantity), Price.price(price));
     }
 
     public boolean isAvailableFor(Product product) {
-        return product.hasProductIdSameAs(productId) && product.hasLessOrEqualThan(amount);
+        return product.hasProductIdSameAs(productId) && product.hasLessOrEqualThan(quantity);
     }
 
     public boolean isFor(UUID productId) {
@@ -40,8 +40,8 @@ public class AvailableProduct {
         return productId;
     }
 
-    public Amount getAmount() {
-        return amount;
+    public Quantity getQuantity() {
+        return quantity;
     }
 
     public Price getPrice() {

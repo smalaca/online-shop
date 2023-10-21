@@ -33,11 +33,11 @@ public class OrderAssertion {
         return this;
     }
 
-    public OrderAssertion containsProduct(UUID expectedSellerId, UUID expectedProductId, int expectedAmount, BigDecimal expectedPrice) {
+    public OrderAssertion containsProduct(UUID expectedSellerId, UUID expectedProductId, int expectedQuantity, BigDecimal expectedPrice) {
         assertThat(actual).extracting("items")
                 .satisfies(actualItems -> {
                     AvailableProduct availableProduct = availableProduct(
-                            expectedSellerId, expectedProductId, expectedAmount, expectedPrice);
+                            expectedSellerId, expectedProductId, expectedQuantity, expectedPrice);
                     OrderItem expected = new OrderItem(availableProduct);
                     assertThat((List) actualItems).contains(expected);
                 });

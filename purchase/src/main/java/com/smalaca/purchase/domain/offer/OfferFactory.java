@@ -46,7 +46,7 @@ public class OfferFactory {
         Offer.Builder builder = new Offer.Builder();
         command.products().forEach(product -> {
             AvailableProduct availableProduct = availableProductFor(product.getProductId(), availableProducts);
-            builder.item(availableProduct.getSellerId(), product.getProductId(), product.getAmount(), availableProduct.getPrice());
+            builder.item(availableProduct.getSellerId(), product.getProductId(), product.getQuantity(), availableProduct.getPrice());
         });
 
         return builder

@@ -25,9 +25,9 @@ public class GivenAvailability {
         return this;
     }
 
-    public GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
+    public GivenAvailability available(UUID sellerId, UUID productId, int quantity, BigDecimal price) {
         productsIds.add(productId);
-        availableProducts.add(AvailableProduct.availableProduct(sellerId, productId, amount, price));
+        availableProducts.add(AvailableProduct.availableProduct(sellerId, productId, quantity, price));
         return this;
     }
 

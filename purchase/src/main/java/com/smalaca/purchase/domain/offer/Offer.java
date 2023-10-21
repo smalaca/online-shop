@@ -3,7 +3,7 @@ package com.smalaca.purchase.domain.offer;
 import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
-import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.quantity.Quantity;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
@@ -91,8 +91,8 @@ public class Offer {
             return this;
         }
 
-        void item(UUID sellerId, UUID productId, Amount amount, Price price) {
-            items.add(new OfferItem(sellerId, productId, amount, price));
+        void item(UUID sellerId, UUID productId, Quantity quantity, Price price) {
+            items.add(new OfferItem(sellerId, productId, quantity, price));
         }
     }
 }

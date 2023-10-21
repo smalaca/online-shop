@@ -19,8 +19,8 @@ class GivenCart {
         this.cartRepository = cartRepository;
     }
 
-    GivenCart withProduct(UUID productId, int amount) {
-        products.add(Product.product(productId, amount));
+    GivenCart withProduct(UUID productId, int quantity) {
+        products.add(Product.product(productId, quantity));
         return this;
     }
 

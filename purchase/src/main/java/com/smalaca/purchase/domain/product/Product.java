@@ -2,7 +2,7 @@ package com.smalaca.purchase.domain.product;
 
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.annotations.ddd.ValueObject;
-import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.quantity.Quantity;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
@@ -11,35 +11,35 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class Product {
     private final UUID productId;
-    private final Amount amount;
+    private final Quantity quantity;
 
-    private Product(UUID productId, Amount amount) {
+    private Product(UUID productId, Quantity quantity) {
         this.productId = productId;
-        this.amount = amount;
+        this.quantity = quantity;
     }
 
     @Factory
-    public static Product product(UUID productId, Integer amount) {
-        return new Product(productId, Amount.amount(amount));
+    public static Product product(UUID productId, Integer quantity) {
+        return new Product(productId, Quantity.quantity(quantity));
     }
 
     public boolean hasProductIdSameAs(UUID productId) {
         return this.productId.equals(productId);
     }
 
-    public Amount getAmount() {
-        return amount;
+    public Quantity getQuantity() {
+        return quantity;
     }
 
     public UUID getProductId() {
         return productId;
     }
 
-    public boolean hasLessThan(Amount amount) {
-        return this.amount.isLowerThan(amount);
+    public boolean hasLessThan(Quantity quantity) {
+        return this.quantity.isLowerThan(quantity);
     }
 
-    public boolean hasLessOrEqualThan(Amount amount) {
-        return this.amount.isLowerOrEqualThan(amount);
+    public boolean hasLessOrEqualThan(Quantity quantity) {
+        return this.quantity.isLowerOrEqualThan(quantity);
     }
 }

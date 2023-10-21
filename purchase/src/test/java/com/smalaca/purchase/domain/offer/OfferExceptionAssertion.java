@@ -32,16 +32,16 @@ public class OfferExceptionAssertion {
         return this;
     }
 
-    public OfferExceptionAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
+    public OfferExceptionAssertion containsProduct(UUID expectedProductId, int expectedQuantity) {
         assertThat(actual).extracting("products").satisfies(products -> {
-            assertThat((List<Product>) products).contains(Product.product(expectedProductId, expectedAmount));
+            assertThat((List<Product>) products).contains(Product.product(expectedProductId, expectedQuantity));
         });
 
         return this;
     }
 
-    public OfferExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedAmount) {
-        return hasProducts(1).containsProduct(expectedProductId, expectedAmount);
+    public OfferExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedQuantity) {
+        return hasProducts(1).containsProduct(expectedProductId, expectedQuantity);
     }
 
     public OfferExceptionAssertion hasDeliveryAddress(DeliveryAddress expected) {

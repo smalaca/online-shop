@@ -26,7 +26,7 @@ public class Cart {
             Optional<CartItem> found = cartItemFor(product);
 
             if (found.isPresent()) {
-                found.get().increase(product.getAmount());
+                found.get().increase(product.getQuantity());
             } else {
                 items.add(asCartItem(product));
             }
@@ -34,7 +34,7 @@ public class Cart {
     }
 
     private CartItem asCartItem(Product product) {
-        return new CartItem(product.getProductId(), product.getAmount());
+        return new CartItem(product.getProductId(), product.getQuantity());
     }
 
     private Optional<CartItem> cartItemFor(Product product) {
@@ -46,7 +46,7 @@ public class Cart {
         products.forEach(product -> {
             cartItemFor(product).ifPresent(cartItem -> {
                 if (cartItem.hasMoreThan(product)){
-                    cartItem.decrease(product.getAmount());
+                    cartItem.decrease(product.getQuantity());
                 } else {
                     items.remove(cartItem);
                 }

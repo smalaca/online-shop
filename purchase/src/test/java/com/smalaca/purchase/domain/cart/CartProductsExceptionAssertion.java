@@ -31,15 +31,15 @@ public class CartProductsExceptionAssertion {
         return this;
     }
 
-    public CartProductsExceptionAssertion containsProduct(UUID expectedProductId, int expectedAmount) {
+    public CartProductsExceptionAssertion containsProduct(UUID expectedProductId, int expectedQuantity) {
         assertThat(actual).extracting("products").satisfies(products -> {
-            assertThat((List<Product>) products).contains(Product.product(expectedProductId, expectedAmount));
+            assertThat((List<Product>) products).contains(Product.product(expectedProductId, expectedQuantity));
         });
 
         return this;
     }
 
-    public CartProductsExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedAmount) {
-        return hasProducts(1).containsProduct(expectedProductId, expectedAmount);
+    public CartProductsExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedQuantity) {
+        return hasProducts(1).containsProduct(expectedProductId, expectedQuantity);
     }
 }

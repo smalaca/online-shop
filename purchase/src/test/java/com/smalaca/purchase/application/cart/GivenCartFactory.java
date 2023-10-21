@@ -11,8 +11,8 @@ class GivenCartFactory {
         this.cartRepository = cartRepository;
     }
 
-    GivenCart withProduct(UUID productId, int amount) {
-        return givenCart().withProduct(productId, amount);
+    GivenCart withProduct(UUID productId, int quantity) {
+        return givenCart().withProduct(productId, quantity);
     }
 
     void empty(UUID cartId) {

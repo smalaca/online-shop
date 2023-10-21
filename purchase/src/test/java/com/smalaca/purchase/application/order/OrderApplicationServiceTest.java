@@ -45,9 +45,9 @@ class OrderApplicationServiceTest {
     private static final BigDecimal TOTAL_PRICE = randomPrice();
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
-    protected static final int AMOUNT_ONE = 2;
-    protected static final int AMOUNT_TWO = 8;
-    protected static final int AMOUNT_THREE = 4;
+    protected static final int QUANTITY_ONE = 2;
+    protected static final int QUANTITY_TWO = 8;
+    protected static final int QUANTITY_THREE = 4;
 
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final PurchaseRepository purchaseRepository = mock(PurchaseRepository.class);
@@ -84,9 +84,9 @@ class OrderApplicationServiceTest {
                 .withOfferId(OFFER_ID)
                 .withOrderId(ORDER_ID)
                 .withDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
-                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE);
+                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
+                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO)
+                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE);
     }
 
     private PurchaseAssertion thenSavedPurchase() {
