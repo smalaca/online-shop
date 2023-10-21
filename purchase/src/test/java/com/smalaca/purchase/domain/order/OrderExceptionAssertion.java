@@ -1,11 +1,12 @@
 package com.smalaca.purchase.domain.order;
 
-import com.smalaca.purchase.domain.selection.Selection;
-import com.smalaca.purchase.domain.selection.SelectionTestFactory;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProductTestFactory.quantitativeProduct;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrderExceptionAssertion {
@@ -25,22 +26,18 @@ public class OrderExceptionAssertion {
     }
 
     public OrderExceptionAssertion hasProducts(int expected) {
-        assertThat(actual).extracting("selections").satisfies(products -> {
-            assertThat((List<Selection>) products).hasSize(expected);
+        assertThat(actual).extracting("quantitativeProducts").satisfies(products -> {
+            assertThat((List<QuantitativeProduct>) products).hasSize(expected);
         });
 
         return this;
     }
 
-    public OrderExceptionAssertion containsProduct(UUID expectedProductId, int expectedQuantity) {
-        assertThat(actual).extracting("selections").satisfies(products -> {
-            assertThat((List< Selection>) products).contains(SelectionTestFactory.selection(expectedProductId, expectedQuantity));
+    public OrderExceptionAssertion containsProduct(UUID expectedSellerId, UUID expectedProductId, int expectedQuantity, BigDecimal expectedPrice) {
+        assertThat(actual).extracting("quantitativeProducts").satisfies(products -> {
+            assertThat((List< QuantitativeProduct>) products).contains(quantitativeProduct(expectedSellerId, expectedProductId, expectedQuantity, expectedPrice));
         });
 
         return this;
-    }
-
-    public OrderExceptionAssertion hasOnlyOneProduct(UUID expectedProductId, int expectedQuantity) {
-        return hasProducts(1).containsProduct(expectedProductId, expectedQuantity);
     }
 }

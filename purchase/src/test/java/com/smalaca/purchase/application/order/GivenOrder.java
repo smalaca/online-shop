@@ -8,8 +8,7 @@ import com.smalaca.purchase.domain.order.OrderFactory;
 import com.smalaca.purchase.domain.order.OrderRepository;
 import com.smalaca.purchase.domain.price.Price;
 import com.smalaca.purchase.domain.productmanagementservice.GivenAvailability;
-import com.smalaca.purchase.domain.selection.Selection;
-import com.smalaca.purchase.domain.selection.SelectionTestFactory;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProductTestFactory.quantitativeProduct;
 import static org.mockito.BDDMockito.given;
 
 class GivenOrder {
@@ -24,7 +24,7 @@ class GivenOrder {
     private final OrderFactory orderFactory;
     private final GivenAvailability givenAvailability;
 
-    private final List<Selection> selections = new ArrayList<>();
+    private final List<QuantitativeProduct> quantitativeProducts = new ArrayList<>();
     private UUID buyerId;
     private UUID offerId;
     private UUID orderId;
@@ -58,7 +58,7 @@ class GivenOrder {
 
     GivenOrder withProduct(UUID sellerId, UUID productId, int quantity, BigDecimal price) {
         givenAvailability.available(sellerId, productId, quantity, price);
-        selections.add(SelectionTestFactory.selection(productId, quantity));
+        quantitativeProducts.add(quantitativeProduct(sellerId, productId, quantity, price));
         return this;
     }
 
@@ -68,14 +68,14 @@ class GivenOrder {
     }
 
     private Order order() {
-        givenAvailability.forReserving(buyerId, selections);
+        givenAvailability.forReserving(buyerId, quantitativeProducts);
         Order order = orderFactory.create(command());
 
         return orderWithId(order);
     }
 
     private AcceptOfferDomainCommand command() {
-        return new AcceptOfferDomainCommand(buyerId, offerId, delivery, selections);
+        return new AcceptOfferDomainCommand(buyerId, offerId, delivery, quantitativeProducts);
     }
 
     private Order orderWithId(Order order) {

@@ -14,8 +14,7 @@ import com.smalaca.purchase.domain.order.OrderRepository;
 import com.smalaca.purchase.domain.price.Price;
 import com.smalaca.purchase.domain.productmanagementservice.GivenAvailabilityFactory;
 import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
-import com.smalaca.purchase.domain.selection.Selection;
-import com.smalaca.purchase.domain.selection.SelectionTestFactory;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +33,7 @@ import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
 import static com.smalaca.purchase.domain.offer.OfferExceptionAssertion.assertOfferProductsException;
 import static com.smalaca.purchase.domain.order.OrderAssertion.assertOrder;
 import static com.smalaca.purchase.domain.order.OrderExceptionAssertion.assertOrderProductsException;
+import static com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProductTestFactory.quantitativeProduct;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -61,10 +61,10 @@ class OfferApplicationServiceTest {
     protected static final int QUANTITY_ONE = 2;
     protected static final int QUANTITY_TWO = 8;
     protected static final int QUANTITY_THREE = 4;
-    private static final List<Selection> SELECTIONS = ImmutableList.of(
-            SelectionTestFactory.selection(PRODUCT_ID_ONE, QUANTITY_ONE),
-            SelectionTestFactory.selection(PRODUCT_ID_TWO, QUANTITY_TWO),
-            SelectionTestFactory.selection(PRODUCT_ID_THREE, QUANTITY_THREE));
+    private static final List<QuantitativeProduct> QUANTITATIVE_PRODUCTS = ImmutableList.of(
+            quantitativeProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE),
+            quantitativeProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO),
+            quantitativeProduct(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE));
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final OrderRepository orderRepository = mock(OrderRepository.class);
@@ -86,15 +86,15 @@ class OfferApplicationServiceTest {
                 .notAvailable(PRODUCT_ID_ONE)
                 .notAvailable(PRODUCT_ID_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, SELECTIONS);
+                .forReserving(BUYER_ID, QUANTITATIVE_PRODUCTS);
 
         Executable executable = () -> service.accept(OFFER_ID);
 
         thenOrderNotCreatedDueToOrderExceptionThat(executable)
                 .hasMessage("Cannot create Order because products are not available anymore.")
                 .hasProducts(2)
-                .containsProduct(PRODUCT_ID_ONE, QUANTITY_ONE)
-                .containsProduct(PRODUCT_ID_TWO, QUANTITY_TWO);
+                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO);
     }
 
     private OrderExceptionAssertion thenOrderNotCreatedDueToOrderExceptionThat(Executable executable) {
@@ -166,7 +166,7 @@ class OfferApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, SELECTIONS);
+                .forReserving(BUYER_ID, QUANTITATIVE_PRODUCTS);
     }
 
     @Test
@@ -178,7 +178,7 @@ class OfferApplicationServiceTest {
                 .available(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, newPriceOne)
                 .available(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, newPriceTwo)
                 .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, SELECTIONS);
+                .forReserving(BUYER_ID, QUANTITATIVE_PRODUCTS);
 
         service.accept(OFFER_ID);
 

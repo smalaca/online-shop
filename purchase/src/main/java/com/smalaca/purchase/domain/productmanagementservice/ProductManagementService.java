@@ -1,7 +1,7 @@
 package com.smalaca.purchase.domain.productmanagementservice;
 
 import com.smalaca.annotations.architectures.portadapter.SecondaryPort;
-import com.smalaca.purchase.domain.selection.Selection;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,5 +10,5 @@ import java.util.UUID;
 public interface ProductManagementService {
     List<AvailableProduct> getAvailabilityOf(List<UUID> productsIds);
 
-    ProductsReservation reserve(UUID buyerId, List<Selection> selections);
+    ProductsReservation reserve(UUID buyerId, List<QuantitativeProduct> quantitativeProducts);
 }

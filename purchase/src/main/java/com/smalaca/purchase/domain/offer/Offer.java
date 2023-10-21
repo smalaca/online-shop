@@ -3,6 +3,7 @@ package com.smalaca.purchase.domain.offer;
 import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 import com.smalaca.purchase.domain.quantity.Quantity;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
@@ -11,7 +12,6 @@ import com.smalaca.purchase.domain.order.AcceptOfferDomainCommand;
 import com.smalaca.purchase.domain.order.Order;
 import com.smalaca.purchase.domain.order.OrderFactory;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.selection.Selection;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,16 +49,16 @@ public class Offer {
         }
 
         offerState = ACCEPTED;
-        return orderFactory.create(new AcceptOfferDomainCommand(buyerId, offerId, delivery, selections()));
+        return orderFactory.create(new AcceptOfferDomainCommand(buyerId, offerId, delivery, quantitativeProducts()));
     }
 
     private boolean cannotBeAccepted() {
         return offerState.cannotBeAccepted();
     }
 
-    private List<Selection> selections() {
+    private List<QuantitativeProduct> quantitativeProducts() {
         return items.stream()
-                .map(OfferItem::asSelection)
+                .map(OfferItem::asQuantitativeProduct)
                 .collect(toList());
     }
 

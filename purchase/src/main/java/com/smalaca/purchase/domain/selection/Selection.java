@@ -18,9 +18,8 @@ public class Selection {
         this.quantity = quantity;
     }
 
-    // to do - should be packaget private after removed in OfferItem
     @Factory
-    public static Selection selection(UUID productId, Integer quantity) {
+    static Selection selection(UUID productId, Integer quantity) {
         return new Selection(productId, Quantity.quantity(quantity));
     }
 
