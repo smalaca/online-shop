@@ -3,8 +3,6 @@ package com.smalaca.purchase.domain.purchase;
 import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.clock.Clock;
 
-import java.util.UUID;
-
 @Factory
 public class PurchaseFactory {
     private final Clock clock;
@@ -13,12 +11,12 @@ public class PurchaseFactory {
         this.clock = clock;
     }
 
-    public Purchase create(UUID buyerId, UUID orderId, UUID paymentMethodId) {
+    public Purchase create(AcceptOrderCommand command) {
         return new Purchase.Builder()
-                .buyerId(buyerId)
-                .orderId(orderId)
+                .buyerId(command.buyerId())
+                .orderId(command.orderId())
                 .creationDateTime(clock.nowDateTime())
-                .paymentMethodId(paymentMethodId)
+                .paymentMethodId(command.paymentMethodId())
                 .build();
     }
 }

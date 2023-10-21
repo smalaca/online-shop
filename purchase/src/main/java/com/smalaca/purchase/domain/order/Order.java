@@ -6,6 +6,7 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
 import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
+import com.smalaca.purchase.domain.purchase.AcceptOrderCommand;
 import com.smalaca.purchase.domain.purchase.Purchase;
 import com.smalaca.purchase.domain.purchase.PurchaseFactory;
 
@@ -36,7 +37,7 @@ public class Order {
     @PrimaryPort
     @Factory
     public Purchase purchase(UUID paymentMethodId, PurchaseFactory purchaseFactory) {
-        return purchaseFactory.create(buyerId, orderId, paymentMethodId);
+        return purchaseFactory.create(new AcceptOrderCommand(buyerId, orderId, paymentMethodId));
     }
 
     @Factory
