@@ -3,6 +3,7 @@ package com.smalaca.purchase.domain.order;
 import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
+import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
 import com.smalaca.purchase.domain.purchase.AcceptOrderCommand;
@@ -38,8 +39,16 @@ public class Order {
 
     @PrimaryPort
     @Factory
-    public Purchase purchase(UUID paymentMethodId, PurchaseFactory purchaseFactory) {
+    public Purchase purchase(UUID paymentMethodId, PurchaseFactory purchaseFactory, Clock clock) {
+        if (isExpiredOrder(clock)) {
+            throw OrderException.expired(orderId);
+        }
+
         return purchaseFactory.create(acceptOrderCommand(paymentMethodId));
+    }
+
+    private boolean isExpiredOrder(Clock clock) {
+        return creationDateTime.plusMinutes(10).isBefore(clock.nowDateTime());
     }
 
     private AcceptOrderCommand acceptOrderCommand(UUID paymentMethodId) {

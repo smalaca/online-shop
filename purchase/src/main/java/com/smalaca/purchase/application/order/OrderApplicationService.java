@@ -18,16 +18,18 @@ public class OrderApplicationService {
     private final OrderRepository orderRepository;
     private final PurchaseRepository purchaseRepository;
     private final PurchaseFactory purchaseFactory;
+    private final Clock clock;
 
     private OrderApplicationService(
-            OrderRepository orderRepository, PurchaseRepository purchaseRepository, PurchaseFactory purchaseFactory) {
+            OrderRepository orderRepository, PurchaseRepository purchaseRepository, PurchaseFactory purchaseFactory, Clock clock) {
         this.orderRepository = orderRepository;
         this.purchaseRepository = purchaseRepository;
         this.purchaseFactory = purchaseFactory;
+        this.clock = clock;
     }
 
     static OrderApplicationService create(OrderRepository orderRepository, PurchaseRepository purchaseRepository, Clock clock) {
-        return new OrderApplicationService(orderRepository, purchaseRepository, new PurchaseFactory(clock));
+        return new OrderApplicationService(orderRepository, purchaseRepository, new PurchaseFactory(clock), clock);
     }
 
     @PrimaryAdapter
@@ -36,7 +38,7 @@ public class OrderApplicationService {
     public void purchase(UUID orderId, UUID paymentMethodId) {
         Order order = orderRepository.findById(orderId);
 
-        Purchase purchase = order.purchase(paymentMethodId, purchaseFactory);
+        Purchase purchase = order.purchase(paymentMethodId, purchaseFactory, clock);
 
         purchaseRepository.save(purchase);
     }

@@ -4,6 +4,7 @@ import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 class OrderException extends RuntimeException {
     private final List<QuantitativeProduct> quantitativeProducts = new ArrayList<>();
@@ -17,5 +18,9 @@ class OrderException extends RuntimeException {
         exception.quantitativeProducts.addAll(quantitativeProducts);
 
         return exception;
+    }
+
+    static RuntimeException expired(UUID orderId) {
+        return new OrderException("Order " + orderId + " expired.");
     }
 }
