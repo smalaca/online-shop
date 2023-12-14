@@ -47,7 +47,7 @@ class OrderApplicationServiceTest {
     private static final int AMOUNT_ONE = 2;
     private static final int AMOUNT_TWO = 8;
     private static final int AMOUNT_THREE = 4;
-    private static final Price TOTAL_PRICE = Price.price(BigDecimal.valueOf(3740.24));
+    private static final Price TOTAL_PRICE = Price.price(BigDecimal.valueOf(3974.77));
 
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final PurchaseRepository purchaseRepository = mock(PurchaseRepository.class);

@@ -21,11 +21,15 @@ public class PurchaseFactory {
                 .orderId(command.orderId())
                 .creationDateTime(clock.nowDateTime())
                 .paymentMethodId(command.paymentMethodId())
-                .totalPrice(totalPrice(command.quantitativeProducts()))
+                .totalPrice(totalPrice(command.deliveryCost(), command.quantitativeProducts()))
                 .build();
     }
 
-    private Price totalPrice(List<QuantitativeProduct> products) {
+    private Price totalPrice(Price deliveryCost, List<QuantitativeProduct> products) {
+        return deliveryCost.add(priceFor(products));
+    }
+
+    private Price priceFor(List<QuantitativeProduct> products) {
         return products.stream()
                 .map(product -> product.getPrice().multiply(product.getQuantity()))
                 .reduce(Price.ZERO, Price::add);

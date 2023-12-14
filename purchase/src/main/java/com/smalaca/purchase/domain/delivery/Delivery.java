@@ -19,4 +19,8 @@ public class Delivery {
         this.address = address;
         this.price = price;
     }
+
+    public Price getPrice() {
+        return price;
+    }
 }

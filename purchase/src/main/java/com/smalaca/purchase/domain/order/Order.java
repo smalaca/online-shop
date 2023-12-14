@@ -39,7 +39,11 @@ public class Order {
     @PrimaryPort
     @Factory
     public Purchase purchase(UUID paymentMethodId, PurchaseFactory purchaseFactory) {
-        return purchaseFactory.create(new AcceptOrderCommand(buyerId, orderId, paymentMethodId, quantitativeProducts()));
+        return purchaseFactory.create(acceptOrderCommand(paymentMethodId));
+    }
+
+    private AcceptOrderCommand acceptOrderCommand(UUID paymentMethodId) {
+        return new AcceptOrderCommand(buyerId, orderId, paymentMethodId, delivery.getPrice(), quantitativeProducts());
     }
 
     private List<QuantitativeProduct> quantitativeProducts() {
