@@ -4,9 +4,9 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryResponse;
 import com.smalaca.purchase.domain.deliveryservice.DeliveryService;
-import com.smalaca.purchase.domain.product.Product;
-import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
 import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
+import com.smalaca.purchase.domain.selection.Selection;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,17 +36,17 @@ public class OfferFactory {
             throw OfferException.notExistingAddress(command.deliveryAddress());
         }
 
-        List<AvailableProduct> availableProducts = availableProductsFor(command.products());
-        List<Product> notAvailable = notAvailableOf(command.products(), availableProducts);
+        List<QuantitativeProduct> availableProducts = availableProductsFor(command.selections());
+        List<Selection> notAvailable = notAvailableOf(command.selections(), availableProducts);
 
         if (!notAvailable.isEmpty()) {
             throw OfferException.notAvailableProducts(notAvailable);
         }
 
         Offer.Builder builder = new Offer.Builder();
-        command.products().forEach(product -> {
-            AvailableProduct availableProduct = availableProductFor(product.getProductId(), availableProducts);
-            builder.item(availableProduct.getSellerId(), product.getProductId(), product.getAmount(), availableProduct.getPrice());
+        command.selections().forEach(selection -> {
+            QuantitativeProduct availableProduct = availableProductFor(selection.getProductId(), availableProducts);
+            builder.item(availableProduct, selection.getQuantity());
         });
 
         return builder
@@ -56,7 +56,7 @@ public class OfferFactory {
                 .build();
     }
 
-    private AvailableProduct availableProductFor(UUID productId, List<AvailableProduct> availableProducts) {
+    private QuantitativeProduct availableProductFor(UUID productId, List<QuantitativeProduct> availableProducts) {
         return availableProducts
                 .stream()
                 .filter(availableProduct -> availableProduct.isFor(productId))
@@ -64,18 +64,18 @@ public class OfferFactory {
                 .get();
     }
 
-    private List<AvailableProduct> availableProductsFor(List<Product> products) {
-        List<UUID> productIds = products.stream().map(Product::getProductId).collect(toList());
+    private List<QuantitativeProduct> availableProductsFor(List<Selection> selections) {
+        List<UUID> productIds = selections.stream().map(Selection::getProductId).collect(toList());
         return productManagementService.getAvailabilityOf(productIds);
     }
 
-    private List<Product> notAvailableOf(List<Product> products, List<AvailableProduct> available) {
-        return products.stream()
-                .filter(product -> isAvailabilityNotSatisfied(available, product))
+    private List<Selection> notAvailableOf(List<Selection> selections, List<QuantitativeProduct> available) {
+        return selections.stream()
+                .filter(selection -> isAvailabilityNotSatisfied(selection, available))
                 .collect(toList());
     }
 
-    private boolean isAvailabilityNotSatisfied(List<AvailableProduct> products, Product product) {
-        return products.stream().noneMatch(available -> available.isAvailableFor(product));
+    private boolean isAvailabilityNotSatisfied(Selection selection, List<QuantitativeProduct> products) {
+        return products.stream().noneMatch(available -> available.isAvailableFor(selection));
     }
 }

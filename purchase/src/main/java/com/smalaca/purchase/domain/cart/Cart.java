@@ -6,7 +6,7 @@ import com.smalaca.annotations.ddd.Factory;
 import com.smalaca.purchase.domain.offer.ChooseProductsDomainCommand;
 import com.smalaca.purchase.domain.offer.Offer;
 import com.smalaca.purchase.domain.offer.OfferFactory;
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.selection.Selection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,32 +21,32 @@ public class Cart {
     Cart() {}
 
     @PrimaryPort
-    public void add(List<Product> products) {
-        products.forEach(product -> {
-            Optional<CartItem> found = cartItemFor(product);
+    public void add(List<Selection> selections) {
+        selections.forEach(selection -> {
+            Optional<CartItem> found = cartItemFor(selection);
 
             if (found.isPresent()) {
-                found.get().increase(product.getAmount());
+                found.get().increase(selection.getQuantity());
             } else {
-                items.add(asCartItem(product));
+                items.add(asCartItem(selection));
             }
         });
     }
 
-    private CartItem asCartItem(Product product) {
-        return new CartItem(product.getProductId(), product.getAmount());
+    private CartItem asCartItem(Selection selection) {
+        return new CartItem(selection.getProductId(), selection.getQuantity());
     }
 
-    private Optional<CartItem> cartItemFor(Product product) {
-        return items.stream().filter(item -> item.isFor(product)).findFirst();
+    private Optional<CartItem> cartItemFor(Selection selection) {
+        return items.stream().filter(item -> item.isFor(selection)).findFirst();
     }
 
     @PrimaryPort
-    public void remove(List<Product> products) {
-        products.forEach(product -> {
-            cartItemFor(product).ifPresent(cartItem -> {
-                if (cartItem.hasMoreThan(product)){
-                    cartItem.decrease(product.getAmount());
+    public void remove(List<Selection> selections) {
+        selections.forEach(selection -> {
+            cartItemFor(selection).ifPresent(cartItem -> {
+                if (cartItem.hasMoreThan(selection)){
+                    cartItem.decrease(selection.getQuantity());
                 } else {
                     items.remove(cartItem);
                 }
@@ -57,11 +57,11 @@ public class Cart {
     @PrimaryPort
     @Factory
     public Offer choose(ChooseProductsDomainCommand command, OfferFactory offerFactory) {
-        if (command.hasNoProducts()) {
+        if (command.hasNothingSelected()) {
             throw CartProductsException.choseNothing();
         }
 
-        List<Product> missing = getMissingOf(command.products());
+        List<Selection> missing = getMissingOf(command.selections());
 
         if (!missing.isEmpty()) {
             throw CartProductsException.missing(missing);
@@ -70,15 +70,15 @@ public class Cart {
         return offerFactory.create(command);
     }
 
-    private List<Product> getMissingOf(List<Product> products) {
-        return products.stream()
+    private List<Selection> getMissingOf(List<Selection> selections) {
+        return selections.stream()
                 .filter(this::isMissing)
                 .collect(toList());
     }
 
-    private boolean isMissing(Product product) {
+    private boolean isMissing(Selection selection) {
         Optional<CartItem> existing = items.stream()
-                .filter(cartItem -> cartItem.isEnoughOf(product))
+                .filter(cartItem -> cartItem.isEnoughOf(selection))
                 .findFirst();
 
         return existing.isEmpty();

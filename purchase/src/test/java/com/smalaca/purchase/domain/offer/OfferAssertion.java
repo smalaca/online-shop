@@ -1,6 +1,6 @@
 package com.smalaca.purchase.domain.offer;
 
-import com.smalaca.purchase.domain.amount.Amount;
+import com.smalaca.purchase.domain.quantity.Quantity;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
 import com.smalaca.purchase.domain.price.Price;
@@ -37,17 +37,17 @@ public class OfferAssertion {
         return this;
     }
 
-    public OfferAssertion containsProduct(UUID expectedSellerId, UUID expectedProductId, int expectedAmount, BigDecimal expectedPrice) {
+    public OfferAssertion containsProduct(UUID expectedSellerId, UUID expectedProductId, int expectedQuantity, BigDecimal expectedPrice) {
         assertThat(actual).extracting("items")
                 .satisfies(actualItems -> {
                     OfferItem expected = new OfferItem(
-                            expectedSellerId, expectedProductId, Amount.amount(expectedAmount), Price.price(expectedPrice));
+                            expectedSellerId, expectedProductId, Quantity.quantity(expectedQuantity), Price.price(expectedPrice));
                     assertThat((List) actualItems).contains(expected);
                 });
         return this;
     }
 
-    public OfferAssertion hasDocumentNumberThatStartsWith(String expected) {
+    public OfferAssertion hasOfferNumberThatStartsWith(String expected) {
         assertDocumentNumber(actual).hasDocumentNumberThatStartsWith(expected);
         return this;
     }

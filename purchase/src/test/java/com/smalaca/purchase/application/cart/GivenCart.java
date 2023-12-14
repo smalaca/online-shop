@@ -3,7 +3,8 @@ package com.smalaca.purchase.application.cart;
 import com.smalaca.purchase.domain.cart.Cart;
 import com.smalaca.purchase.domain.cart.CartRepository;
 import com.smalaca.purchase.domain.cart.CartTestFactory;
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.selection.Selection;
+import com.smalaca.purchase.domain.selection.SelectionTestFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,19 +14,19 @@ import static org.mockito.BDDMockito.given;
 
 class GivenCart {
     private final CartRepository cartRepository;
-    private final List<Product> products = new ArrayList<>();
+    private final List<Selection> selections = new ArrayList<>();
 
     GivenCart(CartRepository cartRepository) {
         this.cartRepository = cartRepository;
     }
 
-    GivenCart withProduct(UUID productId, int amount) {
-        products.add(Product.product(productId, amount));
+    GivenCart withProduct(UUID productId, int quantity) {
+        selections.add(SelectionTestFactory.selection(productId, quantity));
         return this;
     }
 
     void with(UUID cartId) {
-        Cart cart = CartTestFactory.cart(products);
+        Cart cart = CartTestFactory.cart(selections);
         given(cartRepository.findBy(cartId)).willReturn(cart);
     }
 }

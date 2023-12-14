@@ -1,8 +1,8 @@
 package com.smalaca.purchase.domain.cart;
 
 import com.smalaca.annotations.ddd.Entity;
-import com.smalaca.purchase.domain.amount.Amount;
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.quantity.Quantity;
+import com.smalaca.purchase.domain.selection.Selection;
 import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
@@ -11,30 +11,30 @@ import java.util.UUID;
 @EqualsAndHashCode
 class CartItem {
     private final UUID productId;
-    private Amount amount;
+    private Quantity quantity;
 
-    CartItem(UUID productId, Amount amount) {
+    CartItem(UUID productId, Quantity quantity) {
         this.productId = productId;
-        this.amount = amount;
+        this.quantity = quantity;
     }
 
-    boolean isFor(Product product) {
-        return product.hasProductIdSameAs(productId);
+    boolean isFor(Selection selection) {
+        return selection.hasProductIdSameAs(productId);
     }
 
-    boolean isEnoughOf(Product product) {
-        return isFor(product) && product.hasLessOrEqualThan(amount);
+    boolean isEnoughOf(Selection selection) {
+        return isFor(selection) && selection.hasLessOrEqualThan(quantity);
     }
 
-    void increase(Amount amount) {
-        this.amount = this.amount.increase(amount);
+    void increase(Quantity quantity) {
+        this.quantity = this.quantity.increase(quantity);
     }
 
-    boolean hasMoreThan(Product product) {
-        return product.hasLessThan(amount);
+    boolean hasMoreThan(Selection selection) {
+        return selection.hasLessThan(quantity);
     }
 
-    void decrease(Amount amount) {
-        this.amount = this.amount.decrease(amount);
+    void decrease(Quantity quantity) {
+        this.quantity = this.quantity.decrease(quantity);
     }
 }

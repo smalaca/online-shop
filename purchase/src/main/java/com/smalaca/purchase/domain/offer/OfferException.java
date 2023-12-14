@@ -1,23 +1,23 @@
 package com.smalaca.purchase.domain.offer;
 
 import com.smalaca.purchase.domain.deliveryaddress.DeliveryAddress;
-import com.smalaca.purchase.domain.product.Product;
+import com.smalaca.purchase.domain.selection.Selection;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 class OfferException extends RuntimeException {
-    private final List<Product> products = new ArrayList<>();
+    private final List<Selection> selections = new ArrayList<Selection>();
     private DeliveryAddress deliveryAddress;
 
     private OfferException(String message) {
         super(message);
     }
 
-    static RuntimeException notAvailableProducts(List<Product> products) {
+    static RuntimeException notAvailableProducts(List<Selection> selections) {
         OfferException exception = new OfferException("Cannot create Offer because products are not available anymore.");
-        exception.products.addAll(products);
+        exception.selections.addAll(selections);
 
         return exception;
     }

@@ -15,7 +15,7 @@ The platform should support following requirements:
     - there is an automatic or (if required) manual verification of the account before products will be available for buying
     - manual verification is time-constrained
   - products are available for buying only if verified against platform policies
-  - information about amounts of the products are based on information shared by the seller
+  - information about quantitys of the products are based on information shared by the seller
   - seller can change information about the product at any time they want 
   - if the order is during processing newly introduced changes about the product are not applicable to it for 15 minutes 
 

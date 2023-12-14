@@ -3,18 +3,24 @@ package com.smalaca.purchase.domain.order;
 import com.smalaca.annotations.architectures.portadapter.PrimaryPort;
 import com.smalaca.annotations.ddd.AggregateRoot;
 import com.smalaca.annotations.ddd.Factory;
+import com.smalaca.purchase.domain.clock.Clock;
 import com.smalaca.purchase.domain.delivery.Delivery;
 import com.smalaca.purchase.domain.documentnumber.DocumentNumber;
-import com.smalaca.purchase.domain.productmanagementservice.AvailableProduct;
+import com.smalaca.purchase.domain.purchase.AcceptOrderCommand;
 import com.smalaca.purchase.domain.purchase.Purchase;
+import com.smalaca.purchase.domain.purchase.PurchaseFactory;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
+
 @AggregateRoot
 public class Order {
+    private UUID orderId;
     private final DocumentNumber documentNumber;
     private final UUID offerId;
     private final UUID buyerId;
@@ -33,8 +39,26 @@ public class Order {
 
     @PrimaryPort
     @Factory
-    public Purchase purchase() {
-        return new Purchase();
+    public Purchase purchase(UUID paymentMethodId, PurchaseFactory purchaseFactory, Clock clock) {
+        if (isExpiredOrder(clock)) {
+            throw OrderException.expired(orderId);
+        }
+
+        return purchaseFactory.create(acceptOrderCommand(paymentMethodId));
+    }
+
+    private boolean isExpiredOrder(Clock clock) {
+        return creationDateTime.plusMinutes(10).isBefore(clock.nowDateTime());
+    }
+
+    private AcceptOrderCommand acceptOrderCommand(UUID paymentMethodId) {
+        return new AcceptOrderCommand(buyerId, orderId, paymentMethodId, delivery.getPrice(), quantitativeProducts());
+    }
+
+    private List<QuantitativeProduct> quantitativeProducts() {
+        return items.stream()
+                .map(OrderItem::asQuantitativeProduct)
+                .collect(toList());
     }
 
     @Factory
@@ -71,7 +95,7 @@ public class Order {
             return this;
         }
 
-        void item(AvailableProduct product) {
+        void item(QuantitativeProduct product) {
             items.add(new OrderItem(product));
         }
     }

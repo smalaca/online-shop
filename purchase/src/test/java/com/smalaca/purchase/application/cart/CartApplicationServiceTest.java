@@ -102,16 +102,16 @@ class CartApplicationServiceTest {
     }
 
     @Test
-    void shouldNotAddProductWhenAmountIsLowerThanOne() {
+    void shouldNotAddProductWhenQuantityIsLowerThanOne() {
         givenCart.empty(CART_ID);
 
         Executable executable = () -> service.addProducts(addProductCommand(PRODUCT_ID_ONE, -13));
 
-        thenCartNotSavedDueToExceptionThat(executable).hasMessage("Amount: \"-13\" is not greater than zero.");
+        thenCartNotSavedDueToExceptionThat(executable).hasMessage("Quantity: \"-13\" is not greater than zero.");
     }
 
     @Test
-    void shouldIncreaseAmountOfProductWhenAlreadyInCart() {
+    void shouldIncreaseQuantityOfProductWhenAlreadyInCart() {
         givenCart.withProduct(PRODUCT_ID_ONE, 3).with(CART_ID);
 
         service.addProducts(addProductCommand(PRODUCT_ID_ONE, 12));
@@ -137,7 +137,7 @@ class CartApplicationServiceTest {
     }
 
     @Test
-    void shouldNotAddAnyProductsWhenAmountOfAtLeastOneIsLowerThanOne() {
+    void shouldNotAddAnyProductsWhenQuantityOfAtLeastOneIsLowerThanOne() {
         givenCart.empty(CART_ID);
         AddProductsCommand command = addProductCommand(ImmutableMap.of(
                 PRODUCT_ID_ONE, 13,
@@ -146,7 +146,7 @@ class CartApplicationServiceTest {
 
         Executable executable = () -> service.addProducts(command);
 
-        thenCartNotSavedDueToExceptionThat(executable).hasMessage("Amount: \"-26\" is not greater than zero.");
+        thenCartNotSavedDueToExceptionThat(executable).hasMessage("Quantity: \"-26\" is not greater than zero.");
     }
 
     @Test
@@ -199,8 +199,8 @@ class CartApplicationServiceTest {
         then(cartRepository).should(never()).save(any());
     }
 
-    private AddProductsCommand addProductCommand(UUID productId, int amount) {
-        return addProductCommand(ImmutableMap.of(productId, amount));
+    private AddProductsCommand addProductCommand(UUID productId, int quantity) {
+        return addProductCommand(ImmutableMap.of(productId, quantity));
     }
 
     private AddProductsCommand addProductCommand(Map<UUID, Integer> products) {
@@ -241,7 +241,7 @@ class CartApplicationServiceTest {
     }
 
     @Test
-    void shouldDecreaseProductAmount() {
+    void shouldDecreaseProductQuantity() {
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 14)
                 .withProduct(PRODUCT_ID_TWO, 1)
@@ -256,7 +256,7 @@ class CartApplicationServiceTest {
     }
 
     @Test
-    void shouldRemoveProductFromCartWhenAmountGreaterThenInCart() {
+    void shouldRemoveProductFromCartWhenQuantityGreaterThenInCart() {
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 14)
                 .withProduct(PRODUCT_ID_TWO, 1)
@@ -268,7 +268,7 @@ class CartApplicationServiceTest {
     }
 
     @Test
-    void shouldRemoveProductsDecreaseAmountOfProductsAndIgnoreThoseNotInCart() {
+    void shouldRemoveProductsDecreaseQuantityOfProductsAndIgnoreThoseNotInCart() {
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 14)
                 .withProduct(PRODUCT_ID_TWO, 1)
@@ -289,8 +289,8 @@ class CartApplicationServiceTest {
                 .containsProduct(PRODUCT_ID_FOUR, 11);
     }
 
-    private RemoveProductsCommand removeProductCommand(UUID productId, int amount) {
-        return removeProductCommand(ImmutableMap.of(productId, amount));
+    private RemoveProductsCommand removeProductCommand(UUID productId, int quantity) {
+        return removeProductCommand(ImmutableMap.of(productId, quantity));
     }
 
     private RemoveProductsCommand removeProductCommand(Map<UUID, Integer> products) {
@@ -336,7 +336,7 @@ class CartApplicationServiceTest {
     }
 
     @Test
-    void shouldRecognizeChosenProductHasGreaterAmountThanCart() {
+    void shouldRecognizeChosenProductHasGreaterQuantityThanCart() {
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .withProduct(PRODUCT_ID_TWO, 7)
@@ -355,7 +355,7 @@ class CartApplicationServiceTest {
     }
 
     @Test
-    void shouldRecognizeOneOfChosenProductHasGreaterAmountThanCart() {
+    void shouldRecognizeOneOfChosenProductHasGreaterQuantityThanCart() {
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 13)
                 .withProduct(PRODUCT_ID_TWO, 7)
@@ -450,7 +450,7 @@ class CartApplicationServiceTest {
     }
 
     @Test
-    void shouldRecognizeProductsWithNotEnoughAmountAnymore() {
+    void shouldRecognizeProductsWithNotEnoughQuantityAnymore() {
         givenDelivery().valid(DELIVERY_PRICE);
         givenCart
                 .withProduct(PRODUCT_ID_ONE, 2)
@@ -506,7 +506,7 @@ class CartApplicationServiceTest {
 
         thenSavedOffer()
                 .hasBuyerId(BUYER_ID)
-                .hasDocumentNumberThatStartsWith("Offer/" + BUYER_ID + "/2023/09/25/")
+                .hasOfferNumberThatStartsWith("Offer/" + BUYER_ID + "/2023/09/25/")
                 .hasCreationDateTime(CREATED_AT)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
@@ -530,8 +530,8 @@ class CartApplicationServiceTest {
         return assertOffer(captor.getValue());
     }
 
-    private ChooseProductsCommand chooseProductsCommand(UUID productId, int amount) {
-        return chooseProductsCommand(ImmutableMap.of(productId, amount));
+    private ChooseProductsCommand chooseProductsCommand(UUID productId, int quantity) {
+        return chooseProductsCommand(ImmutableMap.of(productId, quantity));
     }
 
     private ChooseProductsCommand chooseProductsCommand(Map<UUID, Integer> products) {

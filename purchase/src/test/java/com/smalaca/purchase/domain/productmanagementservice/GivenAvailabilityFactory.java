@@ -14,8 +14,8 @@ public class GivenAvailabilityFactory {
         return create().notAvailable(productId);
     }
 
-    public GivenAvailability available(UUID sellerId, UUID productId, int amount, BigDecimal price) {
-        return create().available(sellerId, productId, amount, price);
+    public GivenAvailability available(UUID sellerId, UUID productId, int quantity, BigDecimal price) {
+        return create().available(sellerId, productId, quantity, price);
     }
 
     public GivenAvailability create() {

@@ -8,8 +8,10 @@ import com.smalaca.purchase.domain.offer.OfferFactory;
 import com.smalaca.purchase.domain.offer.OfferRepository;
 import com.smalaca.purchase.domain.order.OrderFactory;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.productmanagementservice.GivenAvailability;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
+import com.smalaca.purchase.domain.selection.Selection;
+import com.smalaca.purchase.domain.selection.SelectionTestFactory;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -17,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProductTestFactory.quantitativeProduct;
+import static java.util.stream.Collectors.toList;
 import static org.mockito.BDDMockito.given;
 
 class GivenOffer {
@@ -25,7 +29,7 @@ class GivenOffer {
     private final GivenDeliveryFactory givenDelivery;
     private final GivenAvailability givenAvailability;
 
-    private final List<Product> products = new ArrayList<>();
+    private final List<QuantitativeProduct> quantitativeProducts = new ArrayList<>();
     private UUID offerId;
     private UUID buyerId;
     private UUID deliveryMethodId;
@@ -43,7 +47,7 @@ class GivenOffer {
         this.orderFactory = orderFactory;
     }
 
-    GivenOffer withId(UUID offerId) {
+    GivenOffer withOfferId(UUID offerId) {
         this.offerId = offerId;
         return this;
     }
@@ -55,7 +59,7 @@ class GivenOffer {
 
     void accepted() {
         Offer offer = offer();
-        givenAvailability.forReserving(buyerId, products);
+        givenAvailability.forReserving(buyerId, quantitativeProducts);
         offer.accept(orderFactory);
 
         given(offerRepository.findById(offerId)).willReturn(offer);
@@ -71,7 +75,13 @@ class GivenOffer {
     }
 
     private ChooseProductsDomainCommand command() {
-        return new ChooseProductsDomainCommand(buyerId, products, deliveryMethodId, deliveryAddress);
+        return new ChooseProductsDomainCommand(buyerId, selections(), deliveryMethodId, deliveryAddress);
+    }
+
+    private List<Selection> selections() {
+        return quantitativeProducts.stream()
+                .map(product -> SelectionTestFactory.selection(product.getProductId(), product.getQuantity().getValue()))
+                .collect(toList());
     }
 
     private Offer offerWith(UUID offerId, Offer offer) {
@@ -99,9 +109,9 @@ class GivenOffer {
         return this;
     }
 
-    GivenOffer withProduct(UUID sellerId, UUID productId, int amount, BigDecimal price) {
-        givenAvailability.available(sellerId, productId, amount, price);
-        products.add(Product.product(productId, amount));
+    GivenOffer withProduct(UUID sellerId, UUID productId, int quantity, BigDecimal price) {
+        givenAvailability.available(sellerId, productId, quantity, price);
+        quantitativeProducts.add(quantitativeProduct(sellerId, productId, quantity, price));
 
         return this;
     }

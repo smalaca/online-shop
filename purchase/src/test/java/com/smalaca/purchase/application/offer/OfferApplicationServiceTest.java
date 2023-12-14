@@ -12,9 +12,9 @@ import com.smalaca.purchase.domain.order.OrderAssertion;
 import com.smalaca.purchase.domain.order.OrderExceptionAssertion;
 import com.smalaca.purchase.domain.order.OrderRepository;
 import com.smalaca.purchase.domain.price.Price;
-import com.smalaca.purchase.domain.product.Product;
 import com.smalaca.purchase.domain.productmanagementservice.GivenAvailabilityFactory;
 import com.smalaca.purchase.domain.productmanagementservice.ProductManagementService;
+import com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProduct;
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Address;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +33,7 @@ import static com.smalaca.purchase.domain.offer.OfferAssertion.assertOffer;
 import static com.smalaca.purchase.domain.offer.OfferExceptionAssertion.assertOfferProductsException;
 import static com.smalaca.purchase.domain.order.OrderAssertion.assertOrder;
 import static com.smalaca.purchase.domain.order.OrderExceptionAssertion.assertOrderProductsException;
+import static com.smalaca.purchase.domain.quantitativeproduct.QuantitativeProductTestFactory.quantitativeProduct;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -57,13 +58,13 @@ class OfferApplicationServiceTest {
     private static final BigDecimal PRICE_THREE = randomPrice();
     private static final UUID SELLER_ONE = randomId();
     private static final UUID SELLER_TWO = randomId();
-    protected static final int AMOUNT_ONE = 2;
-    protected static final int AMOUNT_TWO = 8;
-    protected static final int AMOUNT_THREE = 4;
-    private static final List<Product> PRODUCTS = ImmutableList.of(
-            Product.product(PRODUCT_ID_ONE, AMOUNT_ONE),
-            Product.product(PRODUCT_ID_TWO, AMOUNT_TWO),
-            Product.product(PRODUCT_ID_THREE, AMOUNT_THREE));
+    protected static final int QUANTITY_ONE = 2;
+    protected static final int QUANTITY_TWO = 8;
+    protected static final int QUANTITY_THREE = 4;
+    private static final List<QuantitativeProduct> QUANTITATIVE_PRODUCTS = ImmutableList.of(
+            quantitativeProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE),
+            quantitativeProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO),
+            quantitativeProduct(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE));
 
     private final OfferRepository offerRepository = mock(OfferRepository.class);
     private final OrderRepository orderRepository = mock(OrderRepository.class);
@@ -84,16 +85,16 @@ class OfferApplicationServiceTest {
         givenAvailability
                 .notAvailable(PRODUCT_ID_ONE)
                 .notAvailable(PRODUCT_ID_TWO)
-                .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, PRODUCTS);
+                .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
+                .forReserving(BUYER_ID, QUANTITATIVE_PRODUCTS);
 
         Executable executable = () -> service.accept(OFFER_ID);
 
         thenOrderNotCreatedDueToOrderExceptionThat(executable)
                 .hasMessage("Cannot create Order because products are not available anymore.")
                 .hasProducts(2)
-                .containsProduct(PRODUCT_ID_ONE, AMOUNT_ONE)
-                .containsProduct(PRODUCT_ID_TWO, AMOUNT_TWO);
+                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO);
     }
 
     private OrderExceptionAssertion thenOrderNotCreatedDueToOrderExceptionThat(Executable executable) {
@@ -149,23 +150,23 @@ class OfferApplicationServiceTest {
         service.accept(OFFER_ID);
 
         thenSavedOrder()
-                .hasDocumentNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
+                .hasOrderNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
                 .hasOfferId(OFFER_ID)
                 .hasBuyerId(BUYER_ID)
                 .hasCreationDateTime(ORDER_CREATION_DATE_TIME)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
-                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
-                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
-                .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE);
+                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO)
+                .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE);
     }
 
     private void givenAvailabilityForReserving() {
         givenAvailability
-                .available(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
-                .available(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
-                .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, PRODUCTS);
+                .available(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
+                .forReserving(BUYER_ID, QUANTITATIVE_PRODUCTS);
     }
 
     @Test
@@ -174,34 +175,34 @@ class OfferApplicationServiceTest {
         BigDecimal newPriceOne = randomPrice();
         BigDecimal newPriceTwo = randomPrice();
         givenAvailability
-                .available(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, newPriceOne)
-                .available(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, newPriceTwo)
-                .available(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
-                .forReserving(BUYER_ID, PRODUCTS);
+                .available(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, newPriceOne)
+                .available(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, newPriceTwo)
+                .available(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE)
+                .forReserving(BUYER_ID, QUANTITATIVE_PRODUCTS);
 
         service.accept(OFFER_ID);
 
         thenSavedOrder()
-                .hasDocumentNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
+                .hasOrderNumberThatStartsWith("Order/" + BUYER_ID + "/2023/09/26/")
                 .hasOfferId(OFFER_ID)
                 .hasBuyerId(BUYER_ID)
                 .hasCreationDateTime(ORDER_CREATION_DATE_TIME)
                 .hasDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
                 .hasProducts(3)
-                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, newPriceOne)
-                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, newPriceTwo)
-                .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE);
+                .containsProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, newPriceOne)
+                .containsProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, newPriceTwo)
+                .containsProduct(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE);
     }
 
     private GivenOffer givenOffer() {
         return GivenOfferFactory.create(offerRepository)
                 .createdAt(OFFER_CREATION_DATE_TIME)
+                .withOfferId(OFFER_ID)
                 .withBuyerId(BUYER_ID)
                 .withDelivery(DELIVERY_METHOD_ID, DELIVERY_ADDRESS, DELIVERY_PRICE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, AMOUNT_ONE, PRICE_ONE)
-                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, AMOUNT_TWO, PRICE_TWO)
-                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, AMOUNT_THREE, PRICE_THREE)
-                .withId(OFFER_ID);
+                .withProduct(SELLER_ONE, PRODUCT_ID_ONE, QUANTITY_ONE, PRICE_ONE)
+                .withProduct(SELLER_ONE, PRODUCT_ID_TWO, QUANTITY_TWO, PRICE_TWO)
+                .withProduct(SELLER_TWO, PRODUCT_ID_THREE, QUANTITY_THREE, PRICE_THREE);
     }
 
     private static BigDecimal randomPrice() {
